@@ -8,9 +8,9 @@ N16					[0-9a-fA-F]
 INT_SPEC			(u|U|l|L)
 FLOAT_SPEC			(f|F|l|L)
 EXP					(e|E)[+-]?{N10}+
-ALPHA				[a-zA-Z0-9_]
+ALPHA				[a-zA-Z_]
 
-STRING_LITERAL		\"(\\\\|\\\"|\\(ALPHA)|[^\"\\\n])*\"
+STRING_LITERAL		\"(\\\\|\\\"|\\({ALPHA}|{N10})|[^\"\\\n])*\"
 JAVA_COMMENT		(\/\/[^\n]*\n))|(\/\*([^\\]|\\[^\*])*\*\/)
 
 %%
@@ -27,12 +27,12 @@ JAVA_COMMENT		(\/\/[^\n]*\n))|(\/\*([^\\]|\\[^\*])*\*\/)
 
 
 %{/* KEYWORDS */}%
-		
+
+%{/* WHAT-TO-DO-ABOUT: catch, finally, import, protected, throw, throws, try */}%		
 "boolean"				{ return BOOL; }
 "break"					{ return BREAK; }
 "byte"					{ return BYTE; }
 "case"					{ return CASE; }
-%{/*catch*/}%
 "char"					{ return CHAR; }
 "class"					{ return CLASS; }
 "continue"				{ return CONTINUE; }
@@ -42,26 +42,23 @@ JAVA_COMMENT		(\/\/[^\n]*\n))|(\/\*([^\\]|\\[^\*])*\*\/)
 "else"					{ return ELSE; }
 "enum"					{ return ENUM; }
 "final"					{ return FINAL; }
-%{/*finally*/}%
 "float"					{ return FLOAT; }
 "for"					{ return FOR; }
 "if"					{ return IF; }
-%{/*import*/}%
 "int"					{ return INT; }
 "long"					{ return LONG; }
 "new"					{ return NEW; }
 "private"				{ return PRIVATE; }
-%{/*protected*/}%
 "public"				{ return PUBLIC; }
 "return"				{ return RETURN; }
 "short"					{ return SHORT; }
 "static"				{ return STATIC; }
 "switch"				{ return SWITCH; }
-%{/*throw*/}%
-%{/*throws*/}%
-%{/*try*/}%
 "void"					{ return VOID; }
 "while"					{ return WHILE; }
+
+%{/* IDENTIFIERS */}%
+{ALPHA}({ALPHA}|{N10})* { return ID; }
 
 %{/* OPERATORS */}%
 
