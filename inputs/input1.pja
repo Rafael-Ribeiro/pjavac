@@ -8,18 +8,16 @@ class gcd_rec
 		System.out.println(gcd(a,b));
 	}
 
-	int gcd(int a, int b)
+	public static int gcd(int a, int b)
 	{
 		if (a == b || b == 0)
 			return a;
-
-		if (a == 0)
+		else if (a == 0)
 			return b;
-
-		if (a > b)
+		else if (a > b)
 			return gcd(a % b, b);
-
-		return gcd(a, b % a);
+		else /* b < a */
+			return gcd(a, b % a);
 	}
 }
 
