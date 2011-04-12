@@ -81,6 +81,19 @@ application:
 	class_def														{ return 0; }
 	;
 
+assign_op:
+	ID SHIFT_R_ASSIGN expr
+	| SHIFT_L_ASSIGN expr
+	| ADD_ASSIGN expr
+	| SUB_ASSIGN expr
+	| MUL_ASSIGN expr
+	| DIV_ASSIGN expr
+	| MOD_ASSIGN expr
+	| AND_ASSIGN expr
+	| XOR_ASSIGN expr
+	| OR_ASSIGN expr
+	;
+
 binary_op:
 	expr '+' expr													{ }
 	| expr '-' expr													{ }
@@ -105,6 +118,7 @@ binary_op:
 	| expr GE_OP expr												{ }
 	| expr EQ3_OP expr												{ }
 	| expr NE3_OP expr												{ }
+	| assign_op													{ }
 	;
 
 class_decl_list:
@@ -136,7 +150,8 @@ class_stmt_scope:
 	;
 
 compound_stmt:
-	stmt															{ }
+	';'
+	| stmt															{ }
 	| '{' stmt_list '}'												{ }
 	;
 
@@ -155,8 +170,7 @@ expr_list:
 	;
 
 for:
-	/* TODO */
-	FOR '(' ';' expr ';' ')' compound_stmt
+	FOR '(' expr_list ';' expr ';' expr_list ')' compound_stmt		{ }
 	;
 
 func_call_arg_list:
@@ -248,6 +262,10 @@ var_def:
 var_stmt:
 	var_decl ';'													{ }
 	| var_def ';'													{ }
+	;
+
+while:
+	WHILE '(' expr ')' compound_stmt
 	;
 
 %%
