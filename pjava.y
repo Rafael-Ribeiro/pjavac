@@ -57,6 +57,8 @@
 %token EQ3_OP
 %token NE3_OP
 
+%token END
+
 /* PRIORITY */
 %right SHIFT_R_ASSIGN SHIFT_L_ASSIGN ADD_ASSIGN SUB_ASSIGN MUL_ASSIGN DIV_ASSIGN MOD_ASSIGN AND_ASSIGN XOR_ASSIGN OR_ASSIGN
 %right '='
@@ -78,7 +80,7 @@
 %%
 
 application:
-	class_def														{ return 0; }
+	class_def END													{ return 0; }
 	;
 
 assign_op:
