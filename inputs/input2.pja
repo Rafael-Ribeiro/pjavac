@@ -1,8 +1,9 @@
 /* ERROR CODE */
 class gcd_rec
 {
-		int a;
-		int b;
-	}
+
+	int a;
 }
+
+!"#512435234/^
 
