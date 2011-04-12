@@ -11,26 +11,20 @@ EXP					(e|E)[+-]?{N10}+
 ALPHA				[a-zA-Z_]
 
 STRING_LITERAL		\"(\\\\|\\\"|\\({ALPHA}|{N10})|[^\"\\\n])*\"
-JAVA_COMMENT		(\/\/[^\n]*\n))|(\/\*([^\\]|\\[^\*])*\*\/)
+JAVA_COMMENT		(\/\/[^\n]*\n)|(\/\*([^\\]|\\[^\*])*\*\/)
 
 %%
 
 {JAVA_COMMENT}		{ }
 
-%{/* LITERALS */}%
-
-[+-]?{N8}+{INT_SPEC}*					{ return CONSTANT; }
+[+-]?{N8}+{INT_SPEC}*					{ return CONSTANT; } /* LITERALS */
 [+-]?{N10}+{EXP}?{INT_SPEC}*			{ return CONSTANT; }
 0(x|X){N16}+{INT_SPEC}*					{ return CONSTANT; }
 
 [+-]?{N10}*"."{N10}+{EXP}?{FLOAT_SPEC}*	{ return CONSTANT; }
 
-
-%{/* KEYWORDS */}%
-
-%{/* WHAT-TO-DO-ABOUT: catch, finally, import, protected, throw, throws, try */}%		
-"boolean"				{ return BOOL; }
-"break"					{ return BREAK; }
+"boolean"				{ return BOOL; } /* KEYWORDS */
+"break"					{ return BREAK; } /* WHAT-TO-DO-ABOUT: catch, enum, finally, import, protected, throw, throws, try */
 "byte"					{ return BYTE; }
 "case"					{ return CASE; }
 "char"					{ return CHAR; }
@@ -40,7 +34,6 @@ JAVA_COMMENT		(\/\/[^\n]*\n))|(\/\*([^\\]|\\[^\*])*\*\/)
 "do"					{ return DO; }
 "double"				{ return DOUBLE; }
 "else"					{ return ELSE; }
-"enum"					{ return ENUM; }
 "final"					{ return FINAL; }
 "float"					{ return FLOAT; }
 "for"					{ return FOR; }
@@ -57,13 +50,9 @@ JAVA_COMMENT		(\/\/[^\n]*\n))|(\/\*([^\\]|\\[^\*])*\*\/)
 "void"					{ return VOID; }
 "while"					{ return WHILE; }
 
-%{/* IDENTIFIERS */}%
-{ALPHA}({ALPHA}|{N10})* { return ID; }
+{ALPHA}({ALPHA}|{N10})* { return ID; } /* IDENTIFIERS */
 
-%{/* OPERATORS */}%
-
-%{/*"..."			{ return ELLIPSIS; }*/ %}
-">>="			{ return SHIFT_R_ASSIGN; }
+">>="			{ return SHIFT_R_ASSIGN;} /* OPERATORS */
 "<<="			{ return SHIFT_L_ASSIGN; }
 "+="			{ return ADD_ASSIGN; }
 "-="			{ return SUB_ASSIGN; }
@@ -81,9 +70,11 @@ JAVA_COMMENT		(\/\/[^\n]*\n))|(\/\*([^\\]|\\[^\*])*\*\/)
 "||"			{ return OR_OP; }
 "<="			{ return LE_OP; }
 ">="			{ return GE_OP; }
+"==="			{ return EQ3_OP; }
+"!=="			{ return NE3_OP; }
 "=="			{ return EQ_OP; }
 "!="			{ return NE_OP; }
-"==="			{ return EQ3_OP; }
+
 
 ";"				{ return ';'; }
 "{"				{ return '{'; }
@@ -113,12 +104,6 @@ JAVA_COMMENT		(\/\/[^\n]*\n))|(\/\*([^\\]|\\[^\*])*\*\/)
 [ \t\v\n\f\r]|.	{ /* remove whitespace */}
 
 %%
-int main()
-{
-	yylex();
-	return 0;
-}
-
 int yywrap()
 {
 	return 1;
