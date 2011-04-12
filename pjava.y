@@ -76,150 +76,9 @@
 %right INC_OP DEC_OP '~' '!' NEW
 
 %%
+
 application:
 	class_def														{ return 0; }
-	;
-
-class_def:
-	CLASS ID '{' class_decl_list '}'								{ }
-	;
-
-class_decl_list:
-	class_stmt														{ }
-	| class_stmt class_decl_list									{ }
-	;
-
-class_stmt:
-	member_stmt														{ }
-	| class_stmt_privacy member_stmt								{ }
-	| class_stmt_scope member_stmt									{ }
-	| class_stmt_privacy class_stmt_scope member_stmt				{ }
-	;
-
-member_stmt:
-	var_stmt														{ }
-	| func_def														{ }
-	;
-
-type_decl:
-	BOOL															{ }
-	| BYTE															{ }
-	| CHAR															{ }
-	| DOUBLE														{ }
-	| FLOAT															{ }
-	| INT															{ }
-	| LONG															{ }
-	| SHORT															{ }
-	;
-
-var_decl:
-	type_decl ID													{ }
-	;
-
-var_def:
-	type_decl ID '=' expr											{ }
-	;
-	
-var_stmt:
-	var_decl ';'													{ }
-	| var_def ';'													{ }
-	;
-
-var_assign:
-	ID '=' expr ';'													{ }
-/* 
-	TODO's
-	<<=
-	etc..
-*/
-	;
-
-func_def:
-	type_decl ID func_def_arg_list '{' stmt_list '}'				{ }
-	;
-
-func_def_arg_list:
-	'(' ')'															{ }
-	| '(' var_decl_list ')'											{ }
-	;
-
-var_decl_list:
-	var_decl														{ }
-	| var_decl ',' var_decl_list									{ }
-	;
-
-func_call_arg_list:
-	'(' ')'															{ }
-	| '(' expr_list ')'												{ }
-	;
-
-stmt:
-	var_stmt														{ }
-	| var_assign													{ }
-/*
-	| if															{ }
-	| for															{ }
-	| while															{ }
-	| do_while														{ }
-	| switch														{ }
-	| break															{ }
-	| continue														{ }
-	| return														{ }
-*/
-	;
-
-/*
-if:
-	;
-
-for:
-	;
-
-while:
-	;
-
-do_while:
-	;
-
-switch:
-	;
-
-break:
-	;
-
-continue:
-	;
-
-return:
-	;
-*/
-
-compound_stmt:
-	stmt															{ }
-	| '{' stmt_list '}'												{ }
-	;
-
-stmt_list:
-	stmt															{ }
-	| stmt stmt_list	 											{ }
-	;
-
-expr:
-	'(' expr ')' 													{ }
-	| ID 															{ }
-	| CONSTANT														{ }
-	| unary_op														{ }
-	| binary_op														{ }
-	| ternary_op													{ }
-	;
-
-unary_op:
-	INC_OP ID														{ }
-	| ID INC_OP														{ }
-	| DEC_OP ID														{ }
-	| ID DEC_OP														{ }
-	| '!' ID														{ }
-	| '~' ID														{ }
 	;
 
 binary_op:
@@ -248,13 +107,25 @@ binary_op:
 	| expr NE3_OP expr												{ }
 	;
 
-ternary_op:
-	expr '?' expr ':' expr											{ }
+class_decl_list:
+	class_stmt														{ }
+	| class_stmt class_decl_list									{ }
 	;
 
-expr_list:
-	expr															{ }
-	| expr ',' expr_list											{ }
+class_def:
+	CLASS ID '{' class_decl_list '}'								{ }
+	;
+
+class_stmt:
+	member_stmt														{ }
+	| class_stmt_privacy member_stmt								{ }
+	| class_stmt_scope member_stmt									{ }
+	| class_stmt_privacy class_stmt_scope member_stmt				{ }
+	;
+
+class_stmt_privacy:
+	PUBLIC															{ }
+	| PRIVATE														{ }
 	;
 
 class_stmt_scope:
@@ -264,10 +135,122 @@ class_stmt_scope:
 	| FINAL STATIC													{ }
 	;
 
-class_stmt_privacy:
-	PUBLIC															{ }
-	| PRIVATE														{ }
+compound_stmt:
+	stmt															{ }
+	| '{' stmt_list '}'												{ }
 	;
+
+expr:
+	'(' expr ')' 													{ }
+	| ID 															{ }
+	| CONSTANT														{ }
+	| unary_op														{ }
+	| binary_op														{ }
+	| ternary_op													{ }
+	;
+
+expr_list:
+	expr															{ }
+	| expr ',' expr_list											{ }
+	;
+
+/*
+for:
+	TODO
+	FOR '(' ';' condition ';' ')' compound_stmt
+	;
+*/
+
+func_call_arg_list:
+	'(' ')'															{ }
+	| '(' expr_list ')'												{ }
+	;
+
+func_def:
+	type_decl ID func_def_arg_list '{' stmt_list '}'				{ }
+	;
+
+func_def_arg_list:
+	'(' ')'															{ }
+	| '(' var_decl_list ')'											{ }
+	;
+
+member_stmt:
+	var_stmt														{ }
+	| func_def														{ }
+	;
+
+stmt:
+	var_stmt														{ }
+	| var_assign													{ }
+/*
+	| if															{ }
+	| for															{ }
+	| while															{ }
+	| do_while														{ }
+	| switch														{ }
+	| break															{ }
+	| continue														{ }
+	| return														{ }
+*/
+	;
+
+stmt_list:
+	stmt															{ }
+	| stmt stmt_list	 											{ }
+	;
+
+ternary_op:
+	expr '?' expr ':' expr											{ }
+	;
+
+type_decl:
+	BOOL															{ }
+	| BYTE															{ }
+	| CHAR															{ }
+	| DOUBLE														{ }
+	| FLOAT															{ }
+	| INT															{ }
+	| LONG															{ }
+	| SHORT															{ }
+	;
+
+unary_op:
+	INC_OP ID														{ }
+	| ID INC_OP														{ }
+	| DEC_OP ID														{ }
+	| ID DEC_OP														{ }
+	| '!' ID														{ }
+	| '~' ID														{ }
+	;
+
+var_assign:
+	ID '=' expr ';'													{ }
+/* 
+	TODO's
+	<<=
+	etc..
+*/
+	;
+
+var_decl:
+	type_decl ID													{ }
+	;
+
+var_decl_list:
+	var_decl														{ }
+	| var_decl ',' var_decl_list									{ }
+	;
+
+var_def:
+	type_decl ID '=' expr											{ }
+	;
+	
+var_stmt:
+	var_decl ';'													{ }
+	| var_def ';'													{ }
+	;
+
 %%
 int main()
 {
