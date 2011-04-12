@@ -60,6 +60,7 @@
 /* PRIORITY */
 %right SHIFT_R_ASSIGN SHIFT_L_ASSIGN ADD_ASSIGN SUB_ASSIGN MUL_ASSIGN DIV_ASSIGN MOD_ASSIGN AND_ASSIGN XOR_ASSIGN OR_ASSIGN
 %right '='
+%left '?' ':' /* Solves shift-reduces conflict, is this valid? */
 %left OR_OP
 %left AND_OP
 %left '|'
@@ -68,7 +69,7 @@
 %left EQ3_OP NE3_OP
 %left EQ_OP NE_OP
 %left '>' GE_OP
-%left '<' LE_OP 
+%left '<' LE_OP
 %left SHIFT_R SHIFT_L
 %left '+' '-'
 %left '*' '%' '/'
@@ -164,9 +165,34 @@ stmt:
 	| break															{ }
 	| continue														{ }
 	| return														{ }
-
 */
 	;
+
+/*
+if:
+	;
+
+for:
+	;
+
+while:
+	;
+
+do_while:
+	;
+
+switch:
+	;
+
+break:
+	;
+
+continue:
+	;
+
+return:
+	;
+*/
 
 compound_stmt:
 	stmt															{ }
