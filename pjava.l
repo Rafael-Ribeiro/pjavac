@@ -101,7 +101,8 @@ JAVA_COMMENT		(\/\/[^\n]*\n)|(\/\*([^\\]|\\[^\*])*\*\/)
 "|"				{ return '|'; }
 "?"				{ return '?'; }
 
-[ \t\v\n\f\r]|.	{ /* remove whitespace */}
+[ \t\v\n\f\r]	{ /* remove whitespace */}
+.				{ return yytext[0]; } /* bad chars */
 
 %%
 int yywrap()

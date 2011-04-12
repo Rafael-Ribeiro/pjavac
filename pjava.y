@@ -154,12 +154,10 @@ expr_list:
 	| expr ',' expr_list											{ }
 	;
 
-/*
 for:
-	TODO
-	FOR '(' ';' condition ';' ')' compound_stmt
+	/* TODO */
+	FOR '(' ';' expr ';' ')' compound_stmt
 	;
-*/
 
 func_call_arg_list:
 	'(' ')'															{ }
@@ -167,12 +165,17 @@ func_call_arg_list:
 	;
 
 func_def:
-	type_decl ID func_def_arg_list '{' stmt_list '}'				{ }
+	type_decl ID func_def_args_list '{' stmt_list '}'				{ }
 	;
 
-func_def_arg_list:
+func_def_args_list:
+	var_decl														{ }
+	| var_decl ',' func_def_args_list								{ }
+	;
+
+func_def_args:
 	'(' ')'															{ }
-	| '(' var_decl_list ')'											{ }
+	| '(' func_def_args_list ')'									{ }
 	;
 
 member_stmt:
@@ -213,6 +216,7 @@ type_decl:
 	| INT															{ }
 	| LONG															{ }
 	| SHORT															{ }
+	| VOID															{ }
 	;
 
 unary_op:
@@ -235,11 +239,6 @@ var_assign:
 
 var_decl:
 	type_decl ID													{ }
-	;
-
-var_decl_list:
-	var_decl														{ }
-	| var_decl ',' var_decl_list									{ }
 	;
 
 var_def:
