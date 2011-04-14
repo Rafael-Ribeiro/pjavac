@@ -1,9 +1,10 @@
-/* ERROR CODE */
+/*  ERROR CODE *****\*/
 class gcd_rec
 {
-
-	int a;
+	public int asd(int a)
+	{
+		int a[] = {1};
+		a[func()+5-3] = func()+3-"";
+	}
 }
-
-!"#512435234/^
 

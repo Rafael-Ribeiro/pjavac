@@ -9,19 +9,27 @@ INT_SPEC			(u|U|l|L)
 FLOAT_SPEC			(f|F|l|L)
 EXP					(e|E)[+-]?{N10}+
 ALPHA				[a-zA-Z_]
-
-STRING_LITERAL		\"(\\\\|\\\"|\\({ALPHA}|{N10})|[^\"\\\n])*\"
-JAVA_COMMENT		(\/\/[^\n]*\n)|(\/\*([^\\]|\\[^\*])*\*\/)
+		
+WHITE_SPACE			[ \t\v\n\f\r]
+CHAR 				(\\(b|t|n|r|\"|\'|\\|u{N16}{4}|{N8}{1,3})|[^\\\"\n])
+STRING_LITERAL		\"{CHAR}*\"
+JAVA_COMMENT		(\/\/[^\n]*\n)|(\/\*([^\/]|[^\*]\/)*\*\/)
 
 %%
 
 {JAVA_COMMENT}		{ }
 
-[+-]?{N8}+{INT_SPEC}*					{ return CONSTANT; } /* LITERALS */
-[+-]?{N10}+{EXP}?{INT_SPEC}*			{ return CONSTANT; }
+{N8}+{INT_SPEC}*						{ return CONSTANT; } /* LITERALS */
+{N10}+{EXP}?{INT_SPEC}*					{ return CONSTANT; }
 0(x|X){N16}+{INT_SPEC}*					{ return CONSTANT; }
 
-[+-]?{N10}*"."{N10}+{EXP}?{FLOAT_SPEC}*	{ return CONSTANT; }
+{N10}*"."{N10}+{EXP}?{FLOAT_SPEC}*		{ return CONSTANT; }
+
+\'{CHAR}\'								{ return CONSTANT; }
+{STRING_LITERAL}						{ return CONSTANT; }
+
+"true"									{ return CONSTANT; }
+"false"									{ return CONSTANT; }
 
 "boolean"				{ return BOOL; } /* KEYWORDS */
 "break"					{ return BREAK; } /* WHAT-TO-DO-ABOUT: catch, enum, finally, import, protected, throw, throws, try */
@@ -103,7 +111,7 @@ JAVA_COMMENT		(\/\/[^\n]*\n)|(\/\*([^\\]|\\[^\*])*\*\/)
 
 <<EOF>>			{ return END; }
  
-[ \t\v\n\f\r]	{ /* remove whitespace */}
+{WHITE_SPACE}	{ /* remove whitespace */}
 .				{ return yytext[0]; } /* bad chars */
 
 %%

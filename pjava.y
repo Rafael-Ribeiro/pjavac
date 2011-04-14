@@ -59,10 +59,13 @@
 
 %token END
 
+%nonassoc REDUCE
+
 /* PRIORITY */
 %right SHIFT_R_ASSIGN SHIFT_L_ASSIGN ADD_ASSIGN SUB_ASSIGN MUL_ASSIGN DIV_ASSIGN MOD_ASSIGN AND_ASSIGN XOR_ASSIGN OR_ASSIGN
 %right '='
-%left '?' ':' /* Solves shift-reduces conflict, is this valid? */
+%left '?' IF
+%left ':' ELSE
 %left OR_OP
 %left AND_OP
 %left '|'
@@ -79,25 +82,50 @@
 
 %%
 
-application:
-	class_def END													{ return 0; }
+/*
+	TODO: arrays
+	eg.:	type ID[];
+			type ID[] = {1,2,3,};
+			type ID[] = new type[expr];
+			ID = new type[expr];
+
+			( "{}" and "{1,2...}" are valid assignments ONLY on declaration)
+			(new type[expr] will be an expr)
+*/
+
+application
+	: class_def END													{ return 0; }
 	;
 
-assign_op:
-	ID SHIFT_R_ASSIGN expr
-	| SHIFT_L_ASSIGN expr
-	| ADD_ASSIGN expr
-	| SUB_ASSIGN expr
-	| MUL_ASSIGN expr
-	| DIV_ASSIGN expr
-	| MOD_ASSIGN expr
-	| AND_ASSIGN expr
-	| XOR_ASSIGN expr
-	| OR_ASSIGN expr
+array_initializer
+	: expr															{ }
+	| '{' '}'														{ }
+	| '{' ',' '}'													{ }
+	| '{' array_initializer_list '}'								{ }
+ 	| '{' array_initializer_list ',' '}'							{ }
 	;
 
-binary_op:
-	expr '+' expr													{ }
+array_initializer_list
+	: array_initializer												{ }
+	| array_initializer_list ',' array_initializer					{ }
+	;
+
+assign_op
+	: var '=' expr													{ }
+	| var SHIFT_R_ASSIGN expr										{ }
+	| var SHIFT_L_ASSIGN expr										{ }
+	| var ADD_ASSIGN expr											{ }
+	| var SUB_ASSIGN expr											{ }
+	| var MUL_ASSIGN expr											{ }
+	| var DIV_ASSIGN expr											{ }
+	| var MOD_ASSIGN expr											{ }
+	| var AND_ASSIGN expr											{ }
+	| var XOR_ASSIGN expr											{ }
+	| var OR_ASSIGN expr											{ }
+	;
+
+binary_op
+	: expr '+' expr													{ }
 	| expr '-' expr													{ }
 	| expr '*' expr													{ }
 	| expr '/' expr													{ }
@@ -120,111 +148,186 @@ binary_op:
 	| expr GE_OP expr												{ }
 	| expr EQ3_OP expr												{ }
 	| expr NE3_OP expr												{ }
-	| assign_op													{ }
+	| assign_op														{ }
 	;
 
-class_decl_list:
-	class_stmt														{ }
+break
+	: BREAK ';'														{ }
+	| BREAK ID ';'													{ } /* TODO labeled loops */
+	;
+
+class_decl_list
+	: class_stmt													{ }
 	| class_stmt class_decl_list									{ }
 	;
 
-class_def:
-	CLASS ID '{' class_decl_list '}'								{ }
+class_def
+	: CLASS ID '{' '}'												{ } 
+	| CLASS ID '{' class_decl_list '}'								{ }
 	;
 
-class_stmt:
-	member_stmt														{ }
+class_stmt
+	: member_stmt													{ }
 	| class_stmt_privacy member_stmt								{ }
 	| class_stmt_scope member_stmt									{ }
 	| class_stmt_privacy class_stmt_scope member_stmt				{ }
 	;
 
-class_stmt_privacy:
-	PUBLIC															{ }
+class_stmt_privacy
+	: PUBLIC														{ }
 	| PRIVATE														{ }
 	;
 
-class_stmt_scope:
-	FINAL															{ }
+class_stmt_scope
+	: FINAL															{ }
 	| STATIC														{ }
 	| STATIC FINAL													{ }
 	| FINAL STATIC													{ }
 	;
 
-compound_stmt:
-	';'
-	| stmt															{ }
-	| '{' stmt_list '}'												{ }
+compound_stmt
+	: stmt															{ }
+	| '{' '}'														{ }
+	| '{' compound_stmt_list '}'									{ }
 	;
 
-expr:
-	'(' expr ')' 													{ }
-	| ID 															{ }
+compound_stmt_list
+	: compound_stmt													{ }
+	| compound_stmt compound_stmt_list								{ }
+	;
+
+continue
+	: CONTINUE ';'													{ }
+	| CONTINUE ID ';'												{ } /* TODO labeled loops */
+	;
+
+do_while
+	: DO compound_stmt WHILE '(' expr ')' ';'						{ }
+	;
+
+expr
+	: var 															{ }
+	| expr_op														{ }
+	;
+
+expr_op
+	: '(' expr_op ')'												{ }
 	| CONSTANT														{ }
 	| unary_op														{ }
 	| binary_op														{ }
 	| ternary_op													{ }
+	| func_call														{ }
 	;
 
-expr_list:
-	expr															{ }
+expr_list
+	: expr															{ }
 	| expr ',' expr_list											{ }
 	;
 
-for:
-	FOR '(' expr_list ';' expr ';' expr_list ')' compound_stmt		{ }
+for
+	: FOR '(' for_init ';' for_cond ';' for_inc ')' compound_stmt	{ }
 	;
 
-func_call_arg_list:
-	'(' ')'															{ }
+for_cond
+	: /* empty */													{ }
+	| expr															{ }
+	;
+
+for_inc
+	: /* empty */													{ }
+	| expr_list														{ }
+	;
+
+for_init
+	: /* empty */
+	| expr_list														{ }
+	| var_defs														{ }
+	;
+
+func_call
+	: ID func_call_arg_list
+	;
+
+func_call_arg_list
+	: '(' ')'														{ }
 	| '(' expr_list ')'												{ }
 	;
 
-func_def:
-	type_decl ID func_def_args_list '{' stmt_list '}'				{ }
+func_def
+	: type_decl ID func_def_args '{' '}'							{ } 
+	| type_decl ID func_def_args '{' compound_stmt_list '}'			{ }
 	;
 
-func_def_args_list:
-	var_decl														{ }
-	| var_decl ',' func_def_args_list								{ }
+func_def_arg
+	: type_decl var													{ }
 	;
 
-func_def_args:
-	'(' ')'															{ }
-	| '(' func_def_args_list ')'									{ }
+func_def_arg_list
+	: func_def_arg													{ }
+	| func_def_arg ',' func_def_arg_list							{ }
 	;
 
-member_stmt:
-	var_stmt														{ }
+func_def_args
+	: '(' ')'														{ }
+	| '(' func_def_arg_list ')'										{ }
+	;
+
+if
+	: IF '(' expr ')' compound_stmt	%prec REDUCE					{ }
+	| IF '(' expr ')' compound_stmt	ELSE compound_stmt				{ }
+	;
+
+loop_stmt
+	: for															{ }
+	| while															{ }
+	| do_while														{ }
+	;
+
+member_stmt
+	: var_stmt														{ }
 	| func_def														{ }
 	;
 
-stmt:
-	var_stmt														{ }
-	| var_assign													{ }
-/*
+return
+	: RETURN ';'													{ }
+	| RETURN expr ';'												{ }
+	;
+
+stmt
+	: ';'															{ }
+	| var_stmt														{ }
+	| expr ';'														{ }
 	| if															{ }
-	| for															{ }
-	| while															{ }
-	| do_while														{ }
+	| loop_stmt
 	| switch														{ }
 	| break															{ }
 	| continue														{ }
 	| return														{ }
-*/
 	;
 
-stmt_list:
-	stmt															{ }
-	| stmt stmt_list	 											{ }
+switch
+	: SWITCH '(' expr ')' '{' '}'									{ }
+	| SWITCH '(' expr ')' '{' switch_stmt_list '}'					{ }
 	;
 
-ternary_op:
-	expr '?' expr ':' expr											{ }
+switch_stmt
+	: DEFAULT ':'													{ }
+	| DEFAULT ':' compound_stmt_list								{ }
+	| CASE CONSTANT ':'												{ }
+	| CASE CONSTANT ':' compound_stmt_list							{ }
 	;
 
-type_decl:
-	BOOL															{ }
+switch_stmt_list
+	: switch_stmt													{ }
+	| switch_stmt switch_stmt_list 									{ }
+	;
+
+ternary_op
+	: expr '?' expr ':' expr										{ }
+	;
+
+type_decl
+	: BOOL															{ }
 	| BYTE															{ }
 	| CHAR															{ }
 	| DOUBLE														{ }
@@ -235,39 +338,51 @@ type_decl:
 	| VOID															{ }
 	;
 
-unary_op:
-	INC_OP ID														{ }
-	| ID INC_OP														{ }
-	| DEC_OP ID														{ }
-	| ID DEC_OP														{ }
-	| '!' ID														{ }
-	| '~' ID														{ }
+unary_op
+	: INC_OP var													{ }
+	| var INC_OP													{ }
+	| DEC_OP var													{ }
+	| var DEC_OP													{ }
+	| '+' expr														{ }
+	| '-' expr														{ }
+	| '!' expr														{ }
+	| '~' expr														{ }
 	;
 
-var_assign:
-	ID '=' expr ';'													{ }
-/* 
-	TODO's
-	<<=
-	etc..
-*/
+var
+	: ID															{ }
+	| '(' var ')' 													{ }
+	| var '[' expr ']'												{ }
+	| func_call '[' expr ']'										{ }
 	;
 
-var_decl:
-	type_decl ID													{ }
+var_def
+	: ID															{ }
+	| ID '=' expr													{ }
+	| var_un_init_array												{ }
+	| var_un_init_array '=' array_initializer						{ }
 	;
 
-var_def:
-	type_decl ID '=' expr											{ }
-	;
-	
-var_stmt:
-	var_decl ';'													{ }
-	| var_def ';'													{ }
+var_def_list
+	: var_def														{ }
+	| var_def ',' var_def_list										{ }
 	;
 
-while:
-	WHILE '(' expr ')' compound_stmt
+var_defs
+	: type_decl var_def_list										{ }
+	;
+
+var_stmt															
+	: var_defs ';'													{ }
+	;
+
+var_un_init_array
+	: ID '[' ']'													{ }
+	| '[' ']' ID													{ }
+	;
+
+while
+	: WHILE '(' expr ')' compound_stmt								{ }
 	;
 
 %%
