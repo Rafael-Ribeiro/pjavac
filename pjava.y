@@ -97,6 +97,10 @@ application
 	: class_def END													{ return 0; }
 	;
 
+array_decl
+	: type_decl '[' ']'												{ }
+	;
+
 array_initializer
 	: expr															{ }
 	| '{' '}'														{ }
@@ -205,23 +209,33 @@ do_while
 	: DO compound_stmt WHILE '(' expr ')' ';'						{ }
 	;
 
-expr
-	: var 															{ }
-	| expr_op														{ }
+empty_dimension
+	: /* empty */													{ }
+	| empty_dimension '[' ']'										{ }
 	;
 
-expr_op
-	: '(' expr_op ')'												{ }
-	| CONSTANT														{ }
-	| unary_op														{ }
-	| binary_op														{ }
-	| ternary_op													{ }
-	| func_call														{ }
+expr
+	: var 															{ }
+	| expr_paren													{ }
 	;
 
 expr_list
 	: expr															{ }
 	| expr ',' expr_list											{ }
+	;
+
+expr_op
+	: unary_op														{ }
+	| binary_op														{ }
+	| ternary_op													{ }
+	;
+
+expr_paren
+	: '(' expr_paren ')'											{ }
+	| CONSTANT														{ }
+	| new_op														{ }
+	| func_call														{ }
+	| expr_op														{ }
 	;
 
 for
@@ -240,8 +254,14 @@ for_inc
 
 for_init
 	: /* empty */
-	| expr_list														{ }
+	| for_init_list
 	| var_defs														{ }
+	;
+
+for_init_list /* Cannot be expr_list; e.g.: for(i;;) is invalid */
+	: assign_op
+	| incr_op
+	| func_call
 	;
 
 func_call
@@ -277,6 +297,13 @@ if
 	| IF '(' expr ')' compound_stmt	ELSE compound_stmt				{ }
 	;
 
+incr_op
+	: INC_OP var													{ }
+	| var INC_OP													{ }
+	| DEC_OP var													{ }
+	| var DEC_OP													{ }
+	;
+
 loop_stmt
 	: for															{ }
 	| while															{ }
@@ -288,6 +315,22 @@ member_stmt
 	| func_def														{ }
 	;
 
+native
+	: BOOL															{ }
+	| BYTE															{ }
+	| CHAR															{ }
+	| DOUBLE														{ }
+	| FLOAT															{ }
+	| INT															{ }
+	| LONG															{ }
+	| SHORT															{ }
+	| VOID															{ }
+	;
+
+new_op
+	: NEW type_decl													{ }
+	;
+
 return
 	: RETURN ';'													{ }
 	| RETURN expr ';'												{ }
@@ -296,7 +339,8 @@ return
 stmt
 	: ';'															{ }
 	| var_stmt														{ }
-	| expr ';'														{ }
+	| assign_op ';'													{ }
+	| incr_op ';'													{ }
 	| if															{ }
 	| loop_stmt
 	| switch														{ }
@@ -327,22 +371,13 @@ ternary_op
 	;
 
 type_decl
-	: BOOL															{ }
-	| BYTE															{ }
-	| CHAR															{ }
-	| DOUBLE														{ }
-	| FLOAT															{ }
-	| INT															{ }
-	| LONG															{ }
-	| SHORT															{ }
-	| VOID															{ }
+	: native														{ }
+	| array_decl
+	/* | ID															{ } Object constructors */
 	;
 
 unary_op
-	: INC_OP var													{ }
-	| var INC_OP													{ }
-	| DEC_OP var													{ }
-	| var DEC_OP													{ }
+	: incr_op														{ }
 	| '+' expr														{ }
 	| '-' expr														{ }
 	| '!' expr														{ }
@@ -358,9 +393,8 @@ var
 
 var_def
 	: ID															{ }
-	| ID '=' expr													{ }
-	| var_un_init_array												{ }
-	| var_un_init_array '=' array_initializer						{ }
+	| ID empty_dimension '=' expr									{ }
+	| ID empty_dimension '=' array_initializer						{ }
 	;
 
 var_def_list
@@ -374,11 +408,6 @@ var_defs
 
 var_stmt															
 	: var_defs ';'													{ }
-	;
-
-var_un_init_array
-	: ID '[' ']'													{ }
-	| '[' ']' ID													{ }
 	;
 
 while
