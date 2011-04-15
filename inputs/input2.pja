@@ -3,8 +3,7 @@ class gcd_rec
 {
 	public int asd(int a)
 	{
-		int[] a = {1};
-		
+		int[] a = new int[1];
 	}
 }
 

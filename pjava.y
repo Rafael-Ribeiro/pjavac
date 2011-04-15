@@ -83,14 +83,8 @@
 %%
 
 /*
-	TODO: arrays
-	eg.:	type ID[];
-			type ID[] = {1,2,3,};
-			type ID[] = new type[expr];
-			ID = new type[expr];
-
-			( "{}" and "{1,2...}" are valid assignments ONLY on declaration)
-			(new type[expr] will be an expr)
+	TODO: dims
+		dims_empty_list can follow dims_sized (e.g: new int[2][]) but makes a shift/reduce conlict
 */
 
 application
@@ -102,17 +96,10 @@ array_decl
 	;
 
 array_initializer
-	: expr															{ }
-	| '{' '}'														{ }
-	| '{' ',' '}'													{ }
-	| '{' array_initializer_list '}'								{ }
- 	| '{' array_initializer_list ',' '}'							{ }
-	;
-
-array_initializer_list
-	: array_initializer												{ }
-	| array_initializer_list ',' array_initializer					{ }
-	;
+	: '{' '}'														{ }
+	| '{' expr_list '}'												{ }
+/*	| '{' expr_list ',' '}'											{ } */
+	; 
 
 assign_op
 	: var '=' expr													{ }
@@ -205,17 +192,31 @@ continue
 	| CONTINUE ID ';'												{ } /* TODO labeled loops */
 	;
 
+dims:
+	| dims_sized_list dims_empty_list								{ } 
+	;
+
+dims_sized
+	: '[' expr ']'													{ }
+	;
+
+dims_sized_list 
+	: dims_sized													{ }
+	| dims_sized dims_sized_list									{ }
+	; 
+
 do_while
 	: DO compound_stmt WHILE '(' expr ')' ';'						{ }
 	;
 
-empty_dimension
+dims_empty_list
 	: /* empty */													{ }
-	| empty_dimension '[' ']'										{ }
+	| dims_empty_list '[' ']'										{ }
 	;
 
 expr
 	: var 															{ }
+	| array_initializer												{ }
 	| expr_paren													{ }
 	;
 
@@ -315,20 +316,8 @@ member_stmt
 	| func_def														{ }
 	;
 
-native
-	: BOOL															{ }
-	| BYTE															{ }
-	| CHAR															{ }
-	| DOUBLE														{ }
-	| FLOAT															{ }
-	| INT															{ }
-	| LONG															{ }
-	| SHORT															{ }
-	| VOID															{ }
-	;
-
 new_op
-	: NEW type_decl													{ }
+	: NEW type_object dims											{ }
 	;
 
 return
@@ -371,8 +360,24 @@ ternary_op
 	;
 
 type_decl
-	: native														{ }
-	| array_decl
+	: type_object													{ }
+	| array_decl													{ }
+	;
+
+type_native
+	: BOOL															{ }
+	| BYTE															{ }
+	| CHAR															{ }
+	| DOUBLE														{ }
+	| FLOAT															{ }
+	| INT															{ }
+	| LONG															{ }
+	| SHORT															{ }
+	| VOID															{ }
+	;
+
+type_object
+	: type_native													{ }
 	/* | ID															{ } Object constructors */
 	;
 
@@ -393,8 +398,7 @@ var
 
 var_def
 	: ID															{ }
-	| ID empty_dimension '=' expr									{ }
-	| ID empty_dimension '=' array_initializer						{ }
+	| ID dims_empty_list '=' expr									{ }
 	;
 
 var_def_list
