@@ -196,12 +196,13 @@ continue
 	| CONTINUE ID ';'												{ } /* TODO labeled loops */
 	;
 
-dims:
-	| dims_sized_list dims_empty_list								{ } 
+dims
+	: dims_sized_list												{ }
+	| dims_sized_list dims_empty_list								{ }
 	;
 
 dims_empty_list
-	: /* empty */													{ }
+	: '[' ']'														{ }
 	| '[' ']' dims_empty_list										{ }
 	;
 
@@ -408,6 +409,7 @@ var
 
 var_def
 	: ID															{ }
+	| ID '=' expr													{ }
 	| ID dims_empty_list '=' expr									{ }
 	;
 
