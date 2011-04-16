@@ -193,7 +193,7 @@ continue
 	;
 
 dims:
-	| dims_sized_list dims_empty_list								{ } 
+	| dims_sized_list 												{ } 
 	;
 
 dims_sized
@@ -394,6 +394,7 @@ var
 	| '(' var ')' 													{ }
 	| var '[' expr ']'												{ }
 	| func_call '[' expr ']'										{ }
+	| '(' new_op ')' '[' expr ']'									{ }
 	;
 
 var_def
