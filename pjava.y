@@ -93,7 +93,7 @@ application
 
 /*
 	FIXME: array_decl should use dims_empty_list (since an array decl may be multi-dimension
-	(but that causes several shift-reduce conflicts)
+	(that causes another shift-reduce conflict (the same one))
 */
 array_decl
 	: type_decl '[' ']'												{ }
@@ -157,7 +157,7 @@ class_decl_list
 	;
 
 class_def
-	: CLASS ID '{' '}'												{ } 
+	: CLASS ID '{' '}'												{ }
 	| CLASS ID '{' class_decl_list '}'								{ }
 	;
 
