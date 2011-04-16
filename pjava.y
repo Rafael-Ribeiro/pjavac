@@ -248,7 +248,7 @@ for_cond
 	| expr															{ }
 	;
 
-for_inc
+for_inc /* TODO: Same as for init; for_inc cannot be an expr_list for the same reason */
 	: /* empty */													{ }
 	| expr_list														{ }
 	;
