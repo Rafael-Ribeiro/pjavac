@@ -259,7 +259,7 @@ for_init
 	| var_defs														{ }
 	;
 
-for_init_list /* Cannot be expr_list; e.g.: for(i;;) is invalid */
+for_init_list /* Cannot be expr_list; e.g.: for(i;;) is invalid; TODO: this ain't a list, it reduces to a single op (and I think func_call is invalid); */
 	: assign_op
 	| incr_op
 	| func_call
