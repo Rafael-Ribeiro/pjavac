@@ -91,6 +91,10 @@ application
 	: class_def END													{ return 0; }
 	;
 
+/*
+	FIXME: array_decl should use dims_empty_list (since an array decl may be multi-dimension
+	(but that causes several shift-reduce conflicts)
+*/
 array_decl
 	: type_decl '[' ']'												{ }
 	;
@@ -198,7 +202,7 @@ dims:
 
 dims_empty_list
 	: /* empty */													{ }
-	| dims_empty_list '[' ']'										{ }
+	| '[' ']' dims_empty_list										{ }
 	;
 
 dims_sized
@@ -248,7 +252,10 @@ for_cond
 	| expr															{ }
 	;
 
-for_inc /* TODO: Same as for init; for_inc cannot be an expr_list for the same reason */
+/*
+	FIXME: Same as for_init; for_inc cannot be an expr_list for the same reason
+*/
+for_inc
 	: /* empty */													{ }
 	| expr_list														{ }
 	;
@@ -259,7 +266,11 @@ for_init
 	| var_defs														{ }
 	;
 
-for_init_list /* Cannot be expr_list; e.g.: for(i;;) is invalid; TODO: this ain't a list, it reduces to a single op */
+/*
+	Cannot be expr_list; e.g.: for(i;;) is invalid;
+	FIXME: this ain't a list, it reduces to a single op
+*/
+for_init_list
 	: assign_op
 	| incr_op
 	;
