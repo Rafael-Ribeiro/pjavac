@@ -84,7 +84,7 @@
 
 /*
 	TODO: dims
-		dims_empty_list can follow dims_sized (e.g: new int[2][]) but makes a shift/reduce conlict
+		dims_empty_list can follow dims_sized (e.g: new int[2][]) but makes a shift/reduce conflict
 */
 
 application
@@ -196,6 +196,11 @@ dims:
 	| dims_sized_list dims_empty_list								{ } 
 	;
 
+dims_empty_list
+	: /* empty */													{ }
+	| dims_empty_list '[' ']'										{ }
+	;
+
 dims_sized
 	: '[' expr ']'													{ }
 	;
@@ -207,11 +212,6 @@ dims_sized_list
 
 do_while
 	: DO compound_stmt WHILE '(' expr ')' ';'						{ }
-	;
-
-dims_empty_list
-	: /* empty */													{ }
-	| dims_empty_list '[' ']'										{ }
 	;
 
 expr
