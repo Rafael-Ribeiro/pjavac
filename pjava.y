@@ -92,11 +92,11 @@ application
 	;
 
 /*
-	FIXME: array_decl should use dims_empty_list (since an array decl may be multi-dimension
+	FIXME: array_decl should use dims_empty_list (since an array_decl may be multi-dimension
 	(that causes another shift-reduce conflict (the same one))
 */
 array_decl
-	: type_decl '[' ']'												{ }
+	: type_decl dims_empty											{ }
 	;
 
 array_initializer
@@ -201,9 +201,13 @@ dims
 	| dims_sized_list dims_empty_list								{ }
 	;
 
-dims_empty_list
+dims_empty
 	: '[' ']'														{ }
-	| '[' ']' dims_empty_list										{ }
+	;
+
+dims_empty_list
+	: dims_empty													{ }
+	| dims_empty dims_empty_list									{ }
 	;
 
 dims_sized
