@@ -91,10 +91,6 @@ application
 	: class_def END													{ return 0; }
 	;
 
-/*
-	FIXME: array_decl should use dims_empty_list (since an array_decl may be multi-dimension
-	(that causes another shift-reduce conflict (the same one))
-*/
 array_decl
 	: type_object dims_empty_list									{ }
 	;
