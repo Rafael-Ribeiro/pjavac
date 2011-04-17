@@ -329,7 +329,8 @@ stmt
 	| assign_op ';'													{ }
 	| incr_op ';'													{ }
 	| if															{ }
-	| loop_stmt
+	| loop_stmt														{ }
+	| func_call														{ }
 	| switch														{ }
 	| break															{ }
 	| continue														{ }
@@ -380,7 +381,7 @@ type_object
 	;
 
 unary_op
-	: incr_op														{ } /* TODO 2 shift/LOW_PRECs here */
+	: incr_op														{ }
 	| '+' expr														{ }
 	| '-' expr														{ }
 	| '!' expr														{ }
