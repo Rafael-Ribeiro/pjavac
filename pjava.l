@@ -60,7 +60,7 @@ JAVA_COMMENT		(\/\/[^\n]*\n)|(\/\*([^\/]|[^\*]\/)*\*\/)
 
 {ALPHA}({ALPHA}|{N10})* { return ID; } /* IDENTIFIERS */
 
-"System"WS*"."WS*"out"WS*"."WS*"println" { printf("found\n");return SYSOUT; }
+"System"{WS}*"."{WS}*"out"{WS}*"."{WS}*"println" { return SYSOUT; }
 
 ">>="			{ return SHIFT_R_ASSIGN;} /* OPERATORS */
 "<<="			{ return SHIFT_L_ASSIGN; }
