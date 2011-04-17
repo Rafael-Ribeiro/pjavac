@@ -80,7 +80,6 @@
 %left '*' '%' '/'
 %right INC_OP DEC_OP '~' '!' NEW
 %left '(' ')'
-
 %%
 
 application
@@ -391,8 +390,9 @@ unary_op
 var
 	: ID %prec LOW_PREC												{ }
 	| '(' var ')' 													{ } 
+	| '(' new_op ')'												{ } 
 	| var dims_sized												{ } 
-	| func_call dims_sized											{ } 
+	| func_call dims_sized											{ }
 	;
 
 var_def
