@@ -216,9 +216,9 @@ do_while
 
 expr
 	: var %prec LOW_PREC											{ }
+	| new_op %prec LOW_PREC											{ }
 	| '(' expr ')'													{ }
 	| CONSTANT														{ }
-	| new_op														{ }
 	| func_call														{ }
 	| expr_op														{ }
 	;

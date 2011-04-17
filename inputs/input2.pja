@@ -4,6 +4,7 @@ class gcd_rec
 	public int asd(int a)
 	{
 		int a = (new int[1]);
+		a()[1] = 1;
 	}
 }
 
