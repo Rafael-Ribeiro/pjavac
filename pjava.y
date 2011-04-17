@@ -95,10 +95,10 @@ array_decl
 	;
 
 array_initializer
-	: '{' '}'														{ }
-	| '{' expr_list '}'												{ }
-/*	| '{' expr_list ',' '}'											{ } */
-	; 
+	: var_initializer												{ }
+	| array_initializer ',' var_initializer							{ }
+ 	| array_initializer ','											{ }	/* your magic comma */
+	;
 
 assign_op
 	: var '=' expr													{ }
@@ -220,7 +220,6 @@ do_while
 
 expr
 	: var 															{ }
-	| array_initializer												{ }
 	| expr_paren													{ }
 	;
 
@@ -402,13 +401,12 @@ var
 	| '(' var ')' 													{ }
 	| var dims_sized												{ }
 	| func_call dims_sized											{ }
-/*	| '(' new_op ')' '[' expr ']'									{ }*/
 	;
 
 var_def
 	: ID															{ }
-	| ID '=' expr													{ }
-	| ID dims_empty_list '=' expr									{ }
+	| ID '=' var_initializer										{ }
+	| ID dims_empty_list '=' var_initializer						{ }
 	;
 
 var_def_list
@@ -418,6 +416,12 @@ var_def_list
 
 var_defs
 	: type_decl var_def_list										{ }
+	;
+
+var_initializer
+	: '{' '}' 
+	| '{' array_initializer '}'
+	| expr
 	;
 
 var_stmt															
