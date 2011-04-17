@@ -96,7 +96,7 @@ application
 	(that causes another shift-reduce conflict (the same one))
 */
 array_decl
-	: type_decl dims_empty											{ }
+	: type_object dims_empty_list									{ }
 	;
 
 array_initializer
@@ -257,9 +257,6 @@ for_cond
 	| expr															{ }
 	;
 
-/*
-	FIXME: Same as for_init; for_inc cannot be an expr_list for the same reason
-*/
 for_inc
 	: /* empty */													{ }
 	| expr_list														{ }
@@ -267,17 +264,19 @@ for_inc
 
 for_init
 	: /* empty */
-	| for_init_list
+	| for_init_op_list
 	| var_defs														{ }
 	;
 
-/*
-	Cannot be expr_list; e.g.: for(i;;) is invalid;
-	FIXME: this ain't a list, it reduces to a single op
-*/
-for_init_list
-	: assign_op
-	| incr_op
+for_init_op
+ 	: incr_op
+	| assign_op
+	;
+
+/* Cannot be expr_list; e.g.: for(i;;) is invalid; */
+for_init_op_list
+	: for_init_op
+	| for_init_op for_init_op_list
 	;
 
 func_call
