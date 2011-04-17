@@ -207,7 +207,7 @@ dims_empty
 
 dims_empty_list
 	: dims_empty													{ }
-	| dims_empty dims_empty_list									{ }
+	| dims_empty_list dims_empty									{ }
 	;
 
 dims_sized
@@ -216,7 +216,7 @@ dims_sized
 
 dims_sized_list 
 	: dims_sized													{ }
-	| dims_sized dims_sized_list									{ }
+	| dims_sized_list dims_sized									{ }
 	; 
 
 do_while
