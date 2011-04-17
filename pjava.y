@@ -83,8 +83,7 @@
 %%
 
 /*
-	TODO: dims
-		dims_empty_list can follow dims_sized (e.g: new int[2][]) but makes a shift/reduce conflict
+	TODO: put array_initializer, var_initializer like they have
 */
 
 application
@@ -401,8 +400,8 @@ unary_op
 var
 	: ID															{ }
 	| '(' var ')' 													{ }
-	| var '[' expr ']'												{ }
-	| func_call '[' expr ']'										{ }
+	| var dims_sized												{ }
+	| func_call dims_sized											{ }
 /*	| '(' new_op ')' '[' expr ']'									{ }*/
 	;
 
