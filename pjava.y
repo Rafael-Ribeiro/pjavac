@@ -79,6 +79,7 @@
 %left '+' '-'
 %left '*' '%' '/'
 %right INC_OP DEC_OP '~' '!' NEW
+%left '(' ')'
 
 %%
 
@@ -388,8 +389,8 @@ unary_op
 	;
 
 var
-	: ID															{ }
-/*	| '(' var ')' 													{ } */
+	: ID %prec LOW_PREC												{ }
+	| '(' var ')' 													{ } 
 	| var dims_sized												{ } 
 	| func_call dims_sized											{ } 
 	;
