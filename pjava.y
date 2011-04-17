@@ -249,7 +249,7 @@ expr_paren
 	;
 
 for
-	: FOR '(' for_init ';' for_cond ';' for_inc ')' compound_stmt	{ }
+	: FOR '(' for_init ';' for_cond ';' for_inc')' compound_stmt	{ }
 	;
 
 for_cond
@@ -257,28 +257,27 @@ for_cond
 	| expr															{ }
 	;
 
-for_inc
-	: /* empty */													{ }
-	| expr_list														{ }
+for_expr
+	: incr_op														{ }
+	| assign_op														{ }
+	;
+
+for_expr_list
+	: for_expr													 	{ }
+	| for_expr for_expr_list										{ }
 	;
 
 for_init
 	: /* empty */
-	| for_init_op_list
 	| var_defs														{ }
+	| for_expr_list													{ }
 	;
 
-for_init_op
- 	: incr_op
-	| assign_op
+for_inc
+	: /* empty */
+	| for_expr_list													{ }
 	;
-
-/* Cannot be expr_list; e.g.: for(i;;) is invalid; */
-for_init_op_list
-	: for_init_op
-	| for_init_op for_init_op_list
-	;
-
+ 	
 func_call
 	: ID func_call_arg_list
 	;
