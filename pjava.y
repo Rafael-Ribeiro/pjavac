@@ -84,15 +84,19 @@
 
 /*
 	TODO: dims
-		dims_empty_list can follow dims_sized (e.g: new int[2][]) but makes a shift/reduce conlict
+		dims_empty_list can follow dims_sized (e.g: new int[2][]) but makes a shift/reduce conflict
 */
 
 application
 	: class_def END													{ return 0; }
 	;
 
+/*
+	FIXME: array_decl should use dims_empty_list (since an array_decl may be multi-dimension
+	(that causes another shift-reduce conflict (the same one))
+*/
 array_decl
-	: type_decl '[' ']'												{ }
+	: type_decl dims_empty											{ }
 	;
 
 array_initializer
@@ -153,7 +157,7 @@ class_decl_list
 	;
 
 class_def
-	: CLASS ID '{' '}'												{ } 
+	: CLASS ID '{' '}'												{ }
 	| CLASS ID '{' class_decl_list '}'								{ }
 	;
 
@@ -192,8 +196,18 @@ continue
 	| CONTINUE ID ';'												{ } /* TODO labeled loops */
 	;
 
-dims:
-	| dims_sized_list 												{ } 
+dims
+	: dims_sized_list												{ }
+	| dims_sized_list dims_empty_list								{ }
+	;
+
+dims_empty
+	: '[' ']'														{ }
+	;
+
+dims_empty_list
+	: dims_empty													{ }
+	| dims_empty dims_empty_list									{ }
 	;
 
 dims_sized
@@ -207,11 +221,6 @@ dims_sized_list
 
 do_while
 	: DO compound_stmt WHILE '(' expr ')' ';'						{ }
-	;
-
-dims_empty_list
-	: /* empty */													{ }
-	| dims_empty_list '[' ']'										{ }
 	;
 
 expr
@@ -248,6 +257,9 @@ for_cond
 	| expr															{ }
 	;
 
+/*
+	FIXME: Same as for_init; for_inc cannot be an expr_list for the same reason
+*/
 for_inc
 	: /* empty */													{ }
 	| expr_list														{ }
@@ -259,10 +271,13 @@ for_init
 	| var_defs														{ }
 	;
 
-for_init_list /* Cannot be expr_list; e.g.: for(i;;) is invalid */
+/*
+	Cannot be expr_list; e.g.: for(i;;) is invalid;
+	FIXME: this ain't a list, it reduces to a single op
+*/
+for_init_list
 	: assign_op
 	| incr_op
-	| func_call
 	;
 
 func_call
@@ -394,11 +409,12 @@ var
 	| '(' var ')' 													{ }
 	| var '[' expr ']'												{ }
 	| func_call '[' expr ']'										{ }
-	| '(' new_op ')' '[' expr ']'									{ }
+/*	| '(' new_op ')' '[' expr ']'									{ }*/
 	;
 
 var_def
 	: ID															{ }
+	| ID '=' expr													{ }
 	| ID dims_empty_list '=' expr									{ }
 	;
 
