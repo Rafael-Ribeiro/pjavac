@@ -8,9 +8,9 @@ N16					[0-9a-fA-F]
 INT_SPEC			(u|U|l|L)
 FLOAT_SPEC			(f|F|l|L)
 EXP					(e|E)[+-]?{N10}+
-ALPHA				[a-zA-Z_]
+ALPHA				[a-zA-Z\_]
 		
-WHITE_SPACE			[ \t\v\n\f\r]
+WS					[ \t\v\n\f\r]
 CHAR 				(\\(b|t|n|r|\"|\'|\\|u{N16}{4}|{N8}{1,3})|[^\\\"\n])
 STRING_LITERAL		\"{CHAR}*\"
 JAVA_COMMENT		(\/\/[^\n]*\n)|(\/\*([^\/]|[^\*]\/)*\*\/)
@@ -59,6 +59,8 @@ JAVA_COMMENT		(\/\/[^\n]*\n)|(\/\*([^\/]|[^\*]\/)*\*\/)
 "while"					{ return WHILE; }
 
 {ALPHA}({ALPHA}|{N10})* { return ID; } /* IDENTIFIERS */
+
+"System"WS*"."WS*"out"WS*"."WS*"println" { printf("found\n");return SYSOUT; }
 
 ">>="			{ return SHIFT_R_ASSIGN;} /* OPERATORS */
 "<<="			{ return SHIFT_L_ASSIGN; }
@@ -111,7 +113,7 @@ JAVA_COMMENT		(\/\/[^\n]*\n)|(\/\*([^\/]|[^\*]\/)*\*\/)
 
 <<EOF>>			{ return END; }
  
-{WHITE_SPACE}	{ /* remove whitespace */}
+{WS}			{ /* remove whitespace */}
 .				{ return yytext[0]; } /* bad chars */
 
 %%

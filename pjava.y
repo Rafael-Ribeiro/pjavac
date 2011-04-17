@@ -32,6 +32,7 @@
 %token VOID
 %token WHILE
 
+%token SYSOUT
 %token ID
 
 %token SHIFT_R_ASSIGN
@@ -264,7 +265,8 @@ for_inc
 	;
  	
 func_call
-	: ID func_call_arg_list
+	: ID func_call_arg_list											{ }
+	| SYSOUT func_call_arg_list										{ }
 	;
 
 func_call_arg_list

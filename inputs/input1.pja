@@ -5,7 +5,7 @@ class gcd_rec
 		int a, b;
 		a = 315;
 		b = 1932;
-		/*System.out.println(gcd(a,b)); */
+		System.out.println();
 	}
 
 	public static int gcd(int a, int b)
