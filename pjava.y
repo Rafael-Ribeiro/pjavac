@@ -59,7 +59,7 @@
 
 %token END
 
-%nonassoc REDUCE
+%nonassoc LOW_PREC
 
 /* PRIORITY */
 %right SHIFT_R_ASSIGN SHIFT_L_ASSIGN ADD_ASSIGN SUB_ASSIGN MUL_ASSIGN DIV_ASSIGN MOD_ASSIGN AND_ASSIGN XOR_ASSIGN OR_ASSIGN
@@ -81,10 +81,6 @@
 %right INC_OP DEC_OP '~' '!' NEW
 
 %%
-
-/*
-	TODO: put array_initializer, var_initializer like they have
-*/
 
 application
 	: class_def END													{ return 0; }
@@ -219,8 +215,12 @@ do_while
 	;
 
 expr
-	: var 															{ }
-	| expr_paren													{ }
+	: var %prec LOW_PREC											{ }
+	| '(' expr ')'													{ }
+	| CONSTANT														{ }
+	| new_op														{ }
+	| func_call														{ }
+	| expr_op														{ }
 	;
 
 expr_list
@@ -233,15 +233,6 @@ expr_op
 	| binary_op														{ }
 	| ternary_op													{ }
 	;
-
-expr_paren
-	: '(' expr_paren ')'											{ }
-	| CONSTANT														{ }
-	| new_op														{ }
-	| func_call														{ }
-	| expr_op														{ }
-	;
-
 for
 	: FOR '(' for_init ';' for_cond ';' for_inc')' compound_stmt	{ }
 	;
@@ -301,15 +292,15 @@ func_def_args
 	;
 
 if
-	: IF '(' expr ')' compound_stmt	%prec REDUCE					{ }
+	: IF '(' expr ')' compound_stmt	%prec LOW_PREC					{ }
 	| IF '(' expr ')' compound_stmt	ELSE compound_stmt				{ }
 	;
 
 incr_op
 	: INC_OP var													{ }
-	| var INC_OP													{ }
-	| DEC_OP var													{ }
-	| var DEC_OP													{ }
+	| var INC_OP 													{ }
+	| DEC_OP var 													{ }
+	| var DEC_OP 	 												{ }
 	;
 
 loop_stmt
@@ -389,7 +380,7 @@ type_object
 	;
 
 unary_op
-	: incr_op														{ }
+	: incr_op														{ } /* TODO 2 shift/LOW_PRECs here */
 	| '+' expr														{ }
 	| '-' expr														{ }
 	| '!' expr														{ }
@@ -398,9 +389,9 @@ unary_op
 
 var
 	: ID															{ }
-	| '(' var ')' 													{ }
-	| var dims_sized												{ }
-	| func_call dims_sized											{ }
+/*	| '(' var ')' 													{ } */
+	| var dims_sized												{ } 
+	| func_call dims_sized											{ } 
 	;
 
 var_def
