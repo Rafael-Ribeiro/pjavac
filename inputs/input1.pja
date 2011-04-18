@@ -1,11 +1,11 @@
 class gcd_rec
 {
-	public static void main(int[] args)
+	public static void main(String[] args)
 	{
 		int a, b;
 		a = 315;
 		b = 1932;
-		System.out.println();
+		System.out.println(gcd(a,b));
 	}
 
 	public static int gcd(int a, int b)
