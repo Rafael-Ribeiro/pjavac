@@ -410,12 +410,13 @@ var_defs
 var_initializer
 	: '{' '}' 														{ }
 	| '{' var_initializer_list '}'									{ }
+	| '{' var_initializer_list ',' '}'								{ }
 	| expr															{ }
 	;
 
 var_initializer_list
 	: var_initializer												{ }
-	| var_initializer ',' var_initializer_list						{ }
+	| var_initializer_list ',' var_initializer						{ }
  	;
 
 var_stmt															
