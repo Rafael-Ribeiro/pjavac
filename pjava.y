@@ -91,12 +91,6 @@ array_decl
 	: type_object dims_empty_list									{ }
 	;
 
-array_initializer
-	: var_initializer												{ }
-	| array_initializer ',' var_initializer							{ }
- 	| array_initializer ','											{ }	/* your magic comma */
-	;
-
 assign_op
 	: var '=' expr													{ }
 	| var SHIFT_R_ASSIGN expr										{ }
@@ -414,10 +408,15 @@ var_defs
 	;
 
 var_initializer
-	: '{' '}' 
-	| '{' array_initializer '}'
-	| expr
+	: '{' '}' 														{ }
+	| '{' var_initializer_list '}'									{ }
+	| expr															{ }
 	;
+
+var_initializer_list
+	: var_initializer												{ }
+	| var_initializer ',' var_initializer_list						{ }
+ 	;
 
 var_stmt															
 	: var_defs ';'													{ }
