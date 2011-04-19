@@ -104,16 +104,16 @@ typedef struct
 	is_id* label;	/* nullable */
 } is_break;
 
-typedef struct _is_class_decl_list
+typedef struct _is_class_stmt_list
 {
-	is_class_decl decl;
-	struct _is_class_decl_list* next;
-} is_class_decl_list;
+	is_class_stmt stmt;
+	struct _is_class_stmt_list* next;
+} is_class_stmt_list;
 
 typedef struct
 {
 	is_id* id;
-	is_class_decl_list* body;
+	is_class_stmt_list* body;
 } is_class_def;
 
 typedef struct

@@ -2,26 +2,26 @@
 #define INSERT_H
 
 is_array_decl* insert_array_decl(is_type_object* type, is_dims_empty_list dims);
-is_assign_op* insert_assign_op($1, t_assign_op_or, $3);
-is_binary_op* insert_binary_op_operation($1, t_binary_op_add, $3); }
-is_binary_op* insert_binary_op_assign($1);
+is_assign_op* insert_assign_op(is_var* var, type_assign_op type, is_expr* expr);
+is_binary_op* insert_binary_op_operation(is_expr* left, t_binary_op_add, is_expr* right);
+is_binary_op* insert_binary_op_assign(is_assign_op* assign);
 
-is_break insert_break($2);
+is_break insert_break(is_id* label);
 
-is_class_decl_list* insert_class_decl_list($1, $2); 
+is_class_stmt_list* insert_class_decl_list(is_class_stmt* decl, is_class_stmt_list* next); 
 
-is_class_def* insert_class_def($2, NULL);
+is_class_def* insert_class_def(is_id* id, is_class_stmt_list* body);
 
-is_class_stmt* insert_class_stmt($1, $2, $3); 
+is_class_stmt* insert_class_stmt(is_class_stmt_privacy* privacy, is_class_stmt_scope* scope, is_member_stmt* stmt); 
 
-is_class_stmt_scope* insert_class_stmt_scope(true, false);
+is_class_stmt_scope* insert_class_stmt_scope(bool final, bool static);
 
-is_continue* insert_continue(NULL);
+is_continue* insert_continue(is_id* label);
 
-is_dims* insert_dims($1, NULL);
+is_dims* insert_dims(is_sized_dims_list* sized, is_empty_dims_list empty);
 
 /* this one is left recursive, can we swap it? if not attention to the constructors */
-is_dims_sized_list* insert_dims_sized_list($1, $2);
+is_dims_sized_list* insert_dims_sized_list(is_dims_sized_list* prev, is_dims_sized* dims);
 
 is_do_while insert_do_while($2, $5); 
 
@@ -115,7 +115,7 @@ is_var_def_list* insert_var_def_list($1, NULL);
 
 is_var_defs* insert_var_defs($1, $2);
 
-is_var* insert_var_initializer_array($2); }
+is_var* insert_var_initializer_array($2);
 is_var* insert_var_expr($1);
 
 is_var_initializer* insert_var_initializer_list($1, $2);

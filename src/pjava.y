@@ -153,11 +153,11 @@ is_application* main_application;
 %type<val_assign_op>assign_op
 %type<val_binary_op>binary_op
 %type<val_break>break;
-%type<val_class_decl_list>class_decl_list
 %type<val_class_def>class_def
 %type<val_class_stmt>class_stmt
 %type<val_class_stmt_privacy>class_stmt_privacy
 %type<val_class_stmt_scope>class_stmt_scope
+%type<val_class_stmt_list>class_stmt_list
 %type<val_continue>continue
 %type<val_dims>dims
 /*%type<val_dims_empty>dims_empty*/
@@ -259,11 +259,6 @@ break
 	| BREAK ID ';'													{ $$ = insert_break($2); } /* TODO labeled loops */
 	;
 
-class_decl_list
-	: class_stmt													{ $$ = insert_class_decl_list($1, NULL); }
-	| class_stmt class_decl_list									{ $$ = insert_class_decl_list($1, $2); }
-	;
-
 class_def
 	: CLASS ID '{' '}'												{ $$ = insert_class_def($2, NULL); }
 	| CLASS ID '{' class_decl_list '}'								{ $$ = insert_class_def($2, $4); }
@@ -286,6 +281,11 @@ class_stmt_scope
 	| STATIC														{ $$ = insert_class_stmt_scope(false, true); }
 	| STATIC FINAL													{ $$ = insert_class_stmt_scope(true, true); } 
 	| FINAL STATIC													{ $$ = insert_class_stmt_scope(true, true); }
+	;
+
+class_stmt_list
+	: class_stmt													{ $$ = insert_class_stmt_list($1, NULL); }
+	| class_stmt class_stmt_list									{ $$ = insert_class_stmt_list($1, $2); }
 	;
 
 continue
