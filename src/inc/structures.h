@@ -257,7 +257,7 @@ typedef struct
 
 typedef struct
 {
-	is_expr *expr;
+	is_expr *expr; /* nullable */
 } is_return;
 
 typedef enum {t_empty, t_var_stmt, t_assign, t_incr, t_if, t_loop, t_func_call, t_switch, t_break, t_continue, t_return} type_stmt;
@@ -282,7 +282,7 @@ typedef struct
 typedef struct
 {
 	is_expr *expr;
-	is_switch_stmt_list *list;
+	is_switch_stmt_list *list; /* nullable */
 } is_switch;
 
 typedef enum {t_default, t_case} type_switch_stmt;
@@ -295,7 +295,7 @@ typedef struct
 typedef struct _is_switch_stmt_list
 {
 	is_switch_stmt *switch_case;
-	struct _is_switch_stmt_list *next;
+	struct _is_switch_stmt_list *next; /* nullable */
 } is_switch_stmt_list;
 
 typedef struct
@@ -358,14 +358,14 @@ typedef struct _is_var
 typedef struct
 {
 	is_id* id;
-	is_var_initializer* var_init;
-	is_dims_empty_list dims;
+	is_var_initializer* var_init; /* nullable */
+	is_dims_empty_list dims; /* nullable */
 } is_var_def;
 
 typedef struct _is_var_def_list
 {
 	is_var_def* var_def;
-	struct _is_var_def_list* next;
+	struct _is_var_def_list* next; /* nullable */
 } is_var_def_list;
 
 typedef struct
@@ -381,7 +381,7 @@ typedef struct
 
 	union
 	{
-		is_var_initializer_list* array;
+		is_var_initializer_list* array; /* nullable */
 		is_expr* expr;
 	} data;
 } is_var_initializer;
@@ -389,7 +389,7 @@ typedef struct
 typedef struct _is_var_initializer_list
 {
 	is_var_initializer* init;
-	struct _is_var_initializer_list* next;
+	struct _is_var_initializer_list* next; /* nullable */
 } is_var_initializer_list;
 
 typedef struct
