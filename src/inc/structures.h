@@ -44,6 +44,25 @@ typedef struct
 	is_type_native type;
 } is_type_object;
 
+
+struct _is_dims_sized_list; /* mutual references hack */
+
+typedef int is_dims_empty_list;
+
+typedef struct
+{
+	struct _is_dims_sized_list* sized;
+	is_dims_empty_list empty; /* NOT nullable, 0 if not existant, 1+ otherwise */
+} is_dims;
+
+typedef is_expr is_dims_sized;
+
+typedef struct _is_dims_sized_list
+{
+	is_dims_sized* size;
+	struct _is_dims_sized_list* next;
+} is_dims_sized_list;
+
 typedef struct
 {
 	is_type_object* type;
@@ -116,22 +135,6 @@ typedef struct
 {
 	is_id* label;	/* nullable */
 } is_continue;
-
-typedef struct
-{
-	is_dims_sized_list* sized;
-	is_dims_empty_list empty; /* NOT nullable, 0 if not existant, 1+ otherwise */
-} is_dims;
-
-typedef int is_dims_empty_list;
-
-typedef is_expr is_dims_sized;
-
-typedef struct _is_dims_sized_list
-{
-	is_dims_sized* size;
-	struct _is_dims_sized_list* next;
-} is_dims_sized_list;
 
 typedef struct
 {
