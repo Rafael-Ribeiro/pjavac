@@ -244,7 +244,6 @@ typedef struct
 		is_func_def* func;
 	} data;
 } is_member_stmt;
-/*****************************************************SEPARATOR*****************************************************/
 
 typedef struct
 {
