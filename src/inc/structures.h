@@ -329,14 +329,13 @@ typedef struct
 	} data;
 } is_unary_op;
 
-typedef enum {t_id, t_var, t_new_op, t_array, t_func_call} type_var;
+typedef enum {t_id, t_new_op, t_array, t_func_call} type_var;
 typedef struct _is_var
 {
 	type_var type;
 	union
 	{
 		is_id* id;
-		struct _is_var* var;
 		is_new_op* new_op;
 		struct
 		{
