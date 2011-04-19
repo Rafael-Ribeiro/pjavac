@@ -1,5 +1,6 @@
 %{
-#include<stdio.h>
+#include <stdio.h>
+#include "inc/structures.h"
 %}
 
 /* TOKENS */
@@ -166,17 +167,6 @@ class_stmt_scope
 	| FINAL STATIC													{ }
 	;
 
-compound_stmt
-	: stmt															{ }
-	| '{' '}'														{ }
-	| '{' compound_stmt_list '}'									{ }
-	;
-
-compound_stmt_list
-	: compound_stmt													{ }
-	| compound_stmt compound_stmt_list								{ }
-	;
-
 continue
 	: CONTINUE ';'													{ }
 	| CONTINUE ID ';'												{ } /* TODO labeled loops */
@@ -206,7 +196,7 @@ dims_sized_list
 	; 
 
 do_while
-	: DO compound_stmt WHILE '(' expr ')' ';'						{ }
+	: DO stmt WHILE '(' expr ')' ';'								{ }
 	;
 
 expr
@@ -229,7 +219,7 @@ expr_op
 	| ternary_op													{ }
 	;
 for
-	: FOR '(' for_init ';' for_cond ';' for_inc')' compound_stmt	{ }
+	: FOR '(' for_init ';' for_cond ';' for_inc')' stmt				{ }
 	;
 
 for_cond
@@ -270,7 +260,7 @@ func_call_arg_list
 
 func_def
 	: type_decl ID func_def_args '{' '}'							{ } 
-	| type_decl ID func_def_args '{' compound_stmt_list '}'			{ }
+	| type_decl ID func_def_args '{' stmt_list '}'			{ }
 	;
 
 func_def_arg
@@ -288,8 +278,8 @@ func_def_args
 	;
 
 if
-	: IF '(' expr ')' compound_stmt	%prec LOW_PREC					{ }
-	| IF '(' expr ')' compound_stmt	ELSE compound_stmt				{ }
+	: IF '(' expr ')' stmt	%prec LOW_PREC							{ }
+	| IF '(' expr ')' stmt	ELSE stmt								{ }
 	;
 
 incr_op
@@ -321,6 +311,8 @@ return
 
 stmt
 	: ';'															{ }
+	| '{' '}'														{ } 
+	| '{' stmt_list '}'												{ }
 	| var_stmt														{ }
 	| assign_op ';'													{ }
 	| incr_op ';'													{ }
@@ -333,6 +325,11 @@ stmt
 	| return														{ }
 	;
 
+stmt_list
+	: stmt															{ }
+	| stmt stmt_list												{ }
+	;
+
 switch
 	: SWITCH '(' expr ')' '{' '}'									{ }
 	| SWITCH '(' expr ')' '{' switch_stmt_list '}'					{ }
@@ -340,9 +337,9 @@ switch
 
 switch_stmt
 	: DEFAULT ':'													{ }
-	| DEFAULT ':' compound_stmt_list								{ }
+	| DEFAULT ':' stmt_list											{ }
 	| CASE CONSTANT ':'												{ }
-	| CASE CONSTANT ':' compound_stmt_list							{ }
+	| CASE CONSTANT ':' stmt_list									{ }
 	;
 
 switch_stmt_list
@@ -424,11 +421,12 @@ var_stmt
 	;
 
 while
-	: WHILE '(' expr ')' compound_stmt								{ }
+	: WHILE '(' expr ')' stmt										{ }
 	;
 
 %%
 int main()
 {
 	yyparse();
+	return 0;
 }

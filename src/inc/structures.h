@@ -4,6 +4,26 @@
 #define MAX_ID_LEN 128
 #define MAX_CONST_LEN MAX_ID_LEN
 
+/*
+	TODO: 
+	fix these errors like this o.O:
+
+	struct b;
+	struct a
+	{
+		    struct b * sdsd;
+		    int a;
+	};
+	struct b
+	{
+		    struct a * sd;
+		    int h;
+	};
+
+	typedef struct a A;
+	typedef struct b B;
+*/
+
 typedef struct
 {
 	char name[MAX_ID_LEN];
