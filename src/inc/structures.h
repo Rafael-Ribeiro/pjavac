@@ -1,6 +1,19 @@
 #ifndef STRUCTURES_H
 #define STRUCTURES_H
 
+#define MAX_ID_LEN 128
+#define MAX_CONST_LEN MAX_ID_LEN
+
+typedef struct
+{
+	char name[MAX_ID_LEN];
+} is_id;
+
+typedef struct
+{
+	char value[MAX_CONST_LEN];
+} is_constant; 
+
 /* just because we can? */
 typedef is_class_def is_application;
 
