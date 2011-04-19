@@ -24,6 +24,10 @@
 	typedef struct b B;
 */
 
+/*
+	Temporary aliases for mutual recursive definitions
+*/
+
 typedef struct
 {
 	char name[MAX_ID_LEN];
@@ -34,8 +38,11 @@ typedef struct
 	char value[MAX_CONST_LEN];
 } is_constant; 
 
-/* just because we can? */
-typedef is_class_def is_application;
+typedef enum {t_bool, t_byte, t_char, t_double, t_float, t_int, t_long, t_short, t_void} is_type_native;
+typedef struct
+{
+	is_type_native type;
+} is_type_object;
 
 typedef struct
 {
@@ -83,7 +90,6 @@ typedef struct _is_class_decl_list
 	is_class_decl decl;
 	struct _is_class_decl_list* next;
 } is_class_decl_list;
-
 
 typedef struct
 {
@@ -254,7 +260,8 @@ typedef struct
 	is_var* var;
 } is_incr_op;
 
-typedef enum {t_for, t_while, t_do_while} type_loop_stmt;
+typedef enum {t
+_for, t_while, t_do_while} type_loop_stmt;
 typedef struct
 {
 	/* TODO: is_id* label; */
@@ -345,11 +352,6 @@ typedef struct
 	} data;
 } is_type_decl;
 
-typedef enum {t_bool, t_byte, t_char, t_double, t_float, t_int, t_long, t_short, t_void} is_type_native;
-typedef struct
-{
-	is_type_native type;
-} is_type_object;
 
 typedef enum {t_plus, t_minus, t_not, t_bin_not} type_unary_op;
 typedef struct
@@ -430,5 +432,8 @@ typedef struct
 	is_expr* condition;
 	is_stmt* body;
 } is_while;
+
+/* just because we can? */
+typedef is_class_def is_application;
 
 #endif
