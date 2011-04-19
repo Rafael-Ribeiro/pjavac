@@ -94,10 +94,6 @@ typedef struct _is_dims_sized_list
 	struct _is_dims_sized_list* next;
 } is_dims_sized_list;
 
-do_while
-	: DO stmt WHILE '(' expr ')' ';'								{ }
-	;
-
 typedef struct
 {
 	is_stmt* body;
