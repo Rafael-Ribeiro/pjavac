@@ -7,7 +7,7 @@ is_application* main_application;
 %}
 
 /* TOKENS */
-%token CONSTANT
+%token<val_constant>CONSTANT
 
 %token BOOL
 %token BREAK
@@ -37,7 +37,7 @@ is_application* main_application;
 %token WHILE
 
 %token SYSOUT
-%token ID
+%token<val_id>ID
 
 %token SHIFT_R_ASSIGN
 %token SHIFT_L_ASSIGN
@@ -89,63 +89,65 @@ is_application* main_application;
 /* TYPEs */
 %union
 {
+	is_id* val_id;
+	is_constant* val_constant;
+
 	is_application* val_application;
 	is_class_def* val_class_def;
 	is_array_decl* val_array_decl;
 	is_assign_op* val_assign_op;
-	is_binary_op* val_binary_op
+	is_binary_op* val_binary_op;
 	is_break* val_break;
-	is_class_decl_list* val_class_decl_list
-	is_class_def* val_class_def
-	is_class_stmt* val_class_stmt
-	is_class_stmt_privacy* val_class_stmt_privacy
-	is_class_stmt_scope* val_class_stmt_scope
-	is_continue* val_continue
-	is_dims* val_dims
+	is_class_stmt* val_class_stmt;
+	is_class_stmt_list* val_class_stmt_list;
+	is_class_stmt_privacy* val_class_stmt_privacy;
+	is_class_stmt_scope* val_class_stmt_scope;
+	is_continue* val_continue;
+	is_dims* val_dims;
 	/*%type<val_dims_empty* val_dims_empty*/
-	is_dims_empty_list* val_dims_empty_list
-	isl_dims_sized* val_dims_sized
-	is_dims_sized_list* val_dims_sized_list
-	is_do_while* val_do_while
-	is_expr* val_expr
-	is_expr_list* val_expr_list
-	is_expr_op* val_expr_op
-	is_for* val_for
-	is_for_cond* val_for_cond
-	is_for_expr* val_for_expr
-	is_for_expr_list* val_for_expr_list
-	is_for_init* val_for_init
-	is_for_inc* val_for_inc
-	is_func_call* val_func_call
-	is_func_call_arg_list* val_func_call_arg_list
-	is_func_def* val_func_def
-	is_func_def_arg* val_func_def_arg
-	is_func_def_arg_list* val_func_def_arg_list
-	is_func_def_args* val_func_def_args
-	is_if* val_if
-	is_incr_op* val_incr_op
-	is_loop_stmt* val_loop_stmt
-	is_member_stmt* val_member_stmt
-	is_new_op* val_new_op
-	is_return* val_return
-	is_stmt* val_stmt
-	is_stmt_list* val_stmt_list
-	is_switch* val_switch
-	is_switch_stmt* val_switch_stmt
-	is_switch_stmt_list* val_switch_stmt_list
-	is_ternary_op* val_ternary_op
-	is_type_decl* val_type_decl
-	is_type_native* val_type_native
-	is_type_object* val_type_object
-	is_unary_op* val_unary_op
-	is_var* val_var
-	is_var_def* val_var_def
-	is_var_def_list* val_var_def_list
-	is_var_defs* val_var_defs
-	is_var_initializer* val_var_initializer
-	is_var_initializer_list* val_var_initializer_list
-	is_var_stmt* val_var_stmt
-	is_while* val_while
+	is_dims_empty_list* val_dims_empty_list;
+	is_dims_sized* val_dims_sized;
+	is_dims_sized_list* val_dims_sized_list;
+	is_do_while* val_do_while;
+	is_expr* val_expr;
+	is_expr_list* val_expr_list;
+	is_expr_op* val_expr_op;
+	is_for* val_for;
+	is_for_cond* val_for_cond;
+	is_for_expr* val_for_expr;
+	is_for_expr_list* val_for_expr_list;
+	is_for_init* val_for_init;
+	is_for_inc* val_for_inc;
+	is_func_call* val_func_call;
+	is_func_call_arg_list* val_func_call_arg_list;
+	is_func_def* val_func_def;
+	is_func_def_arg* val_func_def_arg;
+	is_func_def_arg_list* val_func_def_arg_list;
+	is_func_def_args* val_func_def_args;
+	is_if* val_if;
+	is_incr_op* val_incr_op;
+	is_loop_stmt* val_loop_stmt;
+	is_member_stmt* val_member_stmt;
+	is_new_op* val_new_op;
+	is_return* val_return;
+	is_stmt* val_stmt;
+	is_stmt_list* val_stmt_list;
+	is_switch* val_switch;
+	is_switch_stmt* val_switch_stmt;
+	is_switch_stmt_list* val_switch_stmt_list;
+	is_ternary_op* val_ternary_op;
+	is_type_decl* val_type_decl;
+	is_type_native* val_type_native;
+	is_type_object* val_type_object;
+	is_unary_op* val_unary_op;
+	is_var* val_var;
+	is_var_def* val_var_def;
+	is_var_def_list* val_var_def_list;
+	is_var_defs* val_var_defs;
+	is_var_initializer* val_var_initializer;
+	is_var_initializer_list* val_var_initializer_list;
+	is_var_stmt* val_var_stmt;
+	is_while* val_while;
 }
 
 %type<val_application>application
@@ -154,7 +156,6 @@ is_application* main_application;
 %type<val_assign_op>assign_op
 %type<val_binary_op>binary_op
 %type<val_break>break;
-%type<val_class_def>class_def
 %type<val_class_stmt>class_stmt
 %type<val_class_stmt_privacy>class_stmt_privacy
 %type<val_class_stmt_scope>class_stmt_scope
@@ -216,16 +217,16 @@ array_decl
 
 assign_op
 	: var '=' expr													{ $$ = insert_assign_op($1, t_assign_op_eq, $3); }
-	| var SHIFT_R_ASSIGN expr										{ $$ = insert_assign_op($1, t_assign_op_shift_r, $3); }
-	| var SHIFT_L_ASSIGN expr										{ $$ = insert_assign_op($1, t_assign_op_shift_l, $3); }
-	| var ADD_ASSIGN expr											{ $$ = insert_assign_op($1, t_assign_op_add, $3); }
-	| var SUB_ASSIGN expr											{ $$ = insert_assign_op($1, t_assign_op_sub, $3); }
-	| var MUL_ASSIGN expr											{ $$ = insert_assign_op($1, t_assign_op_mul, $3); }
-	| var DIV_ASSIGN expr											{ $$ = insert_assign_op($1, t_assign_op_div, $3); }
-	| var MOD_ASSIGN expr											{ $$ = insert_assign_op($1, t_assign_op_mod, $3); }
-	| var AND_ASSIGN expr											{ $$ = insert_assign_op($1, t_assign_op_and, $3); }
-	| var XOR_ASSIGN expr											{ $$ = insert_assign_op($1, t_assign_op_xor, $3); }
-	| var OR_ASSIGN expr											{ $$ = insert_assign_op($1, t_assign_op_or, $3); }
+	| var SHIFT_R_ASSIGN expr										{ $$ = insert_assign_op($1, t_assign_op_shift_r_eq, $3); }
+	| var SHIFT_L_ASSIGN expr										{ $$ = insert_assign_op($1, t_assign_op_shift_l_eq, $3); }
+	| var ADD_ASSIGN expr											{ $$ = insert_assign_op($1, t_assign_op_add_eq, $3); }
+	| var SUB_ASSIGN expr											{ $$ = insert_assign_op($1, t_assign_op_sub_eq, $3); }
+	| var MUL_ASSIGN expr											{ $$ = insert_assign_op($1, t_assign_op_mul_eq, $3); }
+	| var DIV_ASSIGN expr											{ $$ = insert_assign_op($1, t_assign_op_div_eq, $3); }
+	| var MOD_ASSIGN expr											{ $$ = insert_assign_op($1, t_assign_op_mod_eq, $3); }
+	| var AND_ASSIGN expr											{ $$ = insert_assign_op($1, t_assign_op_and_eq, $3); }
+	| var XOR_ASSIGN expr											{ $$ = insert_assign_op($1, t_assign_op_xor_eq, $3); }
+	| var OR_ASSIGN expr											{ $$ = insert_assign_op($1, t_assign_op_or_eq, $3); }
 	;
 
 binary_op
@@ -262,7 +263,7 @@ break
 
 class_def
 	: CLASS ID '{' '}'												{ $$ = insert_class_def($2, NULL); }
-	| CLASS ID '{' class_decl_list '}'								{ $$ = insert_class_def($2, $4); }
+	| CLASS ID '{' class_stmt_list '}'								{ $$ = insert_class_def($2, $4); }
 	;
 
 class_stmt
@@ -300,12 +301,12 @@ dims
 	;
 
 dims_empty
-	: '[' ']'														{ $$ = 1; }
+	: '[' ']'														{ }
 	;
 
 dims_empty_list
-	: dims_empty													{ $$ = $1; }
-	| dims_empty_list dims_empty									{ $$ = $1 + $2; }
+	: dims_empty													{ $$ = 1; }
+	| dims_empty_list dims_empty									{ $$ = $1 + 1; }
 	;
 
 dims_sized
@@ -538,7 +539,7 @@ var_initializer
 /* this one is left recursive, can we swap it? if not attention to the constructors */
 var_initializer_list
 	: var_initializer												{ $$ = insert_var_initializer_list(NULL, $1); }
-	| var_initializer_list ',' var_initializer						{ $$ = insert_car_initializer_list($1, $2); }
+	| var_initializer_list ',' var_initializer						{ $$ = insert_car_initializer_list($1, $3); }
  	;
 
 var_stmt															

@@ -1,4 +1,7 @@
 %{
+#include <stdbool.h>
+
+#include "inc/structures.h"
 #include "y.tab.h"
 %}
 

@@ -8,8 +8,6 @@ struct _is_array_decl;
 struct _is_assign_op;
 struct _is_binary_op;
 struct _is_break;
-struct _is_class_decl;
-struct _is_class_decl_list;
 struct _is_class_def;
 struct _is_class_stmt;
 struct _is_class_stmt_scope;
@@ -131,6 +129,7 @@ typedef struct _is_class_stmt_list
 	struct _is_class_decl* node;
 	struct _is_class_stmt_list* next;
 } is_class_stmt_list;
+
 typedef struct _is_class_def
 {
 	struct _is_id* id;
@@ -281,6 +280,8 @@ typedef struct _is_for_init
 	} data;
 } is_for_init;
 
+typedef is_for_expr_list is_for_inc;
+
 typedef enum
 {
 	t_func_call_id,
@@ -426,6 +427,13 @@ typedef struct _is_stmt
 	} data;
 } is_stmt;
 
+/* was missing */
+typedef struct _is_stmt_list
+{
+	struct _is_stmt* stmt;
+	struct _is_stmt_list* next;
+} is_stmt_list;
+
 typedef struct _is_switch
 {
 	struct _is_expr *expr;
@@ -493,8 +501,8 @@ typedef struct _is_type_object
 
 typedef enum
 {
-	t_unary_op_operation;
-	t_unary_op_incr_op;
+	t_unary_op_operation,
+	t_unary_op_incr_op
 } type_unary_op;
 
 typedef enum
@@ -513,7 +521,7 @@ typedef struct _is_unary_op
 	{
 		struct
 		{
-			is_unary_op_operator op;
+			type_unary_op_operator op;
 			is_expr *expr;
 		} operation;
 		is_incr_op *incr;
