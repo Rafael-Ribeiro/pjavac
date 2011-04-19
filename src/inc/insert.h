@@ -1,29 +1,31 @@
 #ifndef INSERT_H
 #define INSERT_H
 
+void free_application(is_application* application);
+
 is_array_decl* insert_array_decl(is_type_object* type, is_dims_empty_list dims);
 is_assign_op* insert_assign_op(is_var* var, type_assign_op type, is_expr* expr);
-is_binary_op* insert_binary_op_operation(is_expr* left, t_binary_op_add, is_expr* right);
+is_binary_op* insert_binary_op_operation(is_expr* left, type_binary_op operation, is_expr* right);
 is_binary_op* insert_binary_op_assign(is_assign_op* assign);
 
-is_break insert_break(is_id* label);
+is_break* insert_break(is_id* label);
 
-is_class_stmt_list* insert_class_decl_list(is_class_stmt* decl, is_class_stmt_list* next); 
+is_class_stmt_list* insert_class_stmt_list(is_class_stmt* stmt, is_class_stmt_list* next); 
 
 is_class_def* insert_class_def(is_id* id, is_class_stmt_list* body);
 
 is_class_stmt* insert_class_stmt(is_class_stmt_privacy* privacy, is_class_stmt_scope* scope, is_member_stmt* stmt); 
 
-is_class_stmt_scope* insert_class_stmt_scope(bool final, bool static);
+is_class_stmt_scope* insert_class_stmt_scope(bool _final, bool _static); /* static is a reserved keyword */
 
 is_continue* insert_continue(is_id* label);
 
-is_dims* insert_dims(is_sized_dims_list* sized, is_empty_dims_list empty);
+is_dims* insert_dims(is_dims_sized_list* sized, is_dims_empty_list empty);
 
 /* this one is left recursive, can we swap it? if not attention to the constructors */
 is_dims_sized_list* insert_dims_sized_list(is_dims_sized_list* prev, is_dims_sized* dims);
 
-is_do_while insert_do_while(is_stmt* stmt, is_expr* condition); 
+is_do_while* insert_do_while(is_stmt* stmt, is_expr* condition); 
 
 is_expr* insert_expr_var(is_var* var);
 is_expr* insert_expr_new_op(is_new_op* new_op);
@@ -35,7 +37,7 @@ is_expr_list* insert_expr_list(is_expr* expr, is_expr_list* next);
 
 is_expr_op* insert_expr_op_unary(is_unary_op* op);
 is_expr_op* insert_expr_op_binary(is_binary_op* op);
-is_expr_op* insert_expr_op_ternary(is_expr_op* op);
+is_expr_op* insert_expr_op_ternary(is_ternary_op* op);
 
 is_for* insert_for(is_for_init* init, is_for_cond* cond, is_for_inc* inc, is_stmt* body);
 
@@ -81,7 +83,7 @@ is_stmt* insert_stmt_func_call(is_func_call* func_call);
 is_stmt* insert_stmt_switch(is_switch* switch_stmt);
 is_stmt* insert_stmt_break(is_break* break_stmt);
 is_stmt* insert_stmt_continue(is_continue* continue_stmt);
-is_stmt* insert_stmt_return(is_return* return_stmt*);
+is_stmt* insert_stmt_return(is_return* return_stmt);
 
 is_stmt_list* insert_stmt_list(is_stmt* stmt, is_stmt_list* next); 
 is_switch* insert_switch(is_expr* expr, is_switch_stmt_list* switch_stmt_list);
@@ -106,7 +108,7 @@ is_var* insert_var_new_op(is_new_op* new_op);
 is_var* insert_var_var_subscript(is_var* var, is_dims_sized* position);
 is_var* insert_var_func_subscript(is_func_call* func_call, is_dims_sized* positon);
 
-is_var_def* insert_var_def(is_id* id, dims_empty_list dims, is_var_initializer* init);
+is_var_def* insert_var_def(is_id* id, is_dims_empty_list dims, is_var_initializer* init);
 
 is_var_def_list* insert_var_def_list(is_var_def* var_def, is_var_def_list* next);
 

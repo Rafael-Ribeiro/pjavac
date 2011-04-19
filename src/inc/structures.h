@@ -126,7 +126,7 @@ typedef struct _is_break
 
 typedef struct _is_class_stmt_list
 {
-	struct _is_class_decl* node;
+	struct _is_class_stmt* node;
 	struct _is_class_stmt_list* next;
 } is_class_stmt_list;
 
@@ -513,7 +513,7 @@ typedef enum
 	t_unary_op_operator_bin_not
 } type_unary_op_operator;
 
-/* FIX-ME: refactor disto para como esta agora; ou é uma incr op, ou é uma operaçao, que recebe o operador OK? */
+/* FIXME: refactor disto para como esta agora; ou é uma incr op, ou é uma operaçao, que recebe o operador OK? */
 typedef struct _is_unary_op
 {
 	type_unary_op type;
