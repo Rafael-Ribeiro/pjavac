@@ -551,5 +551,9 @@ while
 int main()
 {
 	yyparse();
+	
+	show_application(main_application);
+	free_application(main_application);
+
 	return 0;
 }
