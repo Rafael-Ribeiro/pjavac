@@ -386,8 +386,9 @@ func_def
 	| type_decl ID func_def_args '{' stmt_list '}'					{ $$ = insert_func_def($1, $2, $3, $5); }
 	;
 
+/** FIX-ME: isto estava type_decl var; o ke permite void a(int (new int)[0]) o ke é errado :! correcto? **/
 func_def_arg
-	: type_decl var													{ $$ = insert_func_def_arg($1, $2); }
+	: type_decl ID													{ $$ = insert_func_def_arg($1, $2); }
 	;
 
 func_def_arg_list
@@ -498,10 +499,10 @@ type_object
 
 unary_op
 	: incr_op														{ $$ = insert_unary_op_incr($1); }
-	| '+' expr														{ $$ = insert_unary_op_plus($2); }
-	| '-' expr														{ $$ = insert_unary_op_minus($2); }
-	| '!' expr														{ $$ = insert_unary_op_not($2); }
-	| '~' expr														{ $$ = insert_unary_op_bin_not($2); }
+	| '+' expr														{ $$ = insert_unary_op_operation(t_unary_op_operator_plus, $2); }
+	| '-' expr														{ $$ = insert_unary_op_operation(t_unary_op_operator_minus, $2); }
+	| '!' expr														{ $$ = insert_unary_op_operation(t_unary_op_operator_not, $2); }
+	| '~' expr														{ $$ = insert_unary_op_operation(t_unary_op_operator_bin_not, $2); }
 	;
 
 var

@@ -310,7 +310,7 @@ typedef struct _is_func_def
 typedef struct _is_func_def_arg
 {
 	struct _is_type_decl* type;
-	struct _is_var* var;
+	struct _is_id* id;
 } is_func_def_arg;
 
 typedef struct _is_func_def_arg_list
@@ -493,18 +493,29 @@ typedef struct _is_type_object
 
 typedef enum
 {
-	t_unary_op_plus,
-	t_unary_op_minus,
-	t_unary_op_not,
-	t_unary_op_bin_not
+	t_unary_op_operation;
+	t_unary_op_incr_op;
 } type_unary_op;
 
+typedef enum
+{
+	t_unary_op_operator_plus,
+	t_unary_op_operator_minus,
+	t_unary_op_operator_not,
+	t_unary_op_operator_bin_not
+} type_unary_op_operator;
+
+/* FIX-ME: refactor disto para como esta agora; ou é uma incr op, ou é uma operaçao, que recebe o operador OK? */
 typedef struct _is_unary_op
 {
 	type_unary_op type;
 	union
 	{
-		is_expr *expr;
+		struct
+		{
+			is_unary_op_operator op;
+			is_expr *expr;
+		} operation;
 		is_incr_op *incr;
 	} data;
 } is_unary_op;
