@@ -14,8 +14,9 @@ typedef enum {t_eq, t_shift_r, t_shift_l, t_add, t_sub, t_mul, t_div, t_mod, t_a
 typedef struct
 {
 	type_assign_op type;
-	is_var var;
-	is_expr expr;
+	is_var* var;
+	is_expr* expr;
 } is_assign_op;
+
 
 #endif
