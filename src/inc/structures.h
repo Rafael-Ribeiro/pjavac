@@ -4,30 +4,6 @@
 #define MAX_ID_LEN 128
 #define MAX_CONST_LEN MAX_ID_LEN
 
-/*
-	TODO: 
-	fix these errors like this o.O:
-
-	struct b;
-	struct a
-	{
-		    struct b * sdsd;
-		    int a;
-	};
-	struct b
-	{
-		    struct a * sd;
-		    int h;
-	};
-
-	typedef struct a A;
-	typedef struct b B;
-*/
-
-/*
-	Temporary aliases for mutual recursive definitions
-*/
-
 struct _is_array_decl;
 struct _is_assign_op;
 struct _is_binary_op;
@@ -97,6 +73,7 @@ typedef enum
 	t_assign_op_xor_eq,
 	t_assign_op_or_eq
 } type_assign_op;
+
 typedef struct _is_assign_op
 {
 	type_assign_op type;
@@ -128,6 +105,7 @@ typedef enum
 	t_binary_op_ne3,
 	t_binary_op_assign
 } type_binary_op;
+
 typedef struct _is_binary_op
 {
 	type_binary_op type;
@@ -159,7 +137,7 @@ typedef struct _is_class_decl
 
 typedef struct _is_class_decl_list
 {
-	struct _is_class_decl* decl;
+	struct _is_class_decl* node;
 	struct _is_class_decl_list* next;
 } is_class_decl_list;
 
@@ -174,11 +152,13 @@ typedef enum
 	t_class_stmt_privacy_public,
 	t_class_stmt_privacy_private
 } is_class_stmt_privacy;
+
 typedef struct _is_class_stmt_scope
 {
 	bool b_final;
 	bool b_static;
 } is_class_stmt_scope;
+
 typedef struct _is_class_stmt
 {
 	is_class_stmt_privacy* privacy; /* nullable */
@@ -207,7 +187,7 @@ typedef struct _is_expr is_dims_sized; /* FIXME: this may be invalid */
 
 typedef struct _is_dims_sized_list
 {
-	is_dims_sized* size; /* not using hack since typedef is right above, may not work FIXME */
+	is_dims_sized* node; /* not using hack since typedef is right above, may not work FIXME */
 	struct _is_dims_sized_list* next;
 } is_dims_sized_list;
 
@@ -225,6 +205,7 @@ typedef enum
 	t_expr_func_call,
 	t_expr_operation
 } type_expr;
+
 typedef struct _is_expr
 {
 	type_expr expr;
@@ -240,7 +221,7 @@ typedef struct _is_expr
 
 typedef struct _is_expr_list
 {
-	struct _is_expr* expr;
+	struct _is_expr* node;
 	struct _is_expr_list* next;
 } is_expr_list;
 
@@ -250,6 +231,7 @@ typedef enum
 	t_expr_op_binary,
 	t_expr_op_ternary
 } type_expr_op;
+
 typedef struct _is_expr_op
 {
 	type_expr_op type;
@@ -276,6 +258,7 @@ typedef enum
 	t_for_expr_incr,
 	t_for_expr_assign
 } type_for_expr;
+
 typedef struct _is_for_expr
 {
 	type_for_expr type;
@@ -288,7 +271,7 @@ typedef struct _is_for_expr
 
 typedef struct _is_for_expr_list
 {
-	struct _is_for_expr* expr;
+	struct _is_for_expr* node;
 	struct _is_for_expr_list* next;
 } is_for_expr_list;
 
@@ -297,6 +280,7 @@ typedef enum
 	t_for_init_var_defs,
 	t_for_init_for_expr_list
 } type_for_init;
+
 typedef struct _is_for_init
 {
 	type_for_init type;
@@ -312,6 +296,7 @@ typedef enum
 	t_func_call_id,
 	t_func_call_sysout
 } type_func_call;
+
 typedef struct _is_func_call
 {
 	type_func_call type;
@@ -340,7 +325,7 @@ typedef struct _is_func_def_arg
 
 typedef struct _is_func_def_arg_list
 {
-	struct _is_func_def_arg* arg;
+	struct _is_func_def_arg* node;
 	struct is_func_def_arg_list* next;
 } is_func_def_arg_list;
 
@@ -363,6 +348,7 @@ typedef enum
 	t_incr_op_inc,
 	t_incr_op_dec
 } type_incr_op;
+
 typedef struct _is_incr_op
 {
 	type_incr_op type;
@@ -376,6 +362,7 @@ typedef enum
 	t_loop_stmt_while,
 	t_loop_stmt_do_while
 } type_loop_stmt;
+
 typedef struct _is_loop_stmt
 {
 	/* TODO: is_id* label; */
@@ -394,6 +381,7 @@ typedef enum
 	t_member_stmt_var,
 	t_member_stmt_func
 } type_member_stmt;
+
 typedef struct _is_member_stmt
 {
 	type_member_stmt type;
@@ -429,6 +417,7 @@ typedef enum
 	t_stmt_continue,
 	t_stmt_return
 } type_stmt;
+
 typedef struct _is_stmt
 {
 	type_stmt type;
@@ -458,6 +447,7 @@ typedef enum
 	t_switch_stmt_default,
 	t_switch_stmt_case
 } type_switch_stmt;
+
 typedef struct _is_switch_stmt
 {
 	type_switch_stmt type;
@@ -466,7 +456,7 @@ typedef struct _is_switch_stmt
 
 typedef struct _is_switch_stmt_list
 {
-	struct _is_switch_stmt *switch_case;
+	struct _is_switch_stmt *node;
 	struct _is_switch_stmt_list *next; /* nullable */
 } is_switch_stmt_list;
 
@@ -482,6 +472,7 @@ typedef enum
 	t_type_decl_type_object,
 	t_type_decl_array_decl
 } type_type_decl;
+
 typedef struct _is_type_decl
 {
 	type_type_decl type;
@@ -504,6 +495,7 @@ typedef enum
 	t_type_native_short,
 	t_type_native_void
 } is_type_native;
+
 typedef struct _is_type_object
 {
 	is_type_native type;
@@ -516,6 +508,7 @@ typedef enum
 	t_unary_op_not,
 	t_unary_op_bin_not
 } type_unary_op;
+
 typedef struct _is_unary_op
 {
 	type_unary_op type;
@@ -533,6 +526,7 @@ typedef enum
 	t_var_array,
 	t_var_func_call
 } type_var;
+
 typedef struct _is_var
 {
 	type_var type;
@@ -557,12 +551,12 @@ typedef struct _is_var_def
 {
 	struct _is_id* id;
 	struct _is_var_initializer* var_init; /* nullable */
-	is_dims_empty_list dims; /* NOT nullable, 0 if not existant, 1+ otherwise */
+	is_dims_empty_list dims;
 } is_var_def;
 
 typedef struct _is_var_def_list
 {
-	struct _is_var_def* var_def;
+	struct _is_var_def *node;
 	struct _is_var_def_list* next; /* nullable */
 } is_var_def_list;
 
@@ -573,6 +567,7 @@ typedef struct _is_var_defs
 } is_var_defs;
 
 typedef enum {t_val_arr, t_expr} type_var_initializer;
+
 typedef struct _is_var_initializer
 {
 	type_var_initializer type;
@@ -586,8 +581,8 @@ typedef struct _is_var_initializer
 
 typedef struct _is_var_initializer_list
 {
-	struct _is_var_initializer* init;
-	struct _is_var_initializer_list* next; /* nullable */
+	struct _is_var_initializer *node;
+	struct _is_var_initializer_list *next; /* nullable */
 } is_var_initializer_list;
 
 typedef is_var_defs is_var_stmt;
