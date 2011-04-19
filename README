@@ -1,0 +1,2 @@
+TODOs:
+	Use strtod, strtof, strtold OR atof for string to float/double/long double conversion (for use on lex)
