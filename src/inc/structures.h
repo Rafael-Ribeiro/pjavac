@@ -138,9 +138,9 @@ typedef struct
 
 typedef struct
 {
-	is_for_init* init;
-	is_for_cond* condition;
-	is_for_inc* inc;
+	is_for_init* init; /* nullable */
+	is_for_cond* condition; /* nullable */
+	is_for_inc* inc; /* nullable */
 	is_stmt* body;
 } is_for;
 
@@ -214,7 +214,7 @@ typedef struct
 {
 	is_expr* condition;
 	is_stmt* then_body;
-	is_stmt* else_body;
+	is_stmt* else_body; /* nullable */
 } is_if;
 
 typedef enum {t_inc, t_dec} type_incr_op
