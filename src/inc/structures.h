@@ -20,4 +20,9 @@ typedef struct
 
 /*****************************************************SEPARATOR*****************************************************/
 
+typedef struct
+{
+	is_expr* iexpr;
+	is_compound_stmt* ics;
+} is_while;
 #endif
