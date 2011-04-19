@@ -4,87 +4,109 @@
 #define MAX_ID_LEN 128
 #define MAX_CONST_LEN MAX_ID_LEN
 
-/*
-	TODO: 
-	fix these errors like this o.O:
+struct _is_array_decl;
+struct _is_assign_op;
+struct _is_binary_op;
+struct _is_break;
+struct _is_class_decl;
+struct _is_class_decl_list;
+struct _is_class_def;
+struct _is_class_stmt;
+struct _is_class_stmt_scope;
+struct _is_constant;
+struct _is_continue;
+struct _is_dims;
+struct _is_dims_sized_list;
+struct _is_do_while;
+struct _is_expr;
+struct _is_expr_list;
+struct _is_expr_op;
+struct _is_for;
+struct _is_for_expr;
+struct _is_for_expr_list;
+struct _is_for_init;
+struct _is_func_call;
+struct _is_func_def;
+struct _is_func_def_arg;
+struct _is_func_def_arg_list;
+struct _is_id;
+struct _is_if;
+struct _is_incr_op;
+struct _is_loop_stmt;
+struct _is_member_stmt;
+struct _is_new_op;
+struct _is_return;
+struct _is_stmt;
+struct _is_switch;
+struct _is_switch_stmt;
+struct _is_switch_stmt_list;
+struct _is_ternary_op;
+struct _is_type_decl;
+struct _is_type_object;
+struct _is_unary_op;
+struct _is_var;
+struct _is_var_def;
+struct _is_var_def_list;
+struct _is_var_defs;
+struct _is_var_initializer;
+struct _is_var_initializer_list;
+struct _is_var_stmt;
+struct _is_while;
 
-	struct b;
-	struct a
-	{
-		    struct b * sdsd;
-		    int a;
-	};
-	struct b
-	{
-		    struct a * sd;
-		    int h;
-	};
-
-	typedef struct a A;
-	typedef struct b B;
-*/
-
-/*
-	Temporary aliases for mutual recursive definitions
-*/
-
-typedef struct
+typedef struct _array_decl
 {
-	char name[MAX_ID_LEN];
-} is_id;
-
-typedef struct
-{
-	char value[MAX_CONST_LEN];
-} is_constant; 
-
-typedef enum {t_bool, t_byte, t_char, t_double, t_float, t_int, t_long, t_short, t_void} is_type_native;
-typedef struct
-{
-	is_type_native type;
-} is_type_object;
-
-
-struct _is_dims_sized_list; /* mutual references hack */
-
-typedef int is_dims_empty_list;
-
-typedef struct
-{
-	struct _is_dims_sized_list* sized;
-	is_dims_empty_list empty; /* NOT nullable, 0 if not existant, 1+ otherwise */
-} is_dims;
-
-typedef is_expr is_dims_sized;
-
-typedef struct _is_dims_sized_list
-{
-	is_dims_sized* size;
-	struct _is_dims_sized_list* next;
-} is_dims_sized_list;
-
-typedef struct
-{
-	is_type_object* type;
-	is_dims_empty_list* dims;
+	struct _is_type_object* type;
+	struct _is_dims_empty_list* dims;
 } is_array_decl;
 
-typedef enum {t_eq, t_shift_r_eq, t_shift_l_eq, t_add_eq, t_sub_eq, t_mul_eq, t_div_eq, t_mod_eq, t_and_eq, t_xor_eq, t_or_eq} type_assign_op;
-typedef struct
+typedef enum
+{
+	t_assign_op_eq,
+	t_assign_op_shift_r_eq,
+	t_assign_op_shift_l_eq,
+	t_assign_op_add_eq,
+	t_assign_op_sub_eq,
+	t_assign_op_mul_eq,
+	t_assign_op_div_eq,
+	t_assign_op_mod_eq,
+	t_assign_op_and_eq,
+	t_assign_op_xor_eq,
+	t_assign_op_or_eq
+} type_assign_op;
+
+typedef struct _is_assign_op
 {
 	type_assign_op type;
-	is_var* var;
-	is_expr* expr;
+	struct _is_var* var;
+	struct _is_expr* expr;
 } is_assign_op;
 
-typedef enum {
-	t_add, t_sub, t_mul, t_div, t_mod, t_and, t_or,
-	t_xor, t_shift_r, t_shift_l, t_logic_and, t_logic_or,
-	t_eq, t_ne, t_l, t_g, t_le, t_ge, t_eq3, t_ne3,
-	t_assign
+typedef enum
+{
+	t_binary_op_add,
+	t_binary_op_sub,
+	t_binary_op_mul,
+	t_binary_op_div,
+	t_binary_op_mod,
+	t_binary_op_and,
+	t_binary_op_or,
+	t_binary_op_xor,
+	t_binary_op_shift_r,
+	t_binary_op_shift_l,
+	t_binary_op_logic_and,
+	t_binary_op_logic_or,
+	t_binary_op_eq,
+	t_binary_op_ne,
+	t_binary_op_l,
+	t_binary_op_g,
+	t_binary_op_le,
+	t_binary_op_ge,
+	t_binary_op_eq3,
+	t_binary_op_ne3,
+	t_binary_op_assign
 } type_binary_op;
 
-typedef struct
+typedef struct _is_binary_op
 {
 	type_binary_op type;
 
@@ -92,272 +114,392 @@ typedef struct
 	{
 		struct
 		{
-			expr* left;
-			expr* right;
+			struct _expr* left;
+			struct _expr* right;
 		} operands;
-		is_assign_op* assign;
+		struct _is_assign_op* assign;
 	} data;
 } is_binary_op;
 
-typedef struct
+typedef struct _is_break
 {
-	is_id* label;	/* nullable */
+	struct _is_id* label;	/* nullable */
 } is_break;
 
 typedef struct _is_class_stmt_list
 {
-	is_class_stmt stmt;
+	struct _is_class_decl* node;
 	struct _is_class_stmt_list* next;
 } is_class_stmt_list;
-
-typedef struct
+typedef struct _is_class_def
 {
-	is_id* id;
-	is_class_stmt_list* body;
+	struct _is_id* id;
+	struct _is_class_stmt_list* body;
 } is_class_def;
 
-typedef struct
+typedef enum
 {
-	is_class_stmt_privacy* privacy; /* nullable */
-	is_class_stmt_scope* scope;	/* nullable */
-	is_member_stmt* member;
-} is_class_stmt;
+	t_class_stmt_privacy_public,
+	t_class_stmt_privacy_private
+} is_class_stmt_privacy;
 
-typedef enum {t_public, t_private} is_class_stmt_privacy;
-
-typedef struct
+typedef struct _is_class_stmt_scope
 {
 	bool b_final;
 	bool b_static;
 } is_class_stmt_scope;
 
-typedef struct
+typedef struct _is_class_stmt
 {
-	is_id* label;	/* nullable */
+	is_class_stmt_privacy* privacy; /* nullable */
+	struct _is_class_stmt_scope* scope;	/* nullable */
+	struct _is_member_stmt* member;
+} is_class_stmt;
+
+typedef struct _is_constant
+{
+	char value[MAX_CONST_LEN];
+} is_constant;
+
+typedef struct _is_continue
+{
+	struct _is_id* label;	/* nullable */
 } is_continue;
 
-typedef struct
+typedef int is_dims_empty_list;
+typedef struct _is_dims
 {
-	is_stmt* body;
-	is_expr* condition;
+	struct _is_dims_sized_list* sized;
+	is_dims_empty_list empty; /* NOT nullable, 0 if not existant, 1+ otherwise */
+} is_dims;
+
+typedef struct _is_expr is_dims_sized; /* FIXME: this may be invalid */
+
+typedef struct _is_dims_sized_list
+{
+	is_dims_sized* node; /* not using hack since typedef is right above, may not work FIXME */
+	struct _is_dims_sized_list* next;
+} is_dims_sized_list;
+
+typedef struct _is_do_while
+{
+	struct _is_stmt* body;
+	struct _is_expr* condition;
 } is_do_while;
 
-typedef enum {t_var, t_new_op, t_constant, t_func_call, t_operation} type_expr
-typedef struct
+typedef enum
+{
+	t_expr_var,
+	t_expr_new_op,
+	t_expr_constant,
+	t_expr_func_call,
+	t_expr_operation
+} type_expr;
+
+typedef struct _is_expr
 {
 	type_expr expr;
 	union
 	{
-		is_var* var;
-		is_new_op* new_op;
-		is_constant* constant;
-		is_func_call* func;
-		is_expr_op* operation;
+		struct _is_var* var;
+		struct _is_new_op* new_op;
+		struct _is_constant* constant;
+		struct _is_func_call* func;
+		struct _is_expr_op* operation;
 	} data;
 } is_expr;
 
-typedef struct _is_expr_list;
+typedef struct _is_expr_list
 {
-	is_expr* expr;
-	struct *_is_expr_list next;
+	struct _is_expr* node;
+	struct _is_expr_list* next;
 } is_expr_list;
 
-typedef enum {t_unary, t_binary, t_ternary} type_expr_op
-typedef struct
+typedef enum
+{
+	t_expr_op_unary,
+	t_expr_op_binary,
+	t_expr_op_ternary
+} type_expr_op;
+
+typedef struct _is_expr_op
 {
 	type_expr_op type;
 	union
 	{
-		is_unary_op* unary;
-		is_binary_op* binary;
-		is_ternary_op* ternary;
+		struct _is_unary_op* unary;
+		struct _is_binary_op* binary;
+		struct _is_ternary_op* ternary;
 	} data;
 } is_expr_op;
 
-typedef struct
+typedef struct _is_for
 {
-	is_for_init* init; /* nullable */
-	is_for_cond* condition; /* nullable */
-	is_for_inc* inc; /* nullable */
-	is_stmt* body;
+	struct _is_for_init* init; /* nullable */
+	struct _is_for_cond* condition; /* nullable */
+	struct _is_for_inc* inc; /* nullable */
+	struct _is_stmt* body;
 } is_for;
 
 typedef is_expr is_for_cond;
 
-typedef enum {t_incr, t_assign} type_for_expr;
-typedef struct
+typedef enum
 {
-	type_for_expr;
+	t_for_expr_incr,
+	t_for_expr_assign
+} type_for_expr;
+
+typedef struct _is_for_expr
+{
+	type_for_expr type;
 	union
 	{
-		is_incr_op* incr;
-		is_assing_op* assign;
+		struct _is_incr_op* incr;
+		struct _is_assing_op* assign;
 	} data;
 } is_for_expr;
 
 typedef struct _is_for_expr_list
 {
-	is_for_expr expr;
+	struct _is_for_expr* node;
 	struct _is_for_expr_list* next;
-} is_for_expr_list
+} is_for_expr_list;
 
-
-typedef enum {t_var_defs, t_for_expr_list} type_for_init;
-typedef struct
+typedef enum
 {
-	type_for_init;
+	t_for_init_var_defs,
+	t_for_init_for_expr_list
+} type_for_init;
+
+typedef struct _is_for_init
+{
+	type_for_init type;
 	union
 	{
-		is_var_defs* vars;
-		is_for_expr_list* expr_list;
-	} data; 
+		struct _is_var_defs* vars;
+		struct _is_for_expr_list* expr_list;
+	} data;
 } is_for_init;
 
-typedef enum {t_id, t_sysout} type_func_call;
-typedef struct
+typedef enum
+{
+	t_func_call_id,
+	t_func_call_sysout
+} type_func_call;
+
+typedef struct _is_func_call
 {
 	type_func_call type;
 	union
 	{
-		is_id* id; /* nullable */
-		is_func_call_arg_list* args;
+		struct _is_id* id; /* nullable */
+		struct _is_func_call_arg_list* args;
 	} data;
-} is_func_call; 
+} is_func_call;
 
 typedef is_expr_list is_func_call_arg_list;
 
-typedef struct
+typedef struct _is_func_def
 {
-	is_type_decl* type;
-	is_id* id;
-	is_func_def_args* args;
-	is_stmt_list* body;
+	struct _is_type_decl* type;
+	struct _is_id* id;
+	struct _is_func_def_args* args;
+	struct _is_stmt_list* body;
 } is_func_def;
 
-typedef struct
+typedef struct _is_func_def_arg
 {
-	is_type_decl* type;
-	is_var* var;
+	struct _is_type_decl* type;
+	struct _is_var* var;
 } is_func_def_arg;
 
 typedef struct _is_func_def_arg_list
 {
-	is_func_def_arg arg;
+	struct _is_func_def_arg* node;
 	struct is_func_def_arg_list* next;
 } is_func_def_arg_list;
 
 typedef is_func_def_arg_list is_func_def_args;
 
-typedef struct
+typedef struct _is_id
 {
-	is_expr* condition;
-	is_stmt* then_body;
-	is_stmt* else_body; /* nullable */
+	char name[MAX_ID_LEN];
+} is_id;
+
+typedef struct _is_if
+{
+	struct _is_expr* condition;
+	struct _is_stmt* then_body;
+	struct _is_stmt* else_body; /* nullable */
 } is_if;
 
-typedef enum {t_inc, t_dec} type_incr_op
-typedef struct
+typedef enum
+{
+	t_incr_op_inc,
+	t_incr_op_dec
+} type_incr_op;
+
+typedef struct _is_incr_op
 {
 	type_incr_op type;
 	bool pre;
-	is_var* var;
+	struct _is_var* var;
 } is_incr_op;
 
-typedef enum {t
-_for, t_while, t_do_while} type_loop_stmt;
-typedef struct
+typedef enum
+{
+	t_loop_stmt_for,
+	t_loop_stmt_while,
+	t_loop_stmt_do_while
+} type_loop_stmt;
+
+typedef struct _is_loop_stmt
 {
 	/* TODO: is_id* label; */
 	type_loop_stmt type;
+
 	union
 	{
-		is_for* for_stmt;
-		is_while* while_stmt;
-		is_do_while* do_while;
+		struct _is_for* for_stmt;
+		struct _is_while* while_stmt;
+		struct _is_do_while* do_while;
 	} data;
 } is_loop_stmt;
 
-typedef enum {t_var, t_func} type_member_stmt;
-typedef struct
+typedef enum
+{
+	t_member_stmt_var,
+	t_member_stmt_func
+} type_member_stmt;
+
+typedef struct _is_member_stmt
 {
 	type_member_stmt type;
 	union
 	{
-		is_var_stmt* var;
-		is_func_def* func;
+		struct _is_var_stmt* var;
+		struct _is_func_def* func;
 	} data;
 } is_member_stmt;
 
-typedef struct
+typedef struct _is_new_op
 {
-	is_type_object *type_object;
-	is_dims *dims;
+	struct _is_type_object *type_object;
+	struct _is_dims *dims;
 } is_new_op;
 
-typedef struct
+typedef struct _is_return
 {
 	is_expr *expr; /* nullable */
 } is_return;
 
-typedef enum {t_empty, t_var_stmt, t_assign, t_incr, t_if, t_loop, t_func_call, t_switch, t_break, t_continue, t_return} type_stmt;
-typedef struct
+typedef enum
+{
+	t_stmt_empty,
+	t_stmt_var_stmt,
+	t_stmt_assign,
+	t_stmt_incr,
+	t_stmt_if,
+	t_stmt_loop,
+	t_stmt_func_call,
+	t_stmt_switch,
+	t_stmt_break,
+	t_stmt_continue,
+	t_stmt_return
+} type_stmt;
+
+typedef struct _is_stmt
 {
 	type_stmt type;
 	union
 	{
-		is_var_stmt *var;
-		is_assign_op *assign;
-		is_incr_op *incr;
-		is_if *if_stmt;
-		is_loop_stmt *loop;
-		is_func_call *func_call;
-		is_switch *switch_stmt;
-		is_break *break_stmt;
-		is_continue *continue_stmt;
-		is_return *return_stmt;
+		struct _is_var_stmt *var;
+		struct _is_assign_op *assign;
+		struct _is_incr_op *incr;
+		struct _is_if *if_stmt;
+		struct _is_loop_stmt *loop;
+		struct _is_func_call *func_call;
+		struct _is_switch *switch_stmt;
+		struct _is_break *break_stmt;
+		struct _is_continue *continue_stmt;
+		struct _is_return *return_stmt;
 	} data;
 } is_stmt;
 
-typedef struct
+typedef struct _is_switch
 {
-	is_expr *expr;
-	is_switch_stmt_list *list; /* nullable */
+	struct _is_expr *expr;
+	struct _is_switch_stmt_list *list; /* nullable */
 } is_switch;
 
-typedef enum {t_default, t_case} type_switch_stmt;
-typedef struct
+typedef enum
+{
+	t_switch_stmt_default,
+	t_switch_stmt_case
+} type_switch_stmt;
+
+typedef struct _is_switch_stmt
 {
 	type_switch_stmt type;
-	is_stmt_list *list;
+	struct _is_stmt_list *list;
 } is_switch_stmt;
 
 typedef struct _is_switch_stmt_list
 {
-	is_switch_stmt *switch_case;
+	struct _is_switch_stmt *node;
 	struct _is_switch_stmt_list *next; /* nullable */
 } is_switch_stmt_list;
 
-typedef struct
+typedef struct _is_ternary_op
 {
-	is_expr* if_expr;
-	is_expr* then_expr;
-	is_expr* else_expr;
+	struct _is_expr* if_expr;
+	struct _is_expr* then_expr;
+	struct _is_expr* else_expr;
 } is_ternary_op;
 
-typedef enum {t_type_object, t_array_decl} type_type_decl;
-typedef struct
+typedef enum
+{
+	t_type_decl_type_object,
+	t_type_decl_array_decl
+} type_type_decl;
+
+typedef struct _is_type_decl
 {
 	type_type_decl type;
 	union
 	{
-		is_type_object* type_object;
-		is_array_decl* array;
+		struct _is_type_object* type_object;
+		struct _is_array_decl* array;
 	} data;
 } is_type_decl;
 
+typedef enum
+{
+	t_type_native_bool,
+	t_type_native_byte,
+	t_type_native_char,
+	t_type_native_double,
+	t_type_native_float,
+	t_type_native_int,
+	t_type_native_long,
+	t_type_native_short,
+	t_type_native_void
+} is_type_native;
 
-typedef enum {t_plus, t_minus, t_not, t_bin_not} type_unary_op;
-typedef struct
+typedef struct _is_type_object
+{
+	is_type_native type;
+} is_type_object;
+
+typedef enum
+{
+	t_unary_op_plus,
+	t_unary_op_minus,
+	t_unary_op_not,
+	t_unary_op_bin_not
+} type_unary_op;
+
+typedef struct _is_unary_op
 {
 	type_unary_op type;
 	union
@@ -367,73 +509,78 @@ typedef struct
 	} data;
 } is_unary_op;
 
-typedef enum {t_id, t_new_op, t_array, t_func_call} type_var;
+typedef enum
+{
+	t_var_id,
+	t_var_new_op,
+	t_var_array,
+	t_var_func_call
+} type_var;
+
 typedef struct _is_var
 {
 	type_var type;
 	union
 	{
-		is_id* id;
-		is_new_op* new_op;
+		struct _is_id* id;
+		struct _is_new_op* new_op;
 		struct
 		{
 			struct _is_var* var;
-			is_dims_sized* dims;
+			struct _is_dims_sized* dims;
 		} array;
 		struct
 		{
-			is_func_call* call;
-			is_dims_sized* dims;
+			struct _is_func_call* call;
+			struct _is_dims_sized* dims;
 		} func_call;
 	} data;
 } is_var;
 
-typedef struct
+typedef struct _is_var_def
 {
-	is_id* id;
-	is_var_initializer* var_init; /* nullable */
-	is_dims_empty_list dims; /* nullable */
+	struct _is_id* id;
+	struct _is_var_initializer* var_init; /* nullable */
+	is_dims_empty_list dims;
 } is_var_def;
 
 typedef struct _is_var_def_list
 {
-	is_var_def* var_def;
+	struct _is_var_def *node;
 	struct _is_var_def_list* next; /* nullable */
 } is_var_def_list;
 
-typedef struct
+typedef struct _is_var_defs
 {
 	is_type_decl type;
-	is_var_def_list list;
+	struct _is_var_def_list* list;
 } is_var_defs;
 
 typedef enum {t_val_arr, t_expr} type_var_initializer;
-typedef struct
+
+typedef struct _is_var_initializer
 {
 	type_var_initializer type;
 
 	union
 	{
-		is_var_initializer_list* array; /* nullable */
-		is_expr* expr;
+		struct _is_var_initializer_list* array; /* nullable */
+		struct _is_expr* expr;
 	} data;
 } is_var_initializer;
 
 typedef struct _is_var_initializer_list
 {
-	is_var_initializer* init;
-	struct _is_var_initializer_list* next; /* nullable */
+	struct _is_var_initializer *node;
+	struct _is_var_initializer_list *next; /* nullable */
 } is_var_initializer_list;
 
-typedef struct
-{
-	is_var_defs* defs;
-} is_var_stmt;
+typedef is_var_defs is_var_stmt;
 
-typedef struct
+typedef struct _is_while
 {
-	is_expr* condition;
-	is_stmt* body;
+	struct _is_expr* condition;
+	struct _is_stmt* body;
 } is_while;
 
 /* just because we can? */
