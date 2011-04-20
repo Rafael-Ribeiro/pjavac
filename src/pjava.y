@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include "inc/structures.h"
+#include "inc/insert.h"
 
 is_application* main_application;
 %}
@@ -539,7 +540,7 @@ var_initializer
 /* this one is left recursive, can we swap it? if not attention to the constructors */
 var_initializer_list
 	: var_initializer												{ $$ = insert_var_initializer_list(NULL, $1); }
-	| var_initializer_list ',' var_initializer						{ $$ = insert_car_initializer_list($1, $3); }
+	| var_initializer_list ',' var_initializer						{ $$ = insert_var_initializer_list($1, $3); }
  	;
 
 var_stmt															
