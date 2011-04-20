@@ -562,6 +562,7 @@ int main()
 {
 	yyparse();
 	
+	printf("Valid sintax!\n");
 	show_application(main_application);
 	free_application(main_application);
 
