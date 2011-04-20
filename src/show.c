@@ -361,7 +361,7 @@ void show_expr(is_expr* node)
 			break;
 
 		case t_expr_func_call:
-			show_func_call(node->data.func);
+			show_func_call(node->data.func_call);
 			break;
 
 		case t_expr_operation:
@@ -460,7 +460,7 @@ void show_for_init(is_for_init* node)
 	switch (node->type)
 	{
 		case t_for_init_var_defs:
-			show_var_defs(node->data.vars);
+			show_var_defs(node->data.var_defs);
 			break;
 
 		case t_for_init_for_expr_list:
@@ -483,6 +483,13 @@ void show_func_call(is_func_call* node)
 	}
 
 	show_func_call_arg_list(node->args);
+}
+
+void show_func_call_arg_list(is_func_call_arg_list* node)
+{
+	printf("(");
+	show_expr_list(node);
+	printf(")");
 }
 
 void show_func_def(is_func_def* node, int tablevel)

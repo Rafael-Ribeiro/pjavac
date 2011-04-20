@@ -305,7 +305,7 @@ typedef struct _is_func_call
 {
 	type_func_call type;
 	struct _is_id* id; /* nullable (if sysout) */
-	struct _is_func_call_arg_list* args; /* nullable (no args provided) */
+	is_func_call_arg_list* args; /* nullable (no args provided) */
 } is_func_call;
 
 typedef struct _is_func_def

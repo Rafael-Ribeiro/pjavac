@@ -38,6 +38,7 @@ void show_for_expr_list(is_for_expr_list* node);
 void show_for_inc(is_for_inc* node);
 void show_for_init(is_for_init* node);
 void show_func_call(is_func_call* node);
+void show_func_call_arg_list(is_func_call_arg_list* node);
 void show_func_def(is_func_def* node, int tablevel);
 void show_func_def_arg(is_func_def_arg* node, int tablevel);
 void show_func_def_arg_list(is_func_def_arg_list* node, int tablevel);
