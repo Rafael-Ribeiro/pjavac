@@ -350,22 +350,44 @@ is_for_expr_list* insert_for_expr_list(is_for_expr* expr, is_for_expr_list* next
 
 is_for_init* insert_for_init_var_defs(is_var_defs* var_defs)
 {
-	return NULL;
+	is_for_init* node = (is_for_init*)malloc(sizeof(is_for_init));
+
+	node->type = t_for_init_var_defs;
+	node->data.var_defs = var_defs;
+
+	return node;
 }
 
-is_for_init* insert_for_init_expr_list(is_for_expr_list* expr_list)
+is_for_init* insert_for_init_for_expr_list(is_for_expr_list* expr_list)
 {
-	return NULL;
+	is_for_init* node = (is_for_init*)malloc(sizeof(is_for_init));
+
+	node->type = t_for_init_for_expr_list;
+	node->data.expr_list = expr_list;
+
+	return node;
 }
 
 is_func_call* insert_func_call_id(is_id* id, is_func_call_arg_list* args)
 {
-	return NULL;
+	is_func_call* node = (is_func_call*)malloc(sizeof(is_func_call));
+
+	node->type = t_func_call_id;
+	node->id = id;
+	node->args = args;
+
+	return node;
 }
 
 is_func_call* insert_func_call_sysout(is_func_call_arg_list* args)
 {
-	return NULL;
+	is_func_call* node = (is_func_call*)malloc(sizeof(is_func_call));
+
+	node->type = t_func_call_sysout;
+	node->id = NULL;
+	node->args = args;
+
+	return node;
 }
 
 is_func_def* insert_func_def(is_type_decl* type, is_id* id, is_func_def_arg_list* args, is_stmt_list* body)

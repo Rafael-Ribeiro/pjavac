@@ -56,6 +56,7 @@ typedef struct _is_expr is_for_cond;
 typedef struct _is_for_expr_list is_for_inc;
 typedef struct _is_var_defs is_var_stmt;
 typedef struct _is_class_def is_application;
+typedef struct _is_expr_list is_func_call_arg_list;
 
 /***********************************************************************/
 
@@ -289,7 +290,7 @@ typedef struct _is_for_init
 	type_for_init type;
 	union
 	{
-		struct _is_var_defs* vars;
+		struct _is_var_defs* var_defs;
 		struct _is_for_expr_list* expr_list;
 	} data;
 } is_for_init;
@@ -303,14 +304,9 @@ typedef enum
 typedef struct _is_func_call
 {
 	type_func_call type;
-	union
-	{
-		struct _is_id* id; /* nullable */
-		struct _is_func_call_arg_list* args;
-	} data;
+	struct _is_id* id; /* nullable (if sysout) */
+	struct _is_func_call_arg_list* args; /* nullable (no args provided) */
 } is_func_call;
-
-typedef is_expr_list is_func_call_arg_list;
 
 typedef struct _is_func_def
 {
