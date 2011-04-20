@@ -6,13 +6,13 @@
 #include "inc/structures.h"
 
 /* LEX */
-char* strcopia(const char* data)
+char* __strcpy(const char* data)
 {
 	char* dest;
 	int len;
 
-	len = strlen(data);
-	dest = (char*)malloc(sizeof(char)*len+1);
+	len = strlen(data) + 1; /* +1 to include \0 on both malloc and strncpy */
+	dest = (char*)malloc(sizeof(char)*len);
 	strncpy(dest, data, len);
 
 	return dest;
@@ -21,7 +21,7 @@ char* strcopia(const char* data)
 is_id* insert_id(char* data)
 {
 	is_id* node = (is_id*)malloc(sizeof(is_id));
-	node->name = strcopia(data);
+	node->name = __strcpy(data);
 
 	return node;
 }
@@ -53,7 +53,7 @@ is_constant* insert_constant_double(long double value)
 is_constant* insert_constant_char(char* value)
 {
 	is_constant* node = (is_constant*)malloc(sizeof(is_constant));
-	node->value.string_val = strcopia(value);
+	node->value.string_val = __strcpy(value);
 
 	return node;
 }
@@ -61,7 +61,7 @@ is_constant* insert_constant_char(char* value)
 is_constant* insert_constant_string(char* value)
 {
 	is_constant* node = (is_constant*)malloc(sizeof(is_constant));
-	node->value.string_val = strcopia(value);
+	node->value.string_val = __strcpy(value);
 
 	return node;
 }
@@ -106,7 +106,11 @@ is_class_stmt_list* insert_class_stmt_list (is_class_stmt* stmt, is_class_stmt_l
 
 is_class_def* insert_class_def (is_id* id, is_class_stmt_list* body)
 {
-	return NULL;
+	is_class_def *node = (is_class_def*)malloc(sizeof(is_class_def));
+	node->id = id;
+	node->body = body;
+
+	return node;
 }
 
 is_class_stmt* insert_class_stmt (is_class_stmt_privacy* privacy, is_class_stmt_scope* scope, is_member_stmt* stmt)
@@ -232,7 +236,7 @@ is_for_expr_list* insert_for_expr_list(is_for_expr* expr, is_for_expr_list* next
 	return NULL;
 }
 
-is_for_init* insert_for_init_vars(is_var_defs* var_defs)
+is_for_init* insert_for_init_var_defs(is_var_defs* var_defs)
 {
 	return NULL;
 }

@@ -4,5 +4,6 @@
 
 void free_application(is_application* application)
 {
+	/* TODO */
 }
 

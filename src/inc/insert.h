@@ -1,7 +1,10 @@
 #ifndef INSERT_H
 #define INSERT_H
 
-/* lex */
+/* LEX */
+
+char* __strcpy(const char*);
+
 is_id* insert_id(char* data);
 
 is_constant* insert_constant_bool(bool value);
@@ -10,7 +13,7 @@ is_constant* insert_constant_double(long double value);
 is_constant* insert_constant_char(char* value);
 is_constant* insert_constant_string(char* value);
 
-/* yacc */
+/* YACC */
 is_array_decl* insert_array_decl(is_type_object* type, is_dims_empty_list dims);
 is_assign_op* insert_assign_op(is_var* var, type_assign_op type, is_expr* expr);
 is_binary_op* insert_binary_op_operation(is_expr* left, type_binary_op operation, is_expr* right);
@@ -56,7 +59,7 @@ is_for_expr* insert_for_expr_func_call(is_func_call* func_call);
 
 is_for_expr_list* insert_for_expr_list(is_for_expr* expr, is_for_expr_list* next); 
 
-is_for_init* insert_for_init_vars(is_var_defs* var_defs);
+is_for_init* insert_for_init_var_defs(is_var_defs* var_defs);
 is_for_init* insert_for_init_expr_list(is_for_expr_list* expr_list);
  	
 is_func_call* insert_func_call_id(is_id* id, is_func_call_arg_list* args); 

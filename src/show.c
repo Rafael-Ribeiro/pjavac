@@ -4,4 +4,5 @@
 
 void show_application(is_application* application)
 {
+	/* TODO */
 }

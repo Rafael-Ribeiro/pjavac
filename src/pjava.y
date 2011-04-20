@@ -370,7 +370,7 @@ for_expr_list
 
 for_init
 	: /* empty */													{ $$ = NULL; }
-	| var_defs														{ $$ = insert_for_init_vars($1); }
+	| var_defs														{ $$ = insert_for_init_var_defs($1); }
 	| for_expr_list													{ $$ = insert_for_init_expr_list($1); }
 	;
 
