@@ -17,6 +17,7 @@ is_constant* insert_constant_bool(bool value)
 {
 	is_constant* node = (is_constant*)malloc(sizeof(is_constant));
 	node->value.bool_val = value;
+
 	return node;
 }
 
@@ -24,6 +25,7 @@ is_constant* insert_constant_long(long long value)
 {
 	is_constant* node = (is_constant*)malloc(sizeof(is_constant));
 	node->value.long_val = value;
+
 	return node;
 }
 
@@ -31,6 +33,7 @@ is_constant* insert_constant_double(double value)
 {
 	is_constant* node = (is_constant*)malloc(sizeof(is_constant));
 	node->value.double_val = value;
+
 	return node;
 }
 
@@ -38,6 +41,7 @@ is_constant* insert_constant_char(char value)
 {
 	is_constant* node = (is_constant*)malloc(sizeof(is_constant));
 	node->value.char_val = value;
+
 	return node;
 }
 
@@ -45,6 +49,7 @@ is_constant* insert_constant_string(char* value)
 {
 	is_constant* node = (is_constant*)malloc(sizeof(is_constant));
 	node->value.string_val = strdup(value);
+
 	return node;
 }
 
