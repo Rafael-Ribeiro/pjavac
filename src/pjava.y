@@ -1,8 +1,11 @@
 %{
 #include <stdio.h>
 #include <stdbool.h>
+
 #include "inc/structures.h"
 #include "inc/insert.h"
+#include "inc/show.h"
+#include "inc/free.h"
 
 is_application* main_application;
 %}
