@@ -414,10 +414,10 @@ if
 	;
 
 incr_op
-	: INC_OP var													{ $$ = insert_incr_op(t_incr_op_inc, true); }
-	| var INC_OP 													{ $$ = insert_incr_op(t_incr_op_inc, false); }
-	| DEC_OP var 													{ $$ = insert_incr_op(t_incr_op_dec, true); }
-	| var DEC_OP 	 												{ $$ = insert_incr_op(t_incr_op_dec, false); }
+	: INC_OP var													{ $$ = insert_incr_op(t_incr_op_inc, true, $2); }
+	| var INC_OP 													{ $$ = insert_incr_op(t_incr_op_inc, false, $1); }
+	| DEC_OP var 													{ $$ = insert_incr_op(t_incr_op_dec, true, $2); }
+	| var DEC_OP 	 												{ $$ = insert_incr_op(t_incr_op_dec, false, $1); }
 	;
 
 loop_stmt

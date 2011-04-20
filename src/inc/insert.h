@@ -73,7 +73,7 @@ is_func_def_arg_list* insert_func_def_arg_list(is_func_def_arg* arg, is_func_def
 
 is_if* insert_if(is_expr* cond, is_stmt* then_body, is_stmt* else_body);
 
-is_incr_op* insert_incr_op(type_incr_op type, bool pre);
+is_incr_op* insert_incr_op(type_incr_op type, bool pre, is_var* var);
 
 is_loop_stmt* insert_loop_stmt_for(is_for* for_stmt); 
 is_loop_stmt* insert_loop_stmt_while(is_while* while_stmt);

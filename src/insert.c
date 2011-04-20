@@ -392,12 +392,24 @@ is_func_call* insert_func_call_sysout(is_func_call_arg_list* args)
 
 is_func_def* insert_func_def(is_type_decl* type, is_id* id, is_func_def_arg_list* args, is_stmt_list* body)
 {
-	return NULL;
+	is_func_def* node = (is_func_def*)malloc(sizeof(is_func_def));
+
+	node->type = type;
+	node->id = id;
+	node->args = args;
+	node->body = body;
+
+	return node;
 }
 
 is_func_def_arg* insert_func_def_arg(is_type_decl* type, is_id* id)
 {
-	return NULL;
+	is_func_def_arg* node = (is_func_def_arg*)malloc(sizeof(is_func_def_arg));
+
+	node->type = type;
+	node->id = id;
+
+	return node;
 }
 
 is_func_def_arg_list* insert_func_def_arg_list(is_func_def_arg* arg, is_func_def_arg_list* next)
@@ -420,9 +432,15 @@ is_if* insert_if(is_expr* cond, is_stmt* then_body, is_stmt* else_body)
 	return node;
 }
 
-is_incr_op* insert_incr_op(type_incr_op type, bool pre)
+is_incr_op* insert_incr_op(type_incr_op type, bool pre, is_var* var)
 {
-	return NULL;
+	is_incr_op* node = (is_incr_op*)malloc(sizeof(is_incr_op));
+
+	node->type = type;
+	node->pre = pre;
+	node->var = var;
+
+	return node;
 }
 
 is_loop_stmt* insert_loop_stmt_for(is_for* for_stmt)
