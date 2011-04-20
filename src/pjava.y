@@ -388,7 +388,6 @@ func_def
 	| type_decl ID func_def_args '{' stmt_list '}'					{ $$ = insert_func_def($1, $2, $3, $5); }
 	;
 
-/** FIX-ME: isto estava type_decl var; o ke permite void a(int (new int)[0]) o ke é errado :! correcto? **/
 func_def_arg
 	: type_decl ID													{ $$ = insert_func_def_arg($1, $2); }
 	;

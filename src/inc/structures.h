@@ -395,7 +395,7 @@ typedef struct _is_new_op
 
 typedef struct _is_return
 {
-	is_expr *expr; /* nullable */
+	is_expr *value; /* nullable */
 } is_return;
 
 typedef enum
