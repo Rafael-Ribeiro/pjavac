@@ -117,7 +117,7 @@ void show_binary_op_operation(is_binary_op* node, int tablevel)
 	if (node->type == t_binary_op_assign)
 	{
 		show_assign_op(node->data.assign);
-		return
+		return;
 	}
 
 	printf("(");
@@ -202,6 +202,9 @@ void show_binary_op_operation(is_binary_op* node, int tablevel)
 
 		case t_binary_op_ne3:
 			printf("!==");
+			break;
+
+		default: /* never happens, remove warning because of assign */
 			break;
 	}
 
@@ -306,7 +309,8 @@ void show_continue(is_continue* node, int tablevel)
 
 void show_dims(is_dims* node)
 {
-
+	show_dims_sized_list(node->sized);
+	show_dims_empty_list(node->empty);
 }
 
 void show_dims_empty_list(is_dims_empty_list list)
