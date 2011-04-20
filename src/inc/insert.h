@@ -25,7 +25,7 @@ is_dims* insert_dims(is_dims_sized_list* sized, is_dims_empty_list empty);
 /* this one is left recursive, can we swap it? if not attention to the constructors */
 is_dims_sized_list* insert_dims_sized_list(is_dims_sized_list* prev, is_dims_sized* dims);
 
-is_do_while* insert_do_while(is_stmt* stmt, is_expr* condition); 
+is_do_while* insert_do_while(is_stmt* stmt, is_expr* cond); 
 
 is_expr* insert_expr_var(is_var* var);
 is_expr* insert_expr_new_op(is_new_op* new_op);
@@ -86,7 +86,7 @@ is_stmt* insert_stmt_continue(is_continue* continue_stmt);
 is_stmt* insert_stmt_return(is_return* return_stmt);
 
 is_stmt_list* insert_stmt_list(is_stmt* stmt, is_stmt_list* next); 
-is_switch* insert_switch(is_expr* expr, is_switch_stmt_list* switch_stmt_list);
+is_switch* insert_switch(is_expr* expr, is_switch_stmt_list* list);
 
 is_switch_stmt* insert_switch_stmt_default(is_stmt_list* stmt_list);
 is_switch_stmt* insert_switch_stmt_case(is_constant* constant, is_stmt_list* stmt_list);

@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <stdbool.h>
 #include "inc/structures.h"
 
@@ -67,9 +68,13 @@ is_dims_sized_list* insert_dims_sized_list (is_dims_sized_list* prev, is_dims_si
 	return NULL;
 }
 
-is_do_while* insert_do_while (is_stmt* stmt, is_expr* condition)
+is_do_while *insert_do_while (is_stmt* body, is_expr* cond)
 {
-	return NULL;
+	is_do_while *do_while_node = (is_do_while*)malloc(sizeof(is_do_while));
+	do_while_node->body = body;
+	do_while_node->cond = cond;
+
+	return do_while_node;
 }
 
 is_expr* insert_expr_var(is_var* var)
@@ -117,9 +122,16 @@ is_expr_op* insert_expr_op_ternary(is_ternary_op* op)
 	return NULL;
 }
 
-is_for* insert_for(is_for_init* init, is_for_cond* cond, is_for_inc* inc, is_stmt* body)
+is_for* insert_for(is_for_init *init, is_for_cond *cond, is_for_inc *inc, is_stmt* body)
 {
-	return NULL;
+	is_for *for_node = (is_for*)malloc(sizeof(is_for));
+
+	for_node->init = init;
+	for_node->cond = cond;
+	for_node->inc = inc;
+	for_node->body = body;
+
+	return for_node;
 }
 
 is_for_expr* insert_for_expr_incr(is_incr_op* incr)
@@ -127,7 +139,7 @@ is_for_expr* insert_for_expr_incr(is_incr_op* incr)
 	return NULL;
 }
 
-is_for_expr* insert_for_expr_assign(is_assign_op* assing)
+is_for_expr* insert_for_expr_assign(is_assign_op* assign)
 {
 	return NULL;
 }
@@ -174,7 +186,12 @@ is_func_def_arg_list* insert_func_def_arg_list(is_func_def_arg* arg, is_func_def
 
 is_if* insert_if(is_expr* cond, is_stmt* then_body, is_stmt* else_body)
 {
-	return NULL;
+	is_if *if_node = (is_if*)malloc(sizeof(is_if));
+	if_node->cond = cond;
+	if_node->then_body = then_body;
+	if_node->else_body = else_body;
+
+	return if_node;
 }
 
 is_incr_op* insert_incr_op(type_incr_op type, bool pre)
@@ -277,9 +294,13 @@ is_stmt_list* insert_stmt_list(is_stmt* stmt, is_stmt_list* next)
 	return NULL;
 }
 
-is_switch* insert_switch(is_expr* expr, is_switch_stmt_list* switch_stmt_list)
+is_switch* insert_switch(is_expr* expr, is_switch_stmt_list* list)
 {
-	return NULL;
+	is_switch *switch_node = (is_switch*)malloc(sizeof(is_switch));
+	switch_node->expr = expr;
+	switch_node->list = list;
+
+	return switch_node;
 }
 
 is_switch_stmt* insert_switch_stmt_default(is_stmt_list* stmt_list)
@@ -379,6 +400,11 @@ is_var_initializer_list* insert_var_initializer_list(is_var_initializer_list* pr
 
 is_while* insert_while(is_expr* cond, is_stmt* body)
 {
-	return NULL;
+	is_while *while_node = (is_while*)malloc(sizeof(is_while));
+
+	while_node->cond = cond;
+	while_node->body = body;
+
+	return while_node;
 }
 

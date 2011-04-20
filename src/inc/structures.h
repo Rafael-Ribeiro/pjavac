@@ -183,7 +183,7 @@ typedef struct _is_dims_sized_list
 typedef struct _is_do_while
 {
 	struct _is_stmt* body;
-	struct _is_expr* condition;
+	struct _is_expr* cond;
 } is_do_while;
 
 typedef enum
@@ -235,7 +235,7 @@ typedef struct _is_expr_op
 typedef struct _is_for
 {
 	struct _is_for_init* init; /* nullable */
-	struct _is_for_cond* condition; /* nullable */
+	struct _is_for_cond* cond; /* nullable */
 	struct _is_for_inc* inc; /* nullable */
 	struct _is_stmt* body;
 } is_for;
@@ -280,7 +280,7 @@ typedef struct _is_for_init
 	} data;
 } is_for_init;
 
-typedef is_for_expr_list is_for_inc;
+typedef is_for_expr_list is_for_inc; /* FIXME As I said before, for_inc must be the same as for_init; rename the type_for_init enum to something more generic? */
 
 typedef enum
 {
@@ -329,7 +329,7 @@ typedef struct _is_id
 
 typedef struct _is_if
 {
-	struct _is_expr* condition;
+	struct _is_expr* cond;
 	struct _is_stmt* then_body;
 	struct _is_stmt* else_body; /* nullable */
 } is_if;
@@ -598,7 +598,7 @@ typedef is_var_defs is_var_stmt;
 
 typedef struct _is_while
 {
-	struct _is_expr* condition;
+	struct _is_expr* cond;
 	struct _is_stmt* body;
 } is_while;
 
