@@ -51,7 +51,8 @@ is_expr_op* insert_expr_op_ternary(is_ternary_op* op);
 is_for* insert_for(is_for_init* init, is_for_cond* cond, is_for_inc* inc, is_stmt* body);
 
 is_for_expr* insert_for_expr_incr(is_incr_op* incr); 
-is_for_expr* insert_for_expr_assign(is_assign_op* assing);
+is_for_expr* insert_for_expr_assign(is_assign_op* assign);
+is_for_expr* insert_for_expr_func_call(is_func_call* func_call);
 
 is_for_expr_list* insert_for_expr_list(is_for_expr* expr, is_for_expr_list* next); 
 

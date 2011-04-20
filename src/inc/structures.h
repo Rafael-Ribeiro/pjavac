@@ -53,7 +53,7 @@ struct _is_while;
 typedef int is_dims_empty_list;
 typedef struct _is_expr is_dims_sized;
 typedef struct _is_expr is_for_cond;
-typedef struct _is_for_expr_list is_for_inc; 
+typedef struct _is_for_expr_list is_for_inc;
 typedef struct _is_var_defs is_var_stmt;
 typedef struct _is_class_def is_application;
 
@@ -267,6 +267,7 @@ typedef struct _is_for_expr
 	{
 		struct _is_incr_op* incr;
 		struct _is_assing_op* assign;
+		struct _is_func_call* func_call;
 	} data;
 } is_for_expr;
 

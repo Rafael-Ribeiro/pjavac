@@ -360,11 +360,12 @@ for_cond
 for_expr
 	: incr_op														{ $$ = insert_for_expr_incr($1); }
 	| assign_op														{ $$ = insert_for_expr_assign($1); }
+	| func_call														{ $$ = insert_for_expr_func_call($1); }
 	;
 
 for_expr_list
 	: for_expr													 	{ $$ = insert_for_expr_list($1, NULL); }
-	| for_expr for_expr_list										{ $$ = insert_for_expr_list($1, $2); }
+	| for_expr ',' for_expr_list									{ $$ = insert_for_expr_list($1, $3); }
 	;
 
 for_init
