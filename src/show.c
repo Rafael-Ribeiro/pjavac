@@ -53,6 +53,8 @@ void show_application(is_application* node, int tablevel)
 
 void show_array_decl(is_array_decl* node)
 {
+	int i;
+
 	show_type_object(node->type);
 	for (i = 0; i < node->dims; i++)
 		printf("[]");
