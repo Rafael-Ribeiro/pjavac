@@ -120,8 +120,8 @@ typedef struct _is_binary_op
 	{
 		struct
 		{
-			struct _expr* left;
-			struct _expr* right;
+			struct _is_expr* left;
+			struct _is_expr* right;
 		} operands;
 		struct _is_assign_op* assign;
 	} data;

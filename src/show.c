@@ -7,7 +7,8 @@
 void tab(int tablevel)
 {
 	int i;
-	for (i = 0; i < tablevel; i++) printf("\t");
+	for (i = 0; i < tablevel; i++)
+		printf("\t");
 }
 
 /* LEX */
@@ -53,21 +54,233 @@ void show_application(is_application* node, int tablevel)
 
 void show_array_decl(is_array_decl* node)
 {
-	int i;
-
 	show_type_object(node->type);
-	for (i = 0; i < node->dims; i++)
-		printf("[]");
+	show_dims_empty_list(node->dims);
 }
 
-void show_assign_op(is_assign_op* node, int tablevel)
+void show_assign_op(is_assign_op* node)
 {
+	show_var(node->var);
+	
+	switch (node->type)
+	{
+		case t_assign_op_eq:
+			printf("=");
+			break;
 
+		case t_assign_op_shift_r_eq:
+			printf(">>=");
+			break;
+
+		case t_assign_op_shift_l_eq:
+			printf("<<=");
+			break;
+
+		case t_assign_op_add_eq:
+			printf("+=");
+			break;
+
+		case t_assign_op_sub_eq:
+			printf("-=");
+			break;
+
+		case t_assign_op_mul_eq:
+			printf("*=");
+			break;
+
+		case t_assign_op_div_eq:
+			printf("/=");
+			break;
+
+		case t_assign_op_mod_eq:
+			printf("%%=");
+			break;
+
+		case t_assign_op_and_eq:
+			printf("&=");
+			break;
+
+		case t_assign_op_xor_eq:
+			printf("^=");
+			break;
+
+		case t_assign_op_or_eq:
+			printf("|=");
+			break;
+	}
+
+	show_expr(node->expr);
 }
 
 void show_binary_op_operation(is_binary_op* node, int tablevel)
 {
+	switch (node->type)
+	{
+		case t_binary_op_add:
+			printf("(");
+			show_expr(node->data.operands.left);
+			printf("+");
+			show_expr(node->data.operands.right);
+			printf(")");
+			break;
 
+		case t_binary_op_sub:
+			printf("(");
+			show_expr(node->data.operands.left);
+			printf("+");
+			show_expr(node->data.operands.right);
+			printf(")");
+			break;
+
+		case t_binary_op_mul:
+			printf("(");
+			show_expr(node->data.operands.left);
+			printf("+");
+			show_expr(node->data.operands.right);
+			printf(")");
+			break;
+
+		case t_binary_op_div:
+			printf("(");
+			show_expr(node->data.operands.left);
+			printf("+");
+			show_expr(node->data.operands.right);
+			printf(")");
+			break;
+
+		case t_binary_op_mod:
+			printf("(");
+			show_expr(node->data.operands.left);
+			printf("+");
+			show_expr(node->data.operands.right);
+			printf(")");
+			break;
+
+		case t_binary_op_and:
+			printf("(");
+			show_expr(node->data.operands.left);
+			printf("+");
+			show_expr(node->data.operands.right);
+			printf(")");
+			break;
+
+		case t_binary_op_or:
+			printf("(");
+			show_expr(node->data.operands.left);
+			printf("+");
+			show_expr(node->data.operands.right);
+			printf(")");
+			break;
+
+		case t_binary_op_xor:
+			printf("(");
+			show_expr(node->data.operands.left);
+			printf("+");
+			show_expr(node->data.operands.right);
+			printf(")");
+			break;
+
+		case t_binary_op_shift_r:
+			printf("(");
+			show_expr(node->data.operands.left);
+			printf("+");
+			show_expr(node->data.operands.right);
+			printf(")");
+			break;
+
+		case t_binary_op_shift_l:
+			printf("(");
+			show_expr(node->data.operands.left);
+			printf("+");
+			show_expr(node->data.operands.right);
+			printf(")");
+			break;
+
+		case t_binary_op_logic_and:
+			printf("(");
+			show_expr(node->data.operands.left);
+			printf("+");
+			show_expr(node->data.operands.right);
+			printf(")");
+			break;
+
+		case t_binary_op_logic_or:
+			printf("(");
+			show_expr(node->data.operands.left);
+			printf("+");
+			show_expr(node->data.operands.right);
+			printf(")");
+			break;
+
+		case t_binary_op_eq:
+			printf("(");
+			show_expr(node->data.operands.left);
+			printf("+");
+			show_expr(node->data.operands.right);
+			printf(")");
+			break;
+
+		case t_binary_op_ne:
+			printf("(");
+			show_expr(node->data.operands.left);
+			printf("+");
+			show_expr(node->data.operands.right);
+			printf(")");
+			break;
+
+		case t_binary_op_l:
+			printf("(");
+			show_expr(node->data.operands.left);
+			printf("+");
+			show_expr(node->data.operands.right);
+			printf(")");
+			break;
+
+		case t_binary_op_g:
+			printf("(");
+			show_expr(node->data.operands.left);
+			printf("+");
+			show_expr(node->data.operands.right);
+			printf(")");
+			break;
+
+		case t_binary_op_le:
+			printf("(");
+			show_expr(node->data.operands.left);
+			printf("+");
+			show_expr(node->data.operands.right);
+			printf(")");
+			break;
+
+		case t_binary_op_ge:
+			printf("(");
+			show_expr(node->data.operands.left);
+			printf("+");
+			show_expr(node->data.operands.right);
+			printf(")");
+			break;
+
+		case t_binary_op_eq3:
+			printf("(");
+			show_expr(node->data.operands.left);
+			printf("+");
+			show_expr(node->data.operands.right);
+			printf(")");
+			break;
+
+		case t_binary_op_ne3:
+			printf("(");
+			show_expr(node->data.operands.left);
+			printf("+");
+			show_expr(node->data.operands.right);
+			printf(")");
+			break;
+
+		case t_binary_op_assign:
+			show_assign_op(node->data.assign);
+			break;
+
+	}
 }
 
 void show_break(is_break* node, int tablevel)
@@ -165,12 +378,26 @@ void show_continue(is_continue* node, int tablevel)
 	}
 }
 
-void show_dims(is_dims* node, int tablevel)
+void show_dims(is_dims* node)
 {
 
 }
 
-void show_dims_sized_list(is_dims_sized_list* node, int tablevel)
+void show_dims_empty_list(is_dims_empty_list list)
+{
+	int i;
+	for (i = 0; i < list; i++)
+		printf("[]");
+}
+
+void show_dims_sized(is_dims_sized* node)
+{
+	printf("[");
+	show_expr(node);
+	printf("]");
+}
+
+void show_dims_sized_list(is_dims_sized_list* node)
 {
 
 }
@@ -215,7 +442,7 @@ void show_for_init(is_for_init* node, int tablevel)
 
 }
 
-void show_func_call(is_func_call* node, int tablevel)
+void show_func_call(is_func_call* node)
 {
 
 }
@@ -264,7 +491,7 @@ void show_member_stmt(is_member_stmt* node, int tablevel)
 	}
 }
 
-void show_new_op(is_new_op* node, int tablevel)
+void show_new_op(is_new_op* node)
 {
 
 }
@@ -377,9 +604,30 @@ void show_unary_op(is_unary_op* node, int tablevel)
 
 }
 
-void show_var_id(is_var* node, int tablevel)
+void show_var(is_var* node)
 {
+	switch (node->type)
+	{
+		case t_var_id:
+			show_id(node->data.id);
+			break;
 
+		case t_var_new_op:
+			printf("(");			
+			show_new_op(node->data.new_op);
+			printf(")");
+			break;
+
+		case t_var_array:
+			show_var(node->data.array.var);
+			show_dims_sized(node->data.array.dims);
+			break;
+
+		case t_var_func_call:
+			show_func_call(node->data.func_call.call);
+			show_dims_sized(node->data.func_call.dims);
+			break;
+	}
 }
 
 void show_var_def(is_var_def* node, int tablevel)
@@ -389,7 +637,7 @@ void show_var_def(is_var_def* node, int tablevel)
 
 void show_var_def_list(is_var_def_list* node, int tablevel)
 {
-
+	
 }
 
 void show_var_defs(is_var_defs* node, int tablevel)
