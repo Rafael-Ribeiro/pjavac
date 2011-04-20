@@ -160,7 +160,7 @@ typedef struct _is_class_stmt
 {
 	is_class_stmt_privacy* privacy; /* nullable */
 	struct _is_class_stmt_scope* scope;	/* nullable */
-	struct _is_member_stmt* member;
+	struct _is_member_stmt* stmt;
 } is_class_stmt;
 
 typedef enum {t_constant_bool, t_constant_long, t_constant_double, t_constant_char, t_constant_string} type_constant;

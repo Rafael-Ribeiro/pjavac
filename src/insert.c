@@ -115,7 +115,13 @@ is_class_def* insert_class_def (is_id* id, is_class_stmt_list* body)
 
 is_class_stmt* insert_class_stmt (is_class_stmt_privacy* privacy, is_class_stmt_scope* scope, is_member_stmt* stmt)
 {
-	return NULL;
+	is_class_stmt *node = (is_class_stmt*)malloc(sizeof(is_class_stmt));
+
+	node->privacy = privacy;
+	node->scope = scope;
+	node->stmt = stmt;
+
+	return node;
 }
 
 is_class_stmt_privacy* insert_class_stmt_privacy(is_class_stmt_privacy type)
