@@ -62,7 +62,7 @@ typedef struct _is_class_def is_application;
 typedef struct _array_decl
 {
 	struct _is_type_object* type;
-	is_dims_empty_list* dims;
+	is_dims_empty_list dims;
 } is_array_decl;
 
 typedef enum
