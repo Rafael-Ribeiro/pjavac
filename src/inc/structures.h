@@ -126,7 +126,7 @@ typedef struct _is_break
 
 typedef struct _is_class_stmt_list
 {
-	struct _is_class_decl* node;
+	struct _is_class_stmt* node;
 	struct _is_class_stmt_list* next;
 } is_class_stmt_list;
 
