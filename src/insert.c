@@ -56,7 +56,11 @@ is_constant* insert_constant_string(char* value)
 /* YACC */
 is_array_decl* insert_array_decl (is_type_object* type, is_dims_empty_list dims)
 {
-	return NULL;
+	is_array_decl *node = (is_array_decl*)malloc(sizeof(is_array_decl));
+	node->type = type;
+	node->dims = dims;
+
+	return node;
 }
 
 is_assign_op* insert_assign_op (is_var* var, type_assign_op type, is_expr* expr)
