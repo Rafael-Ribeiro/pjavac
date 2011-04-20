@@ -565,7 +565,7 @@ int main()
 
 	if (main_application)
 	{
-		printf("Valid sintax!\n");
+		printf("Valid syntax!\n");
 		show_application(main_application, 0);
 		free_application(main_application);
 	}

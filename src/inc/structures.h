@@ -590,7 +590,7 @@ typedef struct _is_var_def_list
 
 typedef struct _is_var_defs
 {
-	is_type_decl type;
+	struct _is_type_decl* type;
 	struct _is_var_def_list* list;
 } is_var_defs;
 
