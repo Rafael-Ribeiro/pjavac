@@ -59,7 +59,7 @@ typedef struct _is_class_def is_application;
 
 /***********************************************************************/
 
-typedef struct _array_decl
+typedef struct _is_array_decl
 {
 	struct _is_type_object* type;
 	is_dims_empty_list dims;
@@ -460,7 +460,15 @@ typedef enum
 typedef struct _is_switch_stmt
 {
 	type_switch_stmt type;
-	struct _is_stmt_list *list;
+	union
+	{
+		struct _is_stmt_list *default_stmt_list;
+		struct
+		{
+			struct _is_stmt_list *list;
+			struct _is_constant *constant;
+		} case_stmt;
+	} data;
 } is_switch_stmt;
 
 typedef struct _is_switch_stmt_list
@@ -586,7 +594,7 @@ typedef struct _is_var_defs
 	struct _is_var_def_list* list;
 } is_var_defs;
 
-typedef enum {t_val_arr, t_expr} type_var_initializer;
+typedef enum {t_var_initializer_val_arr, t_var_initializer_expr} type_var_initializer;
 typedef struct _is_var_initializer
 {
 	type_var_initializer type;

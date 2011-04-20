@@ -119,7 +119,7 @@ is_unary_op* insert_unary_op_operation(type_unary_op_operator op, is_expr* expr)
 is_var* insert_var_id(is_id* id);
 is_var* insert_var_new_op(is_new_op* new_op);
 is_var* insert_var_var_subscript(is_var* var, is_dims_sized* position);
-is_var* insert_var_func_subscript(is_func_call* func_call, is_dims_sized* positon);
+is_var* insert_var_func_subscript(is_func_call* func_call, is_dims_sized* position);
 
 is_var_def* insert_var_def(is_id* id, is_dims_empty_list dims, is_var_initializer* init);
 

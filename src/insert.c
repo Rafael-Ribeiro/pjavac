@@ -4,6 +4,7 @@
 #include <string.h>
 
 #include "inc/structures.h"
+#include "inc/free.h"
 
 /* LEX */
 char* __strcpy(const char* data)
@@ -398,6 +399,7 @@ is_stmt_list* insert_stmt_list(is_stmt* stmt, is_stmt_list* next)
 is_switch* insert_switch(is_expr* expr, is_switch_stmt_list* list)
 {
 	is_switch *node = (is_switch*)malloc(sizeof(is_switch));
+
 	node->expr = expr;
 	node->list = list;
 
@@ -406,97 +408,202 @@ is_switch* insert_switch(is_expr* expr, is_switch_stmt_list* list)
 
 is_switch_stmt* insert_switch_stmt_default(is_stmt_list* stmt_list)
 {
-	return NULL;
+	is_switch_stmt* node = (is_switch_stmt*)malloc(sizeof(is_switch_stmt*));
+	
+	node->type = t_switch_stmt_default;
+	node->data.default_stmt_list = stmt_list;
+
+	return node;
 }
 
 is_switch_stmt* insert_switch_stmt_case(is_constant* constant, is_stmt_list* stmt_list)
 {
-	return NULL;
+	is_switch_stmt* node = (is_switch_stmt*)malloc(sizeof(is_switch_stmt*));
+	
+	node->type = t_switch_stmt_case;
+	node->data.case_stmt.constant = constant;
+	node->data.case_stmt.list = stmt_list;
+
+	return node;
 }
 
 is_switch_stmt_list* insert_switch_stmt_list(is_switch_stmt* stmt, is_switch_stmt_list* next)
 {
-	return NULL;
+	is_switch_stmt_list* node = (is_switch_stmt_list*)malloc(sizeof(is_switch_stmt_list*));
+	
+	node->node = stmt;
+	node->next = next;
+
+	return node;
 }
 
 is_ternary_op* insert_ternary_op(is_expr* cond, is_expr* then_expr, is_expr* else_expr)
 {
-	return NULL;
+	is_ternary_op* node = (is_ternary_op*)malloc(sizeof(is_ternary_op));
+
+	node->if_expr = cond;
+	node->then_expr = then_expr;
+	node->else_expr = else_expr;
+
+	return node;
 }
 
 is_type_decl* insert_type_decl_object(is_type_object* object)
 {
-	return NULL;
+	is_type_decl* node = (is_type_decl*)malloc(sizeof(is_type_decl));
+
+	node->type = t_type_decl_type_object;
+	node->data.type_object = object;
+
+	return node;
 }
 
 is_type_decl* insert_type_decl_array(is_array_decl* array)
 {
-	return NULL;
+	is_type_decl* node = (is_type_decl*)malloc(sizeof(is_type_decl));
+
+	node->type = t_type_decl_array_decl;
+	node->data.array = array;
+
+	return node;
 }
 
 is_type_object* insert_type_object(is_type_native type)
 {
-	return NULL;
+	is_type_object* node = (is_type_object*)malloc(sizeof(is_type_object));
+
+	node->type = type;
+
+	return node;
 }
 
 is_unary_op* insert_unary_op_incr(is_incr_op* incr_op)
 {
-	return NULL;
+	is_unary_op* node = (is_unary_op*)malloc(sizeof(is_unary_op));
+
+	node->type = t_unary_op_incr_op;
+	node->data.incr = incr_op;
+	
+	return node;
 }
 
 is_unary_op* insert_unary_op_operation(type_unary_op_operator op, is_expr* expr)
 {
-	return NULL;
+	is_unary_op* node = (is_unary_op*)malloc(sizeof(is_unary_op));
+
+	node->type = t_unary_op_operation;
+	node->data.operation.op = op;
+	node->data.operation.expr = expr;
+ 
+	return node;
 }
 
 is_var* insert_var_id(is_id* id)
 {
-	return NULL;
+	is_var* node = (is_var*)malloc(sizeof(is_var_def));
+
+	node->type = t_var_id;
+	node->data.id = id;
+
+	return node;
 }
 
 is_var* insert_var_new_op(is_new_op* new_op)
 {
-	return NULL;
+	is_var* node = (is_var*)malloc(sizeof(is_var_def));
+
+	node->type = t_var_new_op;
+	node->data.new_op = new_op;
+
+	return node;
 }
 
 is_var* insert_var_var_subscript(is_var* var, is_dims_sized* position)
 {
-	return NULL;
+	is_var* node = (is_var*)malloc(sizeof(is_var_def));
+
+	node->type = t_var_array;
+	node->data.array.var = var;
+	node->data.array.dims = position;
+
+	return node;
 }
 
-is_var* insert_var_func_subscript(is_func_call* func_call, is_dims_sized* positon)
+is_var* insert_var_func_subscript(is_func_call* func_call, is_dims_sized* position)
 {
-	return NULL;
+	is_var* node = (is_var*)malloc(sizeof(is_var_def));
+
+	node->type = t_var_func_call;
+	node->data.func_call.call = func_call;
+	node->data.func_call.dims = position;
+
+	return node;
 }
 
 is_var_def* insert_var_def(is_id* id, is_dims_empty_list dims, is_var_initializer* init)
 {
-	return NULL;
+	is_var_def* node = (is_var_def*)malloc(sizeof(is_var_def));
+
+	node->id = id;
+	node->dims = dims;
+	node->var_init = init;
+
+	return node;
 }
 
 is_var_def_list* insert_var_def_list(is_var_def* var_def, is_var_def_list* next)
 {
-	return NULL;
+	is_var_def_list* node = (is_var_def_list*)malloc(sizeof(is_var_def_list));
+	
+	node->node = var_def;
+	node->next = next;
+
+	return node;
 }
 
 is_var_defs* insert_var_defs(is_type_decl* type, is_var_def_list* list)
 {
-	return NULL;
+	is_var_defs* node = (is_var_defs*)malloc(sizeof(is_var_defs));
+	
+	node->type = *type;
+	free_type_decl(type);
+
+	node->list = list;
+
+	return node;
 }
 
 is_var_initializer* insert_var_initializer_array(is_var_initializer_list* list)
 {
-	return NULL;
+	is_var_initializer* node = (is_var_initializer*)malloc(sizeof(is_var_initializer));
+
+	node->type = t_var_initializer_val_arr;
+	node->data.array = list;
+
+	return node;
 }
 
 is_var_initializer* insert_var_initializer_expr(is_expr* expr)
 {
-	return NULL;
+	is_var_initializer* node = (is_var_initializer*)malloc(sizeof(is_var_initializer));
+
+	node->type = t_var_initializer_expr;
+	node->data.expr = expr;
+
+	return node;
 }
 
 is_var_initializer_list* insert_var_initializer_list(is_var_initializer_list* prev, is_var_initializer* var_init)
 {
-	return NULL;
+	is_var_initializer_list* node = (is_var_initializer_list*)malloc(sizeof(is_var_initializer_list));
+
+	node->node = var_init;
+	node->next = NULL;
+
+	if (prev)
+		prev->next = node;
+
+	return node;
 }
 
 is_while* insert_while(is_expr* cond, is_stmt* body)
