@@ -88,14 +88,25 @@ is_assign_op* insert_assign_op (is_var* var, type_assign_op type, is_expr* expr)
 	return node;
 }
 
-is_binary_op* insert_binary_op_operation (is_expr* left, type_binary_op operation, is_expr* right)
+is_binary_op* insert_binary_op_operation (is_expr* left, type_binary_op type, is_expr* right)
 {
-	return NULL;
+	is_binary_op* node = (is_binary_op*)malloc(sizeof(is_binary_op*));
+
+	node->type = type;
+	node->data.operands.left = left;
+	node->data.operands.right = right;
+
+	return node;
 }
 
 is_binary_op* insert_binary_op_assign (is_assign_op* assign)
 {
-	return NULL;
+	is_binary_op* node = (is_binary_op*)malloc(sizeof(is_binary_op*));
+
+	node->type = t_binary_op_assign;
+	node->data.assign = assign;
+
+	return node;
 }
 
 is_break* insert_break (is_id* label)
