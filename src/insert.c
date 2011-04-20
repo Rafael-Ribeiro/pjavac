@@ -6,10 +6,22 @@
 #include "inc/structures.h"
 
 /* LEX */
+char* strcopia(const char* data)
+{
+	char* dest;
+	int len;
+
+	len = strlen(data);
+	dest = (char*)malloc(sizeof(char)*len+1);
+	strncpy(dest, data, len);
+
+	return dest;
+}
+
 is_id* insert_id(char* data)
 {
 	is_id* node = (is_id*)malloc(sizeof(is_id));
-	node->name = strdup(data);
+	node->name = strcopia(data);
 
 	return node;
 }
@@ -41,7 +53,7 @@ is_constant* insert_constant_double(long double value)
 is_constant* insert_constant_char(char* value)
 {
 	is_constant* node = (is_constant*)malloc(sizeof(is_constant));
-	node->value.string_val = strdup(value);
+	node->value.string_val = strcopia(value);
 
 	return node;
 }
@@ -49,7 +61,7 @@ is_constant* insert_constant_char(char* value)
 is_constant* insert_constant_string(char* value)
 {
 	is_constant* node = (is_constant*)malloc(sizeof(is_constant));
-	node->value.string_val = strdup(value);
+	node->value.string_val = strcopia(value);
 
 	return node;
 }
