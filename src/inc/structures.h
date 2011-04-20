@@ -211,13 +211,13 @@ typedef enum
 
 typedef struct _is_expr
 {
-	type_expr expr;
+	type_expr type;
 	union
 	{
 		struct _is_var* var;
 		struct _is_new_op* new_op;
 		struct _is_constant* constant;
-		struct _is_func_call* func;
+		struct _is_func_call* func_call;
 		struct _is_expr_op* operation;
 	} data;
 } is_expr;
