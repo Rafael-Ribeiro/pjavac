@@ -57,6 +57,7 @@ typedef struct _is_for_expr_list is_for_inc;
 typedef struct _is_var_defs is_var_stmt;
 typedef struct _is_class_def is_application;
 typedef struct _is_expr_list is_func_call_arg_list;
+typedef struct _is_func_def_arg_list is_func_def_args;
 
 /***********************************************************************/
 
@@ -312,7 +313,7 @@ typedef struct _is_func_def
 {
 	struct _is_type_decl* type;
 	struct _is_id* id;
-	struct _is_func_def_args* args;
+	is_func_def_args* args;
 	struct _is_stmt_list* body;
 } is_func_def;
 
@@ -327,8 +328,6 @@ typedef struct _is_func_def_arg_list
 	struct _is_func_def_arg* node;
 	struct _is_func_def_arg_list* next;
 } is_func_def_arg_list;
-
-typedef is_func_def_arg_list is_func_def_args;
 
 typedef struct _is_id
 {
