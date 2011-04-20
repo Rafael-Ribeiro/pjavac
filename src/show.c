@@ -61,7 +61,7 @@ void show_array_decl(is_array_decl* node)
 void show_assign_op(is_assign_op* node)
 {
 	show_var(node->var);
-	
+	printf(" ");
 	switch (node->type)
 	{
 		case t_assign_op_eq:
@@ -108,11 +108,11 @@ void show_assign_op(is_assign_op* node)
 			printf("|=");
 			break;
 	}
-
+	printf(" ");
 	show_expr(node->expr);
 }
 
-void show_binary_op_operation(is_binary_op* node, int tablevel)
+void show_binary_op(is_binary_op* node)
 {
 	if (node->type == t_binary_op_assign)
 	{
@@ -122,6 +122,7 @@ void show_binary_op_operation(is_binary_op* node, int tablevel)
 
 	printf("(");
 	show_expr(node->data.operands.left);
+	printf(" ");
 	switch (node->type)
 	{
 		case t_binary_op_add:
@@ -207,7 +208,7 @@ void show_binary_op_operation(is_binary_op* node, int tablevel)
 		default: /* never happens, remove warning because of assign */
 			break;
 	}
-
+	printf(" ");
 	show_expr(node->data.operands.right);
 	printf(")");
 }
@@ -369,34 +370,103 @@ void show_expr(is_expr* node)
 	}
 }
 
-void show_expr_list(is_expr_list* node, int tablevel)
+void show_expr_list(is_expr_list* node)
 {
-
+	if (node)
+	{
+		show_expr(node->node);
+		if (node->next)
+		{
+			printf(", ");
+			show_expr_list(node->next);
+		}
+	}
 }
 
 void show_expr_op(is_expr_op* node)
 {
+	switch(node->type)
+	{
+		case t_expr_op_unary:
+			show_unary_op(node->data.unary);
+			break;
 
+		case t_expr_op_binary:
+			show_binary_op(node->data.binary);
+			break;
+
+		case t_expr_op_ternary:
+			show_ternary_op(node->data.ternary);
+			break;
+	}
 }
 
 void show_for(is_for* node, int tablevel)
 {
-
+	printf("for (");
+	show_for_init(node->init);
+	printf("; ");
+	show_for_cond(node->cond);
+	printf("; ");
+	show_for_inc(node->inc);
+	printf(")\n");
+	
+	show_stmt(node->body, tablevel+1);
 }
 
-void show_for_expr(is_for_expr* node, int tablevel)
+void show_for_cond(is_for_cond* node)
 {
+	show_expr(node);
+}
 
+void show_for_expr(is_for_expr* node)
+{
+	switch (node->type)
+	{
+		case t_for_expr_incr:
+			show_incr_op(node->data.incr);
+			break;
+
+		case t_for_expr_assign:
+			show_assign_op(node->data.assign);
+			break;
+
+		case t_for_expr_func_call:
+			show_func_call(node->data.func_call);
+			break;
+	}
 }
  
-void show_for_expr_list(is_for_expr_list* node, int tablevel)
+void show_for_expr_list(is_for_expr_list* node)
 {
-
+	if (node)
+	{
+		show_for_expr(node->node);
+		if (node->next)
+		{
+			printf(", ");
+			show_for_expr_list(node->next);
+		}
+	}
 }
- 
-void show_for_init(is_for_init* node, int tablevel)
-{
 
+void show_for_inc(is_for_inc* node)
+{
+	show_for_expr_list(node);
+}
+
+void show_for_init(is_for_init* node)
+{
+	switch (node->type)
+	{
+		case t_for_init_var_defs:
+			show_var_defs(node->data.vars);
+			break;
+
+		case t_for_init_for_expr_list:
+			show_for_expr_list(node->data.expr_list);
+			break;
+	}
 }
 
 void show_func_call(is_func_call* node)
@@ -424,7 +494,7 @@ void show_if(is_if* node, int tablevel)
 
 }
 
-void show_incr_op(is_incr_op* node, int tablevel)
+void show_incr_op(is_incr_op* node)
 {
 
 }
@@ -491,7 +561,7 @@ void show_switch_stmt_list(is_switch_stmt_list* node, int tablevel)
 
 }
 
-void show_ternary_op(is_ternary_op* node, int tablevel)
+void show_ternary_op(is_ternary_op* node)
 {
 
 }
@@ -557,7 +627,7 @@ void show_type_object(is_type_object* node)
 	show_type_native(node->type);
 }
 
-void show_unary_op(is_unary_op* node, int tablevel)
+void show_unary_op(is_unary_op* node)
 {
 
 }
@@ -588,20 +658,20 @@ void show_var(is_var* node)
 	}
 }
 
-void show_var_def(is_var_def* node, int tablevel)
+void show_var_def(is_var_def* node)
 {
 
 }
 
-void show_var_def_list(is_var_def_list* node, int tablevel)
+void show_var_def_list(is_var_def_list* node)
 {
 	
 }
 
-void show_var_defs(is_var_defs* node, int tablevel)
+void show_var_defs(is_var_defs* node)
 {
 	show_type_decl(node->type);
-	show_var_def_list(node->list, tablevel);
+	show_var_def_list(node->list);
 }
 
 void show_var_initializer(is_var_initializer* node, int tablevel)
@@ -616,7 +686,7 @@ void show_var_initializer_list(is_var_initializer_list* node, int tablevel)
 
 void show_var_stmt(is_var_stmt* node, int tablevel)
 {
-	show_var_defs(node, tablevel);
+	show_var_defs(node);
 }
 
 void show_while(is_while* node, int tablevel)
