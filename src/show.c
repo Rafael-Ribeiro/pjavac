@@ -471,7 +471,18 @@ void show_for_init(is_for_init* node)
 
 void show_func_call(is_func_call* node)
 {
+	switch (node->type)
+	{
+		case t_func_call_id:
+			show_id(node->id);
+			break;
 
+		case t_func_call_sysout:
+			printf("System.out.println");
+			break;
+	}
+
+	show_func_call_arg_list(node->args);
 }
 
 void show_func_def(is_func_def* node, int tablevel)
