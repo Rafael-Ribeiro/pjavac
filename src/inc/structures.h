@@ -257,7 +257,8 @@ typedef struct _is_for
 typedef enum
 {
 	t_for_expr_incr,
-	t_for_expr_assign
+	t_for_expr_assign,
+	t_for_expr_func_call
 } type_for_expr;
 
 typedef struct _is_for_expr
@@ -266,7 +267,7 @@ typedef struct _is_for_expr
 	union
 	{
 		struct _is_incr_op* incr;
-		struct _is_assing_op* assign;
+		struct _is_assign_op* assign;
 		struct _is_func_call* func_call;
 	} data;
 } is_for_expr;
@@ -328,7 +329,7 @@ typedef struct _is_func_def_arg
 typedef struct _is_func_def_arg_list
 {
 	struct _is_func_def_arg* node;
-	struct is_func_def_arg_list* next;
+	struct _is_func_def_arg_list* next;
 } is_func_def_arg_list;
 
 typedef is_func_def_arg_list is_func_def_args;
@@ -441,7 +442,7 @@ typedef struct _is_stmt
 /* was missing */
 typedef struct _is_stmt_list
 {
-	struct _is_stmt* stmt;
+	struct _is_stmt* node;
 	struct _is_stmt_list* next;
 } is_stmt_list;
 

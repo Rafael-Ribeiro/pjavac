@@ -79,17 +79,34 @@ is_array_decl* insert_array_decl (is_type_object* type, is_dims_empty_list dims)
 
 is_assign_op* insert_assign_op (is_var* var, type_assign_op type, is_expr* expr)
 {
-	return NULL;
+	is_assign_op *node = (is_assign_op*)malloc(sizeof(is_assign_op));
+
+	node->var = var;
+	node->type = type;
+	node->expr = expr;
+
+	return node;
 }
 
-is_binary_op* insert_binary_op_operation (is_expr* left, type_binary_op operation, is_expr* right)
+is_binary_op* insert_binary_op_operation (is_expr* left, type_binary_op type, is_expr* right)
 {
-	return NULL;
+	is_binary_op* node = (is_binary_op*)malloc(sizeof(is_binary_op*));
+
+	node->type = type;
+	node->data.operands.left = left;
+	node->data.operands.right = right;
+
+	return node;
 }
 
 is_binary_op* insert_binary_op_assign (is_assign_op* assign)
 {
-	return NULL;
+	is_binary_op* node = (is_binary_op*)malloc(sizeof(is_binary_op*));
+
+	node->type = t_binary_op_assign;
+	node->data.assign = assign;
+
+	return node;
 }
 
 is_break* insert_break (is_id* label)
@@ -102,7 +119,12 @@ is_break* insert_break (is_id* label)
 
 is_class_stmt_list* insert_class_stmt_list (is_class_stmt* stmt, is_class_stmt_list* next)
 {
-	return NULL;
+	is_class_stmt_list* node = (is_class_stmt_list*)malloc(sizeof(is_class_stmt_list));
+	
+	node->node = stmt;
+	node->next = next;
+
+	return node;
 }
 
 is_class_def* insert_class_def (is_id* id, is_class_stmt_list* body)
@@ -159,7 +181,15 @@ is_dims* insert_dims (is_dims_sized_list* sized, is_dims_empty_list empty)
 /* this one is left recursive, can we swap it? if not attention to the constructors */
 is_dims_sized_list* insert_dims_sized_list (is_dims_sized_list* prev, is_dims_sized* dims)
 {
-	return NULL;
+	is_dims_sized_list* node = (is_dims_sized_list*)malloc(sizeof(is_dims_sized_list));
+
+	node->node = dims;
+	node->next = NULL;
+
+	if (prev)
+		prev->next = node;
+
+	return node;
 }
 
 is_do_while *insert_do_while (is_stmt* body, is_expr* cond)
@@ -198,7 +228,12 @@ is_expr* insert_expr_expr_op(is_expr_op* expr_op)
 
 is_expr_list* insert_expr_list (is_expr* expr, is_expr_list* next)
 {
-	return NULL;
+	is_expr_list* node = (is_expr_list*)malloc(sizeof(is_expr_list));
+	
+	node->node = expr;
+	node->next = next;
+
+	return node;
 }
 
 is_expr_op* insert_expr_op_unary (is_unary_op* op)
@@ -230,22 +265,42 @@ is_for* insert_for(is_for_init *init, is_for_cond *cond, is_for_inc *inc, is_stm
 
 is_for_expr* insert_for_expr_incr(is_incr_op* incr)
 {
-	return NULL;
+	is_for_expr* node = (is_for_expr*)malloc(sizeof(is_for_expr));
+
+	node->type = t_for_expr_incr;
+	node->data.incr = incr;
+
+	return node;
 }
 
 is_for_expr* insert_for_expr_assign(is_assign_op* assign)
 {
-	return NULL;
+	is_for_expr* node = (is_for_expr*)malloc(sizeof(is_for_expr));
+
+	node->type = t_for_expr_assign;
+	node->data.assign = assign;
+
+	return node;
 }
 
 is_for_expr* insert_for_expr_func_call(is_func_call* func_call)
 {
-	return NULL;
+	is_for_expr* node = (is_for_expr*)malloc(sizeof(is_for_expr));
+
+	node->type = t_for_expr_func_call;
+	node->data.func_call = func_call;
+
+	return node;
 }
 
 is_for_expr_list* insert_for_expr_list(is_for_expr* expr, is_for_expr_list* next)
 {
-	return NULL;
+	is_for_expr_list* node = (is_for_expr_list*)malloc(sizeof(is_for_expr_list));
+	
+	node->node = expr;
+	node->next = next;
+
+	return node;
 }
 
 is_for_init* insert_for_init_var_defs(is_var_defs* var_defs)
@@ -280,7 +335,12 @@ is_func_def_arg* insert_func_def_arg(is_type_decl* type, is_id* id)
 
 is_func_def_arg_list* insert_func_def_arg_list(is_func_def_arg* arg, is_func_def_arg_list* next)
 {
-	return NULL;
+	is_func_def_arg_list* node = (is_func_def_arg_list*)malloc(sizeof(is_func_def_arg_list));
+	
+	node->node = arg;
+	node->next = next;
+
+	return node;
 }
 
 is_if* insert_if(is_expr* cond, is_stmt* then_body, is_stmt* else_body)
@@ -393,7 +453,12 @@ is_stmt* insert_stmt_return(is_return* return_stmt)
 
 is_stmt_list* insert_stmt_list(is_stmt* stmt, is_stmt_list* next)
 {
-	return NULL;
+	is_stmt_list* node = (is_stmt_list*)malloc(sizeof(is_stmt_list));
+	
+	node->node = stmt;
+	node->next = next;
+
+	return node;
 }
 
 is_switch* insert_switch(is_expr* expr, is_switch_stmt_list* list)
