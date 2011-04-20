@@ -1,12 +1,54 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <string.h>
 #include "inc/structures.h"
 
-void free_application(is_application* application)
+/* LEX */
+is_id* insert_id(char* data)
 {
+	is_id* node = (is_id*)malloc(sizeof(is_id));
+	node->name = strdup(data);
+
+	return node;
 }
 
+is_constant* insert_constant_bool(bool value)
+{
+	is_constant* node = (is_constant*)malloc(sizeof(is_constant));
+	node->value.bool_val = value;
+	return node;
+}
+
+is_constant* insert_constant_long(long long value)
+{
+	is_constant* node = (is_constant*)malloc(sizeof(is_constant));
+	node->value.long_val = value;
+	return node;
+}
+
+is_constant* insert_constant_double(double value)
+{
+	is_constant* node = (is_constant*)malloc(sizeof(is_constant));
+	node->value.double_val = value;
+	return node;
+}
+
+is_constant* insert_constant_char(char value)
+{
+	is_constant* node = (is_constant*)malloc(sizeof(is_constant));
+	node->value.char_val = value;
+	return node;
+}
+
+is_constant* insert_constant_string(char* value)
+{
+	is_constant* node = (is_constant*)malloc(sizeof(is_constant));
+	node->value.string_val = strdup(value);
+	return node;
+}
+
+/* YACC */
 is_array_decl* insert_array_decl (is_type_object* type, is_dims_empty_list dims)
 {
 	return NULL;

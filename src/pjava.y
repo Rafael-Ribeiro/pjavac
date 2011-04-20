@@ -209,7 +209,7 @@ is_application* main_application;
 %type<val_while>while
 %%
 application
-	: class_def END													{ $$ = $1; main_application = $1; }
+	: class_def END													{ $$ = $1; main_application = $1; return 0; }
 	;
 
 array_decl

@@ -1,8 +1,16 @@
 #ifndef INSERT_H
 #define INSERT_H
 
-void free_application(is_application* application);
+/* lex */
+is_id* insert_id(char* data);
 
+is_constant* insert_constant_bool(bool value);
+is_constant* insert_constant_long(long long value);
+is_constant* insert_constant_double(double value);
+is_constant* insert_constant_char(char value);
+is_constant* insert_constant_string(char* value);
+
+/* yacc */
 is_array_decl* insert_array_decl(is_type_object* type, is_dims_empty_list dims);
 is_assign_op* insert_assign_op(is_var* var, type_assign_op type, is_expr* expr);
 is_binary_op* insert_binary_op_operation(is_expr* left, type_binary_op operation, is_expr* right);

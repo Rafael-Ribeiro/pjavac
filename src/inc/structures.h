@@ -1,9 +1,6 @@
 #ifndef STRUCTURES_H
 #define STRUCTURES_H
 
-#define MAX_ID_LEN 128
-#define MAX_CONST_LEN MAX_ID_LEN
-
 struct _is_array_decl;
 struct _is_assign_op;
 struct _is_binary_op;
@@ -51,7 +48,7 @@ struct _is_var_initializer_list;
 struct _is_var_stmt;
 struct _is_while;
 
-/**************************************************/
+/***********************************************************************/
 /* just because we can, this ones will be in the structures themselves */
 typedef int is_dims_empty_list;
 typedef struct _is_expr is_dims_sized;
@@ -60,7 +57,7 @@ typedef struct _is_for_expr_list is_for_inc;
 typedef struct _is_var_defs is_var_stmt;
 typedef struct _is_class_def is_application;
 
-/**************************************************/
+/***********************************************************************/
 
 typedef struct _array_decl
 {
@@ -166,9 +163,18 @@ typedef struct _is_class_stmt
 	struct _is_member_stmt* member;
 } is_class_stmt;
 
+typedef enum {t_constant_bool, t_constant_long, t_constant_double, t_constant_char, t_constant_string} type_constant;
 typedef struct _is_constant
 {
-	char value[MAX_CONST_LEN];
+	type_constant type;
+	union
+	{
+		bool bool_val;
+		long long long_val;
+		double double_val;
+		char char_val;
+		char* string_val;
+	} value;
 } is_constant;
 
 typedef struct _is_continue
@@ -328,7 +334,7 @@ typedef is_func_def_arg_list is_func_def_args;
 
 typedef struct _is_id
 {
-	char name[MAX_ID_LEN];
+	char* name;
 } is_id;
 
 typedef struct _is_if
