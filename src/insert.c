@@ -79,6 +79,12 @@ is_array_decl* insert_array_decl (is_type_object* type, is_dims_empty_list dims)
 
 is_assign_op* insert_assign_op (is_var* var, type_assign_op type, is_expr* expr)
 {
+	is_assign_op *node = (is_assign_op*)malloc(sizeof(is_assign_op));
+
+	node->var = var;
+	node->type = type;
+	node->expr = expr;
+
 	return NULL;
 }
 
