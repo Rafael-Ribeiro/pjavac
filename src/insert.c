@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
+
 #include "inc/structures.h"
 
 /* LEX */
@@ -37,10 +38,10 @@ is_constant* insert_constant_double(long double value)
 	return node;
 }
 
-is_constant* insert_constant_char(char value)
+is_constant* insert_constant_char(char* value)
 {
 	is_constant* node = (is_constant*)malloc(sizeof(is_constant));
-	node->value.char_val = value;
+	node->value.string_val = strdup(value);
 
 	return node;
 }

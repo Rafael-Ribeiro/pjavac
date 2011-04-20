@@ -4,6 +4,9 @@
 
 #include "inc/structures.h"
 #include "inc/insert.h"
+#include "inc/show.h"
+#include "inc/free.h"
+
 #include "y.tab.h"
 %}
 
@@ -30,7 +33,7 @@ JAVA_COMMENT		(\/\/[^\n]*\n)|(\/\*([^\/]|[^\*]\/)*\*\/)
 
 {N10}*"."{N10}+{EXP}?{FLOAT_SPEC}*		{ yylval.val_constant = insert_constant_double(strtold(yytext, NULL)); return CONSTANT; }
 
-\'{CHAR}\'								{ yylval.val_constant = insert_constant_char(yytext[0]); return CONSTANT; }
+\'{CHAR}\'								{ yylval.val_constant = insert_constant_char(yytext); return CONSTANT; }
 {STRING_LITERAL}						{ yylval.val_constant = insert_constant_string(yytext); return CONSTANT; }
 
 "true"									{ yylval.val_constant = insert_constant_bool(true); return CONSTANT; }
