@@ -30,7 +30,7 @@ void show_dims_sized_list(is_dims_sized_list* node);
 void show_do_while(is_do_while* node, int tablevel); 
 void show_expr(is_expr* node);
 void show_expr_list(is_expr_list* node, int tablevel);
-void show_expr_op(is_expr_op* node, int tablevel);
+void show_expr_op(is_expr_op* node);
 void show_for(is_for* node, int tablevel);
 void show_for_expr(is_for_expr* node, int tablevel); 
 void show_for_expr_list(is_for_expr_list* node, int tablevel); 

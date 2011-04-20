@@ -214,7 +214,6 @@ void show_binary_op_operation(is_binary_op* node, int tablevel)
 
 void show_break(is_break* node, int tablevel)
 {
-	tab(tablevel);
 	printf("break");
 
 	if (node->label)
@@ -297,7 +296,6 @@ void show_class_stmt_scope(is_class_stmt_scope* node)
  
 void show_continue(is_continue* node, int tablevel)
 {
-	tab(tablevel);
 	printf("continue");
 
 	if (node->label)
@@ -329,17 +327,46 @@ void show_dims_sized(is_dims_sized* node)
 
 void show_dims_sized_list(is_dims_sized_list* node)
 {
-
+	while (node)
+	{
+		show_dims_sized(node->node);
+		show_dims_sized_list(node->next);
+	}
 }
 
 void show_do_while(is_do_while* node, int tablevel)
 {
-
+	printf("do\n");
+	show_stmt(node->body, tablevel+1);
+	printf(" while(");
+	show_expr(node->cond);
+	printf(");");
 }
  
 void show_expr(is_expr* node)
 {
+	switch(node->type)
+	{
+		case t_expr_var:
+			show_var(node->data.var);
+			break;
 
+		case t_expr_new_op:
+			show_new_op(node->data.new_op);
+			break;
+
+		case t_expr_constant:
+			show_constant(node->data.constant);
+			break;
+
+		case t_expr_func_call:
+			show_func_call(node->data.func);
+			break;
+
+		case t_expr_operation:
+			show_expr_op(node->data.operation);
+			break;
+	}
 }
 
 void show_expr_list(is_expr_list* node, int tablevel)
@@ -347,7 +374,7 @@ void show_expr_list(is_expr_list* node, int tablevel)
 
 }
 
-void show_expr_op(is_expr_op* node, int tablevel)
+void show_expr_op(is_expr_op* node)
 {
 
 }
@@ -409,6 +436,8 @@ void show_loop_stmt(is_loop_stmt* node, int tablevel)
  
 void show_member_stmt(is_member_stmt* node, int tablevel)
 {
+	tab(tablevel);
+
 	switch (node->type)
 	{
 		case t_member_stmt_var:
@@ -428,7 +457,6 @@ void show_new_op(is_new_op* node)
 
 void show_return(is_return* node, int tablevel)
 {
-	tab(tablevel);
 	printf("return");
 
 	if (node->value)
@@ -588,7 +616,6 @@ void show_var_initializer_list(is_var_initializer_list* node, int tablevel)
 
 void show_var_stmt(is_var_stmt* node, int tablevel)
 {
-	tab(tablevel);
 	show_var_defs(node, tablevel);
 }
 

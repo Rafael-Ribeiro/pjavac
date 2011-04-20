@@ -211,7 +211,7 @@ typedef enum
 
 typedef struct _is_expr
 {
-	type_expr expr;
+	type_expr type;
 	union
 	{
 		struct _is_var* var;
