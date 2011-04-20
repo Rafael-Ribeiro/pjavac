@@ -114,173 +114,99 @@ void show_assign_op(is_assign_op* node)
 
 void show_binary_op_operation(is_binary_op* node, int tablevel)
 {
+	if (node->type == t_binary_op_assign)
+	{
+		show_assign_op(node->data.assign);
+		return
+	}
+
+	printf("(");
+	show_expr(node->data.operands.left);
 	switch (node->type)
 	{
 		case t_binary_op_add:
-			printf("(");
-			show_expr(node->data.operands.left);
 			printf("+");
-			show_expr(node->data.operands.right);
-			printf(")");
 			break;
 
 		case t_binary_op_sub:
-			printf("(");
-			show_expr(node->data.operands.left);
-			printf("+");
-			show_expr(node->data.operands.right);
-			printf(")");
+			printf("-");
 			break;
 
 		case t_binary_op_mul:
-			printf("(");
-			show_expr(node->data.operands.left);
-			printf("+");
-			show_expr(node->data.operands.right);
-			printf(")");
+			printf("*");
 			break;
 
 		case t_binary_op_div:
-			printf("(");
-			show_expr(node->data.operands.left);
-			printf("+");
-			show_expr(node->data.operands.right);
-			printf(")");
+			printf("/");
 			break;
 
 		case t_binary_op_mod:
-			printf("(");
-			show_expr(node->data.operands.left);
-			printf("+");
-			show_expr(node->data.operands.right);
-			printf(")");
+			printf("%%");
 			break;
 
 		case t_binary_op_and:
-			printf("(");
-			show_expr(node->data.operands.left);
-			printf("+");
-			show_expr(node->data.operands.right);
-			printf(")");
+			printf("&");
 			break;
 
 		case t_binary_op_or:
-			printf("(");
-			show_expr(node->data.operands.left);
-			printf("+");
-			show_expr(node->data.operands.right);
-			printf(")");
+			printf("|");
 			break;
 
 		case t_binary_op_xor:
-			printf("(");
-			show_expr(node->data.operands.left);
-			printf("+");
-			show_expr(node->data.operands.right);
-			printf(")");
+			printf("^");
 			break;
 
 		case t_binary_op_shift_r:
-			printf("(");
-			show_expr(node->data.operands.left);
-			printf("+");
-			show_expr(node->data.operands.right);
-			printf(")");
+			printf(">>");
 			break;
 
 		case t_binary_op_shift_l:
-			printf("(");
-			show_expr(node->data.operands.left);
-			printf("+");
-			show_expr(node->data.operands.right);
-			printf(")");
+			printf("<<");
 			break;
 
 		case t_binary_op_logic_and:
-			printf("(");
-			show_expr(node->data.operands.left);
-			printf("+");
-			show_expr(node->data.operands.right);
-			printf(")");
+			printf("&&");
 			break;
 
 		case t_binary_op_logic_or:
-			printf("(");
-			show_expr(node->data.operands.left);
-			printf("+");
-			show_expr(node->data.operands.right);
-			printf(")");
+			printf("||");
 			break;
 
 		case t_binary_op_eq:
-			printf("(");
-			show_expr(node->data.operands.left);
-			printf("+");
-			show_expr(node->data.operands.right);
-			printf(")");
+			printf("==");
 			break;
 
 		case t_binary_op_ne:
-			printf("(");
-			show_expr(node->data.operands.left);
-			printf("+");
-			show_expr(node->data.operands.right);
-			printf(")");
+			printf("!=");
 			break;
 
 		case t_binary_op_l:
-			printf("(");
-			show_expr(node->data.operands.left);
-			printf("+");
-			show_expr(node->data.operands.right);
-			printf(")");
+			printf("<");
 			break;
 
 		case t_binary_op_g:
-			printf("(");
-			show_expr(node->data.operands.left);
-			printf("+");
-			show_expr(node->data.operands.right);
-			printf(")");
+			printf(">");
 			break;
 
 		case t_binary_op_le:
-			printf("(");
-			show_expr(node->data.operands.left);
-			printf("+");
-			show_expr(node->data.operands.right);
-			printf(")");
+			printf("<=");
 			break;
 
 		case t_binary_op_ge:
-			printf("(");
-			show_expr(node->data.operands.left);
-			printf("+");
-			show_expr(node->data.operands.right);
-			printf(")");
+			printf(">=");
 			break;
 
 		case t_binary_op_eq3:
-			printf("(");
-			show_expr(node->data.operands.left);
-			printf("+");
-			show_expr(node->data.operands.right);
-			printf(")");
+			printf("===");
 			break;
 
 		case t_binary_op_ne3:
-			printf("(");
-			show_expr(node->data.operands.left);
-			printf("+");
-			show_expr(node->data.operands.right);
-			printf(")");
+			printf("!==");
 			break;
-
-		case t_binary_op_assign:
-			show_assign_op(node->data.assign);
-			break;
-
 	}
+
+	show_expr(node->data.operands.right);
+	printf(")");
 }
 
 void show_break(is_break* node, int tablevel)
