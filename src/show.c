@@ -4,22 +4,45 @@
 #include "inc/structures.h"
 #include "inc/show.h"
 
-void tabprintf(int tablevel, char* str)
+void tab(int tablevel)
 {
 	int i;
-	for (i = 0; i < tablevel; i++)
-		printf("\t");
-	printf("%s", str);
+	for (i = 0; i < tablevel; i++) printf("\t");
 }
+
 /* LEX */
 void show_id(is_id* node)
 {
-
+	printf("%s", node->name);
 }
 
 void show_constant(is_constant* node)
 {
+	switch(node->type)
+	{
+		case t_constant_bool:
+			if (node->value.bool_val)
+				printf("true");
+			else
+				printf("false");
+			break;
 
+		case t_constant_long:
+			printf("%lld", node->value.long_val);
+			break;
+
+		case t_constant_double:
+			printf("%.3Lf", node->value.double_val);
+			break;
+
+		case t_constant_char:
+			printf("'%c'", node->value.char_val);
+			break;
+
+		case t_constant_string:
+			printf("%s", node->value.string_val);
+			break;
+	}
 }
 
 /* YACC */
@@ -48,36 +71,76 @@ void show_break(is_break* node, int tablevel)
 {
 
 }
-
-void show_class_stmt_list(is_class_stmt_list* node, int tablevel)
-{
-
-}
  
 void show_class_def(is_class_def* node, int tablevel)
 {
-	tabprintf(tablevel, "class ");
+	tab(tablevel);
+	printf("class ");
 	show_id(node->id);
 	printf("\n");
 
-	tabprintf(tablevel, "{\n");
+	tab(tablevel);
+	printf("{\n");
 	show_class_stmt_list(node->body, tablevel+1);
-	tabprintf(tablevel, "}\n");
+
+	tab(tablevel);
+	printf("}\n");
 }
 
 void show_class_stmt(is_class_stmt* node, int tablevel)
 {
+	tab(tablevel);
+	
+	if (node->privacy)
+	{
+		show_class_stmt_privacy(*node->privacy);
+		printf(" ");
+	}
 
+	if (node->scope)
+	{
+		show_class_stmt_scope(node->scope);
+		printf(" ");
+	}
+
+	show_member_stmt(node->stmt, tablevel);
 }
+
+void show_class_stmt_list(is_class_stmt_list* node, int tablevel)
+{
+	if (node)
+	{
+		show_class_stmt(node->node, tablevel);
+		show_class_stmt_list(node->next, tablevel);
+	}
+} 
  
-void show_class_stmt_privacy(is_class_stmt_privacy* node, int tablevel)
+void show_class_stmt_privacy(is_class_stmt_privacy val)
 {
+	switch(val)
+	{
+		case t_class_stmt_privacy_public:
+			printf("public");
+			break;
 
+		case t_class_stmt_privacy_private:
+			printf("private");
+			break;
+	}
 }
 
-void show_class_stmt_scope(is_class_stmt_scope* node, int tablevel)
+void show_class_stmt_scope(is_class_stmt_scope* node)
 {
+	if (node->b_final)
+		printf("final");
+	
+	if (node->b_static)
+	{
+		if (node->b_final);
+			printf(" ");
 
+		printf("static");
+	}
 }
  
 void show_continue(is_continue* node, int tablevel)

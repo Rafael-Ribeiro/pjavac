@@ -132,12 +132,6 @@ typedef struct _is_break
 	struct _is_id* label;	/* nullable */
 } is_break;
 
-typedef struct _is_class_stmt_list
-{
-	struct _is_class_stmt* node;
-	struct _is_class_stmt_list* next;
-} is_class_stmt_list;
-
 typedef struct _is_class_def
 {
 	struct _is_id* id;
@@ -162,6 +156,12 @@ typedef struct _is_class_stmt
 	struct _is_class_stmt_scope* scope;	/* nullable */
 	struct _is_member_stmt* stmt;
 } is_class_stmt;
+
+typedef struct _is_class_stmt_list
+{
+	struct _is_class_stmt* node;
+	struct _is_class_stmt_list* next;
+} is_class_stmt_list;
 
 typedef enum {t_constant_bool, t_constant_long, t_constant_double, t_constant_char, t_constant_string} type_constant;
 typedef struct _is_constant
