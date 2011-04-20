@@ -9,10 +9,11 @@ void show_constant(is_constant* node);
 /* YACC */
 /* enums */
 void show_class_stmt_privacy(is_class_stmt_privacy val);
+void show_type_native(is_type_native val);
 
 /* nodes */
 void show_application(is_application* node, int tablevel);
-void show_array_decl(is_array_decl* node, int tablevel);
+void show_array_decl(is_array_decl* node);
 void show_assign_op(is_assign_op* node, int tablevel);
 void show_binary_op_operation(is_binary_op* node, int tablevel);
 void show_break(is_break* node, int tablevel);
@@ -24,7 +25,7 @@ void show_continue(is_continue* node, int tablevel);
 void show_dims(is_dims* node, int tablevel);
 void show_dims_sized_list(is_dims_sized_list* node, int tablevel);
 void show_do_while(is_do_while* node, int tablevel); 
-void show_expr(is_expr* node, int tablevel);
+void show_expr(is_expr* node);
 void show_expr_list(is_expr_list* node, int tablevel);
 void show_expr_op(is_expr_op* node, int tablevel);
 void show_for(is_for* node, int tablevel);
@@ -47,13 +48,14 @@ void show_switch(is_switch* node, int tablevel);
 void show_switch_stmt(is_switch_stmt* node, int tablevel);
 void show_switch_stmt_list(is_switch_stmt_list* node, int tablevel);
 void show_ternary_op(is_ternary_op* node, int tablevel);
-void show_type_decl(is_type_decl* node, int tablevel);
-void show_type_object(is_type_object* node, int tablevel);
+void show_type_decl(is_type_decl* node);
+void show_type_object(is_type_object* node);
 void show_unary_op(is_unary_op* node, int tablevel);
 void show_var_id(is_var* node, int tablevel);
 void show_var_def(is_var_def* node, int tablevel);
 void show_var_def_list(is_var_def_list* node, int tablevel);
 void show_var_defs(is_var_defs* node, int tablevel);
+void show_var_stmt(is_var_stmt* node, int tablevel);
 void show_var_initializer(is_var_initializer* node, int tablevel);
 void show_var_initializer_list(is_var_initializer_list* node, int tablevel);
 void show_while(is_while* node, int tablevel);

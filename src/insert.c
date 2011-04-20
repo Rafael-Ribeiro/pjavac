@@ -571,9 +571,7 @@ is_var_defs* insert_var_defs(is_type_decl* type, is_var_def_list* list)
 {
 	is_var_defs* node = (is_var_defs*)malloc(sizeof(is_var_defs));
 	
-	node->type = *type;
-	free_type_decl(type);
-
+	node->type = type;
 	node->list = list;
 
 	return node;
