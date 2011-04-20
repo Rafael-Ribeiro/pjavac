@@ -175,7 +175,12 @@ is_continue* insert_continue (is_id* label)
 
 is_dims* insert_dims (is_dims_sized_list* sized, is_dims_empty_list empty)
 {
-	return NULL;
+	is_dims* node = (is_dims*)malloc(sizeof(is_dims));
+
+	node->sized = sized;
+	node->empty = empty;
+
+	return node;
 }
 
 /* this one is left recursive, can we swap it? if not attention to the constructors */
@@ -203,27 +208,52 @@ is_do_while *insert_do_while (is_stmt* body, is_expr* cond)
 
 is_expr* insert_expr_var(is_var* var)
 {
-	return NULL;
+	is_expr* node = (is_expr*)malloc(sizeof(is_expr));
+
+	node->type = t_expr_var;
+	node->data.var = var;
+
+	return node;
 }
 
 is_expr* insert_expr_new_op(is_new_op* new_op)
 {
-	return NULL;
+	is_expr* node = (is_expr*)malloc(sizeof(is_expr));
+
+	node->type = t_expr_new_op;
+	node->data.new_op = new_op;
+
+	return node;
 }
 
 is_expr* insert_expr_constant(is_constant* constant)
 {
-	return NULL;
+	is_expr* node = (is_expr*)malloc(sizeof(is_expr));
+
+	node->type = t_expr_constant;
+	node->data.constant = constant;
+
+	return node;
 }
 
 is_expr* insert_expr_func_call(is_func_call* func_call)
 {
-	return NULL;
+	is_expr* node = (is_expr*)malloc(sizeof(is_expr));
+
+	node->type = t_expr_func_call;
+	node->data.func_call = func_call;
+
+	return node;
 }
 
 is_expr* insert_expr_expr_op(is_expr_op* expr_op)
 {
-	return NULL;
+	is_expr* node = (is_expr*)malloc(sizeof(is_expr));
+
+	node->type = t_expr_operation;
+	node->data.operation = expr_op;
+
+	return node;
 }
 
 is_expr_list* insert_expr_list (is_expr* expr, is_expr_list* next)
@@ -238,17 +268,32 @@ is_expr_list* insert_expr_list (is_expr* expr, is_expr_list* next)
 
 is_expr_op* insert_expr_op_unary (is_unary_op* op)
 {
-	return NULL;
+	is_expr_op* node = (is_expr_op*)malloc(sizeof(is_expr_op));
+
+	node->type = t_expr_op_unary;
+	node->data.unary = op;
+
+	return node;
 }
 
 is_expr_op* insert_expr_op_binary(is_binary_op* op)
 {
-	return NULL;
+	is_expr_op* node = (is_expr_op*)malloc(sizeof(is_expr_op));
+
+	node->type = t_expr_op_binary;
+	node->data.binary = op;
+
+	return node;
 }
 
 is_expr_op* insert_expr_op_ternary(is_ternary_op* op)
 {
-	return NULL;
+	is_expr_op* node = (is_expr_op*)malloc(sizeof(is_expr_op));
+
+	node->type = t_expr_op_ternary;
+	node->data.ternary = op;
+
+	return node;
 }
 
 is_for* insert_for(is_for_init *init, is_for_cond *cond, is_for_inc *inc, is_stmt* body)
@@ -305,22 +350,44 @@ is_for_expr_list* insert_for_expr_list(is_for_expr* expr, is_for_expr_list* next
 
 is_for_init* insert_for_init_var_defs(is_var_defs* var_defs)
 {
-	return NULL;
+	is_for_init* node = (is_for_init*)malloc(sizeof(is_for_init));
+
+	node->type = t_for_init_var_defs;
+	node->data.var_defs = var_defs;
+
+	return node;
 }
 
-is_for_init* insert_for_init_expr_list(is_for_expr_list* expr_list)
+is_for_init* insert_for_init_for_expr_list(is_for_expr_list* expr_list)
 {
-	return NULL;
+	is_for_init* node = (is_for_init*)malloc(sizeof(is_for_init));
+
+	node->type = t_for_init_for_expr_list;
+	node->data.expr_list = expr_list;
+
+	return node;
 }
 
 is_func_call* insert_func_call_id(is_id* id, is_func_call_arg_list* args)
 {
-	return NULL;
+	is_func_call* node = (is_func_call*)malloc(sizeof(is_func_call));
+
+	node->type = t_func_call_id;
+	node->id = id;
+	node->args = args;
+
+	return node;
 }
 
 is_func_call* insert_func_call_sysout(is_func_call_arg_list* args)
 {
-	return NULL;
+	is_func_call* node = (is_func_call*)malloc(sizeof(is_func_call));
+
+	node->type = t_func_call_sysout;
+	node->id = NULL;
+	node->args = args;
+
+	return node;
 }
 
 is_func_def* insert_func_def(is_type_decl* type, is_id* id, is_func_def_arg_list* args, is_stmt_list* body)

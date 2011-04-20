@@ -60,7 +60,7 @@ is_for_expr* insert_for_expr_func_call(is_func_call* func_call);
 is_for_expr_list* insert_for_expr_list(is_for_expr* expr, is_for_expr_list* next); 
 
 is_for_init* insert_for_init_var_defs(is_var_defs* var_defs);
-is_for_init* insert_for_init_expr_list(is_for_expr_list* expr_list);
+is_for_init* insert_for_init_for_expr_list(is_for_expr_list* expr_list);
  	
 is_func_call* insert_func_call_id(is_id* id, is_func_call_arg_list* args); 
 is_func_call* insert_func_call_sysout(is_func_call_arg_list* args);
