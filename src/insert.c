@@ -93,10 +93,10 @@ is_binary_op* insert_binary_op_assign (is_assign_op* assign)
 
 is_break* insert_break (is_id* label)
 {
-	is_break *break_node = (is_break*)malloc(sizeof(is_break));
-	break_node->label = label;
+	is_break *node = (is_break*)malloc(sizeof(is_break));
+	node->label = label;
 
-	return break_node;
+	return node;
 }
 
 is_class_stmt_list* insert_class_stmt_list (is_class_stmt* stmt, is_class_stmt_list* next)
@@ -132,17 +132,22 @@ is_class_stmt_privacy* insert_class_stmt_privacy(is_class_stmt_privacy type)
 	return node;
 }
 
-is_class_stmt_scope* insert_class_stmt_scope (bool _final, bool _static) /* static is a reserved keyword */
+is_class_stmt_scope* insert_class_stmt_scope (bool b_final, bool b_static) /* static is a reserved keyword */
 {
-	return NULL;
+	is_class_stmt_scope *node = (is_class_stmt_scope*)malloc(sizeof(is_class_stmt_scope));
+
+	node->b_final = b_final;
+	node->b_static = b_static;
+
+	return node;
 }
 
 is_continue* insert_continue (is_id* label)
 {
-	is_continue *continue_node = (is_continue*)malloc(sizeof(is_continue));
-	continue_node->label = label;
+	is_continue *node = (is_continue*)malloc(sizeof(is_continue));
+	node->label = label;
 
-	return continue_node;
+	return node;
 }
 
 is_dims* insert_dims (is_dims_sized_list* sized, is_dims_empty_list empty)
@@ -158,11 +163,11 @@ is_dims_sized_list* insert_dims_sized_list (is_dims_sized_list* prev, is_dims_si
 
 is_do_while *insert_do_while (is_stmt* body, is_expr* cond)
 {
-	is_do_while *do_while_node = (is_do_while*)malloc(sizeof(is_do_while));
-	do_while_node->body = body;
-	do_while_node->cond = cond;
+	is_do_while *node = (is_do_while*)malloc(sizeof(is_do_while));
+	node->body = body;
+	node->cond = cond;
 
-	return do_while_node;
+	return node;
 }
 
 is_expr* insert_expr_var(is_var* var)
@@ -212,14 +217,14 @@ is_expr_op* insert_expr_op_ternary(is_ternary_op* op)
 
 is_for* insert_for(is_for_init *init, is_for_cond *cond, is_for_inc *inc, is_stmt* body)
 {
-	is_for *for_node = (is_for*)malloc(sizeof(is_for));
+	is_for *node = (is_for*)malloc(sizeof(is_for));
 
-	for_node->init = init;
-	for_node->cond = cond;
-	for_node->inc = inc;
-	for_node->body = body;
+	node->init = init;
+	node->cond = cond;
+	node->inc = inc;
+	node->body = body;
 
-	return for_node;
+	return node;
 }
 
 is_for_expr* insert_for_expr_incr(is_incr_op* incr)
@@ -279,12 +284,12 @@ is_func_def_arg_list* insert_func_def_arg_list(is_func_def_arg* arg, is_func_def
 
 is_if* insert_if(is_expr* cond, is_stmt* then_body, is_stmt* else_body)
 {
-	is_if *if_node = (is_if*)malloc(sizeof(is_if));
-	if_node->cond = cond;
-	if_node->then_body = then_body;
-	if_node->else_body = else_body;
+	is_if *node = (is_if*)malloc(sizeof(is_if));
+	node->cond = cond;
+	node->then_body = then_body;
+	node->else_body = else_body;
 
-	return if_node;
+	return node;
 }
 
 is_incr_op* insert_incr_op(type_incr_op type, bool pre)
@@ -324,10 +329,10 @@ is_new_op* insert_new_op(is_type_object* type, is_dims* dims)
 
 is_return* insert_return(is_expr* value)
 {
-	is_return *return_node = (is_return*)malloc(sizeof(is_return));
-	return_node->value = value;
+	is_return *node = (is_return*)malloc(sizeof(is_return));
+	node->value = value;
 
-	return return_node;
+	return node;
 }
 
 is_stmt* insert_stmt_stmt_list(is_stmt_list* stmt_list)
@@ -392,11 +397,11 @@ is_stmt_list* insert_stmt_list(is_stmt* stmt, is_stmt_list* next)
 
 is_switch* insert_switch(is_expr* expr, is_switch_stmt_list* list)
 {
-	is_switch *switch_node = (is_switch*)malloc(sizeof(is_switch));
-	switch_node->expr = expr;
-	switch_node->list = list;
+	is_switch *node = (is_switch*)malloc(sizeof(is_switch));
+	node->expr = expr;
+	node->list = list;
 
-	return switch_node;
+	return node;
 }
 
 is_switch_stmt* insert_switch_stmt_default(is_stmt_list* stmt_list)
@@ -496,11 +501,11 @@ is_var_initializer_list* insert_var_initializer_list(is_var_initializer_list* pr
 
 is_while* insert_while(is_expr* cond, is_stmt* body)
 {
-	is_while *while_node = (is_while*)malloc(sizeof(is_while));
+	is_while *node = (is_while*)malloc(sizeof(is_while));
 
-	while_node->cond = cond;
-	while_node->body = body;
+	node->cond = cond;
+	node->body = body;
 
-	return while_node;
+	return node;
 }
 
