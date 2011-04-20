@@ -1,6 +1,8 @@
 %{
 #include <stdio.h>
+#include <stdlib.h>
 #include <stdbool.h>
+#include <string.h>
 
 #include "inc/structures.h"
 #include "inc/insert.h"
