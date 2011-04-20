@@ -560,11 +560,15 @@ while
 %%
 int main()
 {
+	main_application = NULL;
 	yyparse();
-	
-	printf("Valid sintax!\n");
-	show_application(main_application);
-	free_application(main_application);
+
+	if (main_application)
+	{
+		printf("Valid sintax!\n");
+		show_application(main_application, 0);
+		free_application(main_application);
+	}
 
 	return 0;
 }
