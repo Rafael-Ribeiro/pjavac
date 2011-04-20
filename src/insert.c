@@ -17,6 +17,7 @@ is_constant* insert_constant_bool(bool value)
 {
 	is_constant* node = (is_constant*)malloc(sizeof(is_constant));
 	node->value.bool_val = value;
+
 	return node;
 }
 
@@ -24,6 +25,7 @@ is_constant* insert_constant_long(long long value)
 {
 	is_constant* node = (is_constant*)malloc(sizeof(is_constant));
 	node->value.long_val = value;
+
 	return node;
 }
 
@@ -31,6 +33,7 @@ is_constant* insert_constant_double(long double value)
 {
 	is_constant* node = (is_constant*)malloc(sizeof(is_constant));
 	node->value.double_val = value;
+
 	return node;
 }
 
@@ -38,6 +41,7 @@ is_constant* insert_constant_char(char value)
 {
 	is_constant* node = (is_constant*)malloc(sizeof(is_constant));
 	node->value.char_val = value;
+
 	return node;
 }
 
@@ -45,6 +49,7 @@ is_constant* insert_constant_string(char* value)
 {
 	is_constant* node = (is_constant*)malloc(sizeof(is_constant));
 	node->value.string_val = strdup(value);
+
 	return node;
 }
 
@@ -71,7 +76,10 @@ is_binary_op* insert_binary_op_assign (is_assign_op* assign)
 
 is_break* insert_break (is_id* label)
 {
-	return NULL;
+	is_break *break_node = (is_break*)malloc(sizeof(is_break));
+	break_node->label = label;
+
+	return break_node;
 }
 
 is_class_stmt_list* insert_class_stmt_list (is_class_stmt* stmt, is_class_stmt_list* next)
@@ -104,7 +112,10 @@ is_class_stmt_scope* insert_class_stmt_scope (bool _final, bool _static) /* stat
 
 is_continue* insert_continue (is_id* label)
 {
-	return NULL;
+	is_continue *continue_node = (is_continue*)malloc(sizeof(is_continue));
+	continue_node->label = label;
+
+	return continue_node;
 }
 
 is_dims* insert_dims (is_dims_sized_list* sized, is_dims_empty_list empty)
@@ -281,7 +292,10 @@ is_new_op* insert_new_op(is_type_object* type, is_dims* dims)
 
 is_return* insert_return(is_expr* value)
 {
-	return NULL;
+	is_return *return_node = (is_return*)malloc(sizeof(is_return));
+	return_node->value = value;
+
+	return return_node;
 }
 
 is_stmt* insert_stmt_stmt_list(is_stmt_list* stmt_list)
