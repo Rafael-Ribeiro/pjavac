@@ -47,6 +47,14 @@ is_class_stmt* insert_class_stmt (is_class_stmt_privacy* privacy, is_class_stmt_
 	return NULL;
 }
 
+is_class_stmt_privacy* insert_class_stmt_privacy(is_class_stmt_privacy type)
+{
+	is_class_stmt_privacy* node = (is_class_stmt_privacy*)malloc(sizeof(is_class_stmt_privacy));
+	*node = type;
+
+	return node;
+}
+
 is_class_stmt_scope* insert_class_stmt_scope (bool _final, bool _static) /* static is a reserved keyword */
 {
 	return NULL;
@@ -154,7 +162,7 @@ is_for_init* insert_for_init_vars(is_var_defs* var_defs)
 	return NULL;
 }
 
-is_for_init* insert_for_init_expr_list(is_expr_list* expr_list)
+is_for_init* insert_for_init_expr_list(is_for_expr_list* expr_list)
 {
 	return NULL;
 }
@@ -229,7 +237,7 @@ is_new_op* insert_new_op(is_type_object* type, is_dims* dims)
 	return NULL;
 }
 
-is_return* insert_return(is_id* label)
+is_return* insert_return(is_expr* value)
 {
 	return NULL;
 }
@@ -383,12 +391,12 @@ is_var_defs* insert_var_defs(is_type_decl* type, is_var_def_list* list)
 	return NULL;
 }
 
-is_var* insert_var_initializer_array(is_var_initializer_list* list)
+is_var_initializer* insert_var_initializer_array(is_var_initializer_list* list)
 {
 	return NULL;
 }
 
-is_var* insert_var_expr(is_expr* expr)
+is_var_initializer* insert_var_initializer_expr(is_expr* expr)
 {
 	return NULL;
 }

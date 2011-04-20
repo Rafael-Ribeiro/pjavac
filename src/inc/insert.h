@@ -16,6 +16,7 @@ is_class_def* insert_class_def(is_id* id, is_class_stmt_list* body);
 
 is_class_stmt* insert_class_stmt(is_class_stmt_privacy* privacy, is_class_stmt_scope* scope, is_member_stmt* stmt); 
 
+is_class_stmt_privacy* insert_class_stmt_privacy(is_class_stmt_privacy type);
 is_class_stmt_scope* insert_class_stmt_scope(bool _final, bool _static); /* static is a reserved keyword */
 
 is_continue* insert_continue(is_id* label);
@@ -47,7 +48,7 @@ is_for_expr* insert_for_expr_assign(is_assign_op* assing);
 is_for_expr_list* insert_for_expr_list(is_for_expr* expr, is_for_expr_list* next); 
 
 is_for_init* insert_for_init_vars(is_var_defs* var_defs);
-is_for_init* insert_for_init_expr_list(is_expr_list* expr_list);
+is_for_init* insert_for_init_expr_list(is_for_expr_list* expr_list);
  	
 is_func_call* insert_func_call_id(is_id* id, is_func_call_arg_list* args); 
 is_func_call* insert_func_call_sysout(is_func_call_arg_list* args);
@@ -71,7 +72,7 @@ is_member_stmt* insert_member_stmt_func(is_func_def* func_def);
 
 is_new_op* insert_new_op(is_type_object* type, is_dims* dims);
 
-is_return* insert_return(is_id* label);
+is_return* insert_return(is_expr* value);
 
 is_stmt* insert_stmt_stmt_list(is_stmt_list* stmt_list);
 is_stmt* insert_stmt_var_stmt(is_var_stmt* var_stmt);
@@ -93,7 +94,7 @@ is_switch_stmt* insert_switch_stmt_case(is_constant* constant, is_stmt_list* stm
 
 is_switch_stmt_list* insert_switch_stmt_list(is_switch_stmt* stmt, is_switch_stmt_list* next);
 
-is_ternary_op insert_ternary_op(is_expr* cond, is_expr* then_expr, is_expr* else_expr);
+is_ternary_op* insert_ternary_op(is_expr* cond, is_expr* then_expr, is_expr* else_expr);
 
 is_type_decl* insert_type_decl_object(is_type_object* object);
 is_type_decl* insert_type_decl_array(is_array_decl* array);
@@ -114,8 +115,8 @@ is_var_def_list* insert_var_def_list(is_var_def* var_def, is_var_def_list* next)
 
 is_var_defs* insert_var_defs(is_type_decl* type, is_var_def_list* list);
 
-is_var* insert_var_initializer_array(is_var_initializer_list* list);
-is_var* insert_var_expr(is_expr* expr);
+is_var_initializer* insert_var_initializer_array(is_var_initializer_list* list);
+is_var_initializer* insert_var_initializer_expr(is_expr* expr);
 
 is_var_initializer_list* insert_var_initializer_list(is_var_initializer_list* prev, is_var_initializer* var_init);
 

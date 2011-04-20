@@ -51,10 +51,21 @@ struct _is_var_initializer_list;
 struct _is_var_stmt;
 struct _is_while;
 
+/**************************************************/
+/* just because we can, this ones will be in the structures themselves */
+typedef int is_dims_empty_list;
+typedef struct _is_expr is_dims_sized;
+typedef struct _is_expr is_for_cond;
+typedef struct _is_for_expr_list is_for_inc; 
+typedef struct _is_var_defs is_var_stmt;
+typedef struct _is_class_def is_application;
+
+/**************************************************/
+
 typedef struct _array_decl
 {
 	struct _is_type_object* type;
-	struct _is_dims_empty_list* dims;
+	is_dims_empty_list* dims;
 } is_array_decl;
 
 typedef enum
@@ -165,18 +176,15 @@ typedef struct _is_continue
 	struct _is_id* label;	/* nullable */
 } is_continue;
 
-typedef int is_dims_empty_list;
 typedef struct _is_dims
 {
 	struct _is_dims_sized_list* sized;
 	is_dims_empty_list empty; /* NOT nullable, 0 if not existant, 1+ otherwise */
 } is_dims;
 
-typedef struct _is_expr is_dims_sized; /* FIXME: this may be invalid */
-
 typedef struct _is_dims_sized_list
 {
-	is_dims_sized* node; /* not using hack since typedef is right above, may not work FIXME */
+	is_dims_sized* node;
 	struct _is_dims_sized_list* next;
 } is_dims_sized_list;
 
@@ -234,13 +242,11 @@ typedef struct _is_expr_op
 
 typedef struct _is_for
 {
-	struct _is_for_init* init; /* nullable */
-	struct _is_for_cond* cond; /* nullable */
-	struct _is_for_inc* inc; /* nullable */
+	struct _is_for_init* init; 	/* nullable */
+	is_for_cond* cond; 		/* nullable */
+	is_for_inc* inc; 	/* nullable */
 	struct _is_stmt* body;
 } is_for;
-
-typedef is_expr is_for_cond;
 
 typedef enum
 {
@@ -279,8 +285,6 @@ typedef struct _is_for_init
 		struct _is_for_expr_list* expr_list;
 	} data;
 } is_for_init;
-
-typedef is_for_expr_list is_for_inc; /* FIXME As I said before, for_inc must be the same as for_init; rename the type_for_init enum to something more generic? */
 
 typedef enum
 {
@@ -378,7 +382,7 @@ typedef struct _is_member_stmt
 	type_member_stmt type;
 	union
 	{
-		struct _is_var_stmt* var;
+		is_var_stmt* var;
 		struct _is_func_def* func;
 	} data;
 } is_member_stmt;
@@ -414,7 +418,7 @@ typedef struct _is_stmt
 	type_stmt type;
 	union
 	{
-		struct _is_var_stmt *var;
+		is_var_stmt *var;
 		struct _is_assign_op *assign;
 		struct _is_incr_op *incr;
 		struct _is_if *if_stmt;
@@ -546,12 +550,12 @@ typedef struct _is_var
 		struct
 		{
 			struct _is_var* var;
-			struct _is_dims_sized* dims;
+			is_dims_sized* dims;
 		} array;
 		struct
 		{
 			struct _is_func_call* call;
-			struct _is_dims_sized* dims;
+			is_dims_sized* dims;
 		} func_call;
 	} data;
 } is_var;
@@ -576,7 +580,6 @@ typedef struct _is_var_defs
 } is_var_defs;
 
 typedef enum {t_val_arr, t_expr} type_var_initializer;
-
 typedef struct _is_var_initializer
 {
 	type_var_initializer type;
@@ -594,15 +597,10 @@ typedef struct _is_var_initializer_list
 	struct _is_var_initializer_list *next; /* nullable */
 } is_var_initializer_list;
 
-typedef is_var_defs is_var_stmt;
-
 typedef struct _is_while
 {
 	struct _is_expr* cond;
 	struct _is_stmt* body;
 } is_while;
-
-/* just because we can? */
-typedef is_class_def is_application;
 
 #endif

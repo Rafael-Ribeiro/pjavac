@@ -106,7 +106,7 @@ is_application* main_application;
 	is_continue* val_continue;
 	is_dims* val_dims;
 	/*%type<val_dims_empty* val_dims_empty*/
-	is_dims_empty_list* val_dims_empty_list;
+	is_dims_empty_list val_dims_empty_list;			/* integer, not a pointer? */
 	is_dims_sized* val_dims_sized;
 	is_dims_sized_list* val_dims_sized_list;
 	is_do_while* val_do_while;
@@ -138,7 +138,7 @@ is_application* main_application;
 	is_switch_stmt_list* val_switch_stmt_list;
 	is_ternary_op* val_ternary_op;
 	is_type_decl* val_type_decl;
-	is_type_native* val_type_native;
+	is_type_native val_type_native;
 	is_type_object* val_type_object;
 	is_unary_op* val_unary_op;
 	is_var* val_var;
@@ -275,8 +275,8 @@ class_stmt
 	;
 
 class_stmt_privacy
-	: PUBLIC														{ $$ = t_class_stmt_privacy_public; }
-	| PRIVATE														{ $$ = t_class_stmt_privacy_private; }
+	: PUBLIC														{ $$ = insert_class_stmt_privacy(t_class_stmt_privacy_public); }
+	| PRIVATE														{ $$ = insert_class_stmt_privacy(t_class_stmt_privacy_private); }
 	;
 
 class_stmt_scope
@@ -297,7 +297,7 @@ continue
 	;
 
 dims
-	: dims_sized_list												{ $$ = insert_dims($1, NULL); }
+	: dims_sized_list												{ $$ = insert_dims($1, 0); }
 	| dims_sized_list dims_empty_list								{ $$ = insert_dims($1, $2); }
 	;
 
@@ -516,8 +516,8 @@ var
 	;
 
 var_def
-	: ID															{ $$ = insert_var_def($1, NULL, NULL); }
-	| ID '=' var_initializer										{ $$ = insert_var_def($1, NULL, $3); }
+	: ID															{ $$ = insert_var_def($1, 0, NULL); }
+	| ID '=' var_initializer										{ $$ = insert_var_def($1, 0, $3); }
 	| ID dims_empty_list '=' var_initializer						{ $$ = insert_var_def($1, $2, $4); }
 	;
 
@@ -534,7 +534,7 @@ var_initializer
 	: '{' '}' 														{ $$ = insert_var_initializer_array(NULL); }
 	| '{' var_initializer_list '}'									{ $$ = insert_var_initializer_array($2); }
 	| '{' var_initializer_list ',' '}'								{ $$ = insert_var_initializer_array($2); }
-	| expr															{ $$ = insert_var_expr($1); }
+	| expr															{ $$ = insert_var_initializer_expr($1); }
 	;
 
 /* this one is left recursive, can we swap it? if not attention to the constructors */
