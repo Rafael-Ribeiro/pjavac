@@ -209,7 +209,7 @@ is_application* main_application;
 %type<val_while>while
 %%
 application
-	: class_def END													{ $$ = $1; main_application = $1; }
+	: class_def END													{ $$ = $1; main_application = $1; return 0; }
 	;
 
 array_decl
@@ -422,7 +422,8 @@ loop_stmt
 	;
 
 member_stmt
-	: var_stmt														{ $$ = insert_member_stmt_var($1); }
+	: ';'															{ $$ = NULL; }
+	| var_stmt														{ $$ = insert_member_stmt_var($1); }
 	| func_def														{ $$ = insert_member_stmt_func($1); }
 	;
 
