@@ -23,11 +23,11 @@ JAVA_COMMENT		(\/\/[^\n]*\n)|(\/\*([^\/]|[^\*]\/)*\*\/)
 
 {JAVA_COMMENT}		{ }
 
-{N8}+{INT_SPEC}*						{ yylval.val_constant = insert_constant_long(atoll(yytext)); return CONSTANT; } /* LITERALS */
-{N10}+{EXP}?{INT_SPEC}*					{ yylval.val_constant = insert_constant_long(atoll(yytext)); return CONSTANT; }
-0(x|X){N16}+{INT_SPEC}*					{ yylval.val_constant = insert_constant_long(atoll(yytext)); return CONSTANT; }
+{N8}+{INT_SPEC}*						{ yylval.val_constant = insert_constant_long(strtoll(yytext, NULL, 10)); return CONSTANT; } /* LITERALS */
+{N10}+{EXP}?{INT_SPEC}*					{ yylval.val_constant = insert_constant_long(strtoll(yytext, NULL, 8)); return CONSTANT; }
+0(x|X){N16}+{INT_SPEC}*					{ yylval.val_constant = insert_constant_long(strtoll(yytext, NULL, 16)); return CONSTANT; }
 
-{N10}*"."{N10}+{EXP}?{FLOAT_SPEC}*		{ yylval.val_constant = insert_constant_double(strtod(yytext, NULL)); return CONSTANT; }
+{N10}*"."{N10}+{EXP}?{FLOAT_SPEC}*		{ yylval.val_constant = insert_constant_double(strtold(yytext, NULL)); return CONSTANT; }
 
 \'{CHAR}\'								{ yylval.val_constant = insert_constant_string(yytext[0]); return CONSTANT; }
 {STRING_LITERAL}						{ yylval.val_constant = insert_constant_string(yytext); return CONSTANT; }
@@ -36,7 +36,7 @@ JAVA_COMMENT		(\/\/[^\n]*\n)|(\/\*([^\/]|[^\*]\/)*\*\/)
 "false"									{ yylval.val_constant = insert_constant_bool(false); return CONSTANT; }
 
 "boolean"				{ return BOOL; } /* KEYWORDS */
-"break"					{ return BREAK; } /* WHAT-TO-DO-ABOUT: catch, enum, finally, import, protected, throw, throws, try */
+"break"					{ return BREAK; } /* WHAT-TO-DO-ABOUT: catch, enum, finally, import, protected, throw, throws, try? */
 "byte"					{ return BYTE; }
 "case"					{ return CASE; }
 "char"					{ return CHAR; }

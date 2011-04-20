@@ -106,7 +106,7 @@ is_application* main_application;
 	is_continue* val_continue;
 	is_dims* val_dims;
 	/*%type<val_dims_empty* val_dims_empty*/
-	is_dims_empty_list val_dims_empty_list;			/* integer, not a pointer? */
+	is_dims_empty_list val_dims_empty_list;	
 	is_dims_sized* val_dims_sized;
 	is_dims_sized_list* val_dims_sized_list;
 	is_do_while* val_do_while;

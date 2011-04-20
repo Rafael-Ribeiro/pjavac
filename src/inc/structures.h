@@ -171,7 +171,7 @@ typedef struct _is_constant
 	{
 		bool bool_val;
 		long long long_val;
-		double double_val;
+		long double double_val;
 		char char_val;
 		char* string_val;
 	} value;
