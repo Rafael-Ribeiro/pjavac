@@ -63,8 +63,8 @@ void show_var_def(is_var_def* node);
 void show_var_def_list(is_var_def_list* node);
 void show_var_defs(is_var_defs* node);
 void show_var_stmt(is_var_stmt* node);
-void show_var_initializer(is_var_initializer* node, int tablevel);
-void show_var_initializer_list(is_var_initializer_list* node, int tablevel);
+void show_var_initializer(is_var_initializer* node);
+void show_var_initializer_list(is_var_initializer_list* node);
 void show_while(is_while* node, int tablevel);
 
 #endif
