@@ -8,13 +8,6 @@ void free_application(is_application* application)
 {
 }
 
-/*
-void free_type_decl(is_type_decl* node)
-{
-	/ TODO /
-}
-*/
-
 void free_id(is_id* node)
 {
 	free(node->name);
@@ -67,6 +60,11 @@ void free_assign_op (is_assign_op* node)
 	free(node);
 }
 
+void free_binary_op(is_binary_op* node)
+{
+	/* TODO */
+}
+
 void free_binary_op_operation (is_binary_op* node)
 {
 	free_expr(node->data.operands.left);
@@ -84,11 +82,6 @@ void free_binary_op_assign (is_binary_op* node)
 void free_break (is_break* node)
 {
 	free_id(node->label);
-	free(node);
-}
-
-void free_constant_bool(is_constant* node)
-{
 	free(node);
 }
 
@@ -250,6 +243,16 @@ void free_for(is_for* node)
 	free(node);
 }
 
+void free_for_cond(is_for_cond* node)
+{
+	/* TODO */
+}
+
+void free_for_expr(is_for_expr *node)
+{
+	/* TODO */
+}
+
 void free_for_expr_incr(is_for_expr* node)
 {
 	free_incr_op(node->data.incr);
@@ -281,6 +284,11 @@ void free_for_expr_list(is_for_expr_list* node)
 	free(node);
 }
 
+void free_for_init(is_for_init* node)
+{
+	/* TODO */
+}
+
 void free_for_init_var_defs(is_for_init* node)
 {
 	free_var_defs(node->data.var_defs);
@@ -301,6 +309,11 @@ void free_for_inc(is_for_inc* node)
 }
 
 void free_func_call(is_func_call* node)
+{
+	/* TODO */
+}
+
+void free_func_call_arg_list(is_func_call_arg_list* node)
 {
 	/* TODO */
 }
@@ -362,6 +375,11 @@ void free_incr_op(is_incr_op* node)
 	free_var(node->var);
 
 	free(node);
+}
+
+void free_loop_stmt(is_loop_stmt* node)
+{
+	/* TODO */
 }
 
 void free_loop_stmt_for(is_loop_stmt* node)
@@ -504,7 +522,9 @@ void free_stmt_return(is_stmt* node)
 void free_stmt_list(is_stmt_list* node)
 {
 	free_stmt(node->node);
-	free_stmt(node->next);
+
+	if (node->next)
+		free_stmt_list(node->next);
 
 	free(node);
 }
@@ -515,6 +535,11 @@ void free_switch(is_switch* node)
 	free_switch_stmt_list(node->list);
 
 	free(node);
+}
+
+void free_switch_stmt(is_switch_stmt* node)
+{
+	/* TODO */
 }
 
 void free_switch_stmt_default(is_switch_stmt* node)
@@ -549,6 +574,11 @@ void free_ternary_op(is_ternary_op* node)
 	free_expr(node->else_expr);
 
 	free(node);
+}
+
+void free_type_decl(is_type_decl* node)
+{
+	/* TODO */
 }
 
 void free_type_decl_object(is_type_decl* node)
@@ -642,14 +672,6 @@ void free_var_def_list(is_var_def_list* node)
 	free(node);
 }
 
-void free_var_defs(is_var_defs* node)
-{
-	free_type_decl(node->type);
-	free_var_def_list(node->list);
-
-	free(node);
-}
-
 void free_var_initializer_array(is_var_initializer* node)
 {
 	free_var_initializer_list(node->data.array);
@@ -701,6 +723,11 @@ void free_var_initializer_list(is_var_initializer_list* node)
 
 		free(node);
 	}
+}
+
+void free_var_stmt(is_var_stmt* node)
+{
+	/* TODO */
 }
 
 void free_while(is_while* node)
