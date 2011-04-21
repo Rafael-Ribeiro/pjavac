@@ -377,7 +377,7 @@ typedef struct _is_loop_stmt
 typedef enum
 {
 	t_member_stmt_var,
-	t_member_stmt_func
+	t_member_stmt_func_def
 } type_member_stmt;
 
 typedef struct _is_member_stmt
@@ -386,7 +386,7 @@ typedef struct _is_member_stmt
 	union
 	{
 		is_var_stmt* var;
-		struct _is_func_def* func;
+		struct _is_func_def* func_def;
 	} data;
 } is_member_stmt;
 
@@ -421,6 +421,7 @@ typedef struct _is_stmt
 	type_stmt type;
 	union
 	{
+		struct _is_stmt_list *stmt_list;
 		is_var_stmt *var;
 		struct _is_stmt_list *list;
 		struct _is_assign_op *assign;
