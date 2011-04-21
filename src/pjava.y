@@ -523,8 +523,9 @@ var
 
 var_def
 	: ID															{ $$ = insert_var_def($1, 0, NULL); }
+	| ID dims														{ $$ = insert_var_def($1, $2, NULL); }
 	| ID '=' var_initializer										{ $$ = insert_var_def($1, 0, $3); }
-	| ID dims_empty_list '=' var_initializer						{ $$ = insert_var_def($1, $2, $4); }
+	| ID dims '=' var_initializer									{ $$ = insert_var_def($1, $2, $4); }
 	;
 
 var_def_list

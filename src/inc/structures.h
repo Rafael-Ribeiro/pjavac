@@ -570,7 +570,7 @@ typedef struct _is_var
 typedef struct _is_var_def
 {
 	struct _is_id* id;
-	is_dims_empty_list dims;
+	struct _is_dims* dims;
 	struct _is_var_initializer* var_init; /* nullable */
 } is_var_def;
 
