@@ -486,7 +486,7 @@ void free_stmt(is_stmt* node)
 			case t_stmt_return:
 				free_return(node->data.return_stmt);
 				break;
-
+		}
 	}
 
 	free(node);
@@ -525,10 +525,10 @@ void free_switch_stmt(is_switch_stmt* node)
 				break;
 
 			case t_switch_stmt_case:
-				free_constant(node->data.case_stmt.constant);
+				free_constant(node->constant);
 		}
 
-		free_stmt_list(node->data.case_stmt.list);
+		free_stmt_list(node->list);
 		free(node);
 	}
 }
@@ -664,7 +664,7 @@ void free_var_initializer(is_var_initializer* node)
 			case t_var_initializer_expr:
 				free_expr(node->data.expr);
 				break;
-		}, 
+		} 
 		free(node);
 	}
 }
@@ -694,3 +694,4 @@ void free_while(is_while* node)
 		free(node);
 	}
 }
+
