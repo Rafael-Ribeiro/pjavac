@@ -645,8 +645,8 @@ void free_var_defs(is_var_defs* node)
 {
 	if (node)
 	{
-		free_type_decl(type);
-		free_
+		free_type_decl(node->type);
+		free_var_def_list(node->list);
 		free(node);
 	}
 }
