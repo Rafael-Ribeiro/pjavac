@@ -424,17 +424,23 @@ void free_member_stmt_func_def(is_member_stmt* node)
 
 void free_new_op(is_new_op* node)
 {
-	free_type_object(node->type_object);
-	free_dims(node->dims);
+	if (node)
+	{
+		free_type_object(node->type_object);
+		free_dims(node->dims);
 
-	free(node);
+		free(node);
+	}
 }
 
 void free_return(is_return* node)
 {
-	free_expr(node->value);
+	if (node)
+	{
+		free_expr(node->value);
 
-	free(node);
+		free(node);
+	}
 }
 
 void free_stmt(is_stmt* node)
@@ -533,6 +539,16 @@ void free_switch_stmt(is_switch_stmt* node)
 	}
 }
 
+void free_switch_stmt_list(is_switch_stmt_list* node)
+{
+	if (node)
+	{
+		free_switch_stmt(node->node);
+		free_switch_stmt_list(node->next);
+
+		free(node);
+	}
+}
 void free_ternary_op(is_ternary_op* node)
 {
 	if (node)
