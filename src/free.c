@@ -737,44 +737,42 @@ is_var_def_list* free_var_def_list(is_var_def* var_def, is_var_def_list* next)
 	free(node);
 }
 
-is_var_defs* free_var_defs(is_type_decl* type, is_var_def_list* list)
-{
-	is_var_defs* node = (is_var_defs*)malloc(sizeof(is_var_defs));
-	
-	node->type = type;
-	node->list = list;
-
-	free(node);
-}
-
-is_var_initializer* free_var_initializer_array(is_var_initializer_list* list)
-{
-	is_var_initializer* node = (is_var_initializer*)malloc(sizeof(is_var_initializer));
-
-	node->type = t_var_initializer_val_arr;
-	node->data.array = list;
-
-	free(node);
-}
-
-is_var_initializer* free_var_initializer_expr(is_expr* expr)
-{
-	is_var_initializer* node = (is_var_initializer*)malloc(sizeof(is_var_initializer));
-
-	node->type = t_var_initializer_expr;
-	node->data.expr = expr;
-
-	free(node);
-}
 */
+
+void free_var_defs(is_var_defs* node)
+{
+	if (node)
+	{
+		free_type_decl(type);
+		free_
+		free(node);
+	}
+}
+
+
+void free_var_initializer(is_var_initializer* node)
+{
+	if (node)
+	{
+		switch(node->type)
+		{
+			case t_var_initializer_val_arr:
+				free_var_initializer_list(node->data.array);
+				break;
+
+			case t_var_initializer_expr:
+				free_expr(node->data.expr);
+				break;
+		}, 
+		free(node);
+	}
+}
 
 void free_var_initializer_list(is_var_initializer_list* node)
 {
 	if (node)
 	{
-		if (node->node)
-			free(node->node);
-
+		free_var_initializer(node->node);
 		free_var_initializer_list(node->next);
 
 		free(node);
@@ -783,12 +781,11 @@ void free_var_initializer_list(is_var_initializer_list* node)
 
 void free_while(is_while* node)
 {
-	if (node->cond)
-		free(node->cond);
-
-	if (node->body)
-		free(node->body);
-
-	free(node);
+	if (node)
+	{
+		free_expr(node->cond);
+		free_stmt(node->body);
+		free(node);
+	}
 }
 
