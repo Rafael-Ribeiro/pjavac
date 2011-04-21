@@ -532,8 +532,8 @@ void show_member_stmt(is_member_stmt* node, int tablevel)
 			show_var_stmt(node->data.var, tablevel);
 			break;
 
-		case t_member_stmt_func:
-			show_func_def(node->data.func, tablevel);
+		case t_member_stmt_func_def:
+			show_func_def(node->data.func_def, tablevel);
 			break;
 	}
 }

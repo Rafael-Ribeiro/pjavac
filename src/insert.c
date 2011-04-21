@@ -445,32 +445,62 @@ is_incr_op* insert_incr_op(type_incr_op type, bool pre, is_var* var)
 
 is_loop_stmt* insert_loop_stmt_for(is_for* for_stmt)
 {
-	return NULL;
+	is_loop_stmt *node = (is_loop_stmt*)malloc(sizeof(is_loop_stmt));
+
+	node->type = t_loop_stmt_for;
+	node->data.for_stmt = for_stmt;
+
+	return node;
 }
 
 is_loop_stmt* insert_loop_stmt_while(is_while* while_stmt)
 {
-	return NULL;
+	is_loop_stmt *node = (is_loop_stmt*)malloc(sizeof(is_loop_stmt));
+
+	node->type = t_loop_stmt_while;
+	node->data.while_stmt = while_stmt;
+
+	return node;
 }
 
 is_loop_stmt* insert_loop_stmt_do_while(is_do_while* do_while_stmt)
 {
-	return NULL;
+	is_loop_stmt *node = (is_loop_stmt*)malloc(sizeof(is_loop_stmt));
+
+	node->type = t_loop_stmt_do_while;
+	node->data.do_while_stmt = do_while_stmt;
+
+	return node;
 }
 
 is_member_stmt* insert_member_stmt_var(is_var_stmt* var)
 {
-	return NULL;
+	is_member_stmt* node = (is_member_stmt*)malloc(sizeof(is_member_stmt));
+
+	node->type = t_member_stmt_var;
+	node->data.var = var;
+
+	return node;
 }
 
-is_member_stmt* insert_member_stmt_func(is_func_def* func_def)
+is_member_stmt* insert_member_stmt_func_def(is_func_def* func_def)
 {
-	return NULL;
+	is_member_stmt* node = (is_member_stmt*)malloc(sizeof(is_member_stmt));
+
+	node->type = t_member_stmt_func_def;
+	node->data.func_def = func_def;
+
+	return node;
 }
 
 is_new_op* insert_new_op(is_type_object* type, is_dims* dims)
 {
-	return NULL;
+	is_new_op* node = (is_new_op*)malloc(sizeof(is_new_op));
+
+	node->type_object = type;
+	node->dims = dims;
+
+	return node;
 }
 
 is_return* insert_return(is_expr* value)
@@ -483,57 +513,112 @@ is_return* insert_return(is_expr* value)
 
 is_stmt* insert_stmt_stmt_list(is_stmt_list* stmt_list)
 {
-	return NULL;
+	is_stmt* node = (is_stmt*)malloc(sizeof(is_stmt));
+
+	node->type = t_stmt_stmt_list;
+	node->data.stmt_list = stmt_list;
+
+	return node;
 }
 
 is_stmt* insert_stmt_var_stmt(is_var_stmt* var_stmt)
 {
-	return NULL;
+	is_stmt* node = (is_stmt*)malloc(sizeof(is_stmt));
+
+	node->type = t_stmt_var_stmt;
+	node->data.var = var_stmt;
+
+	return node;
 }
 
 is_stmt* insert_stmt_assign_op(is_assign_op* assign_op)
 {
-	return NULL;
+	is_stmt* node = (is_stmt*)malloc(sizeof(is_stmt));
+
+	node->type = t_stmt_assign;
+	node->data.assign = assign_op;
+
+	return node;
 }
 
 is_stmt* insert_stmt_incr_op(is_incr_op* incr_op)
 {
-	return NULL;
+	is_stmt* node = (is_stmt*)malloc(sizeof(is_stmt));
+
+	node->type = t_stmt_incr;
+	node->data.incr = incr_op;
+
+	return node;
 }
 
 is_stmt* insert_stmt_if(is_if* if_stmt)
 {
-	return NULL;
+	is_stmt* node = (is_stmt*)malloc(sizeof(is_stmt));
+
+	node->type = t_stmt_if;
+	node->data.if_stmt = if_stmt;
+
+	return node;
 }
 
 is_stmt* insert_stmt_loop_stmt(is_loop_stmt* loop_stmt)
 {
-	return NULL;
+	is_stmt* node = (is_stmt*)malloc(sizeof(is_stmt));
+
+	node->type = t_stmt_loop;
+	node->data.loop = loop_stmt;
+
+	return node;
 }
 
 is_stmt* insert_stmt_func_call(is_func_call* func_call)
 {
-	return NULL;
+	is_stmt* node = (is_stmt*)malloc(sizeof(is_stmt));
+
+	node->type = t_stmt_func_call;
+	node->data.func_call = func_call;
+
+	return node;
 }
 
 is_stmt* insert_stmt_switch(is_switch* switch_stmt)
 {
-	return NULL;
+	is_stmt* node = (is_stmt*)malloc(sizeof(is_stmt));
+
+	node->type = t_stmt_switch;
+	node->data.switch_stmt = switch_stmt;
+
+	return node;
 }
 
 is_stmt* insert_stmt_break(is_break* break_stmt)
 {
-	return NULL;
+	is_stmt* node = (is_stmt*)malloc(sizeof(is_stmt));
+
+	node->type = t_stmt_break;
+	node->data.break_stmt = break_stmt;
+
+	return node;
 }
 
 is_stmt* insert_stmt_continue(is_continue* continue_stmt)
 {
-	return NULL;
+	is_stmt* node = (is_stmt*)malloc(sizeof(is_stmt));
+
+	node->type = t_stmt_continue;
+	node->data.continue_stmt = continue_stmt;
+
+	return node;
 }
 
 is_stmt* insert_stmt_return(is_return* return_stmt)
 {
-	return NULL;
+	is_stmt* node = (is_stmt*)malloc(sizeof(is_stmt));
+
+	node->type = t_stmt_return;
+	node->data.return_stmt = return_stmt;
+
+	return node;
 }
 
 is_stmt_list* insert_stmt_list(is_stmt* stmt, is_stmt_list* next)

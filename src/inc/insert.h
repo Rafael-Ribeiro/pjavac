@@ -80,7 +80,7 @@ is_loop_stmt* insert_loop_stmt_while(is_while* while_stmt);
 is_loop_stmt* insert_loop_stmt_do_while(is_do_while* do_while_stmt);
 
 is_member_stmt* insert_member_stmt_var(is_var_stmt* var);
-is_member_stmt* insert_member_stmt_func(is_func_def* func_def);
+is_member_stmt* insert_member_stmt_func_def(is_func_def* func_def);
 
 is_new_op* insert_new_op(is_type_object* type, is_dims* dims);
 

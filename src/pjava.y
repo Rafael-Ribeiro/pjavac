@@ -429,7 +429,7 @@ loop_stmt
 member_stmt
 	: ';'															{ $$ = NULL; }
 	| var_stmt														{ $$ = insert_member_stmt_var($1); }
-	| func_def														{ $$ = insert_member_stmt_func($1); }
+	| func_def														{ $$ = insert_member_stmt_func_def($1); }
 	;
 
 new_op
