@@ -709,7 +709,7 @@ void free_var_initializer(is_var_initializer* node)
 			case t_var_initializer_expr:
 				free_expr(node->data.expr);
 				break;
-		}, 
+		}
 		free(node);
 	}
 }
