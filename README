@@ -15,3 +15,7 @@ TODO:
 		this makes the error correction to loop;
 
 	can be checked using the application error rule (take forces a match with a END)
+
+
+
+Vou retirar os error handlers uma vez ke pelos vistos não é pedido e está a dar mais bodes ke resultados
