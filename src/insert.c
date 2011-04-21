@@ -100,7 +100,7 @@ is_assign_op* insert_assign_op (is_var* var, type_assign_op type, is_expr* expr)
 
 is_binary_op* insert_binary_op_operation (is_expr* left, type_binary_op type, is_expr* right)
 {
-	is_binary_op* node = (is_binary_op*)malloc(sizeof(is_binary_op*));
+	is_binary_op* node = (is_binary_op*)malloc(sizeof(is_binary_op));
 
 	node->type = type;
 	node->data.operands.left = left;
@@ -111,7 +111,7 @@ is_binary_op* insert_binary_op_operation (is_expr* left, type_binary_op type, is
 
 is_binary_op* insert_binary_op_assign (is_assign_op* assign)
 {
-	is_binary_op* node = (is_binary_op*)malloc(sizeof(is_binary_op*));
+	is_binary_op* node = (is_binary_op*)malloc(sizeof(is_binary_op));
 
 	node->type = t_binary_op_assign;
 	node->data.assign = assign;
@@ -202,9 +202,16 @@ is_dims_sized_list* insert_dims_sized_list (is_dims_sized_list* prev, is_dims_si
 	node->next = NULL;
 
 	if (prev)
-		prev->next = node;
+	{
+		while (prev->next != NULL)
+			prev = prev->next;
 
-	return node;
+		prev->next = node;
+		return prev;
+	} else
+	{
+		return node;
+	}
 }
 
 is_do_while *insert_do_while (is_stmt* body, is_expr* cond)
@@ -665,7 +672,7 @@ is_switch* insert_switch(is_expr* expr, is_switch_stmt_list* list)
 
 is_switch_stmt* insert_switch_stmt_default(is_stmt_list* stmt_list)
 {
-	is_switch_stmt* node = (is_switch_stmt*)malloc(sizeof(is_switch_stmt*));
+	is_switch_stmt* node = (is_switch_stmt*)malloc(sizeof(is_switch_stmt));
 	
 	node->type = t_switch_stmt_default;
 	node->constant = NULL;
@@ -676,7 +683,7 @@ is_switch_stmt* insert_switch_stmt_default(is_stmt_list* stmt_list)
 
 is_switch_stmt* insert_switch_stmt_case(is_constant* constant, is_stmt_list* stmt_list)
 {
-	is_switch_stmt* node = (is_switch_stmt*)malloc(sizeof(is_switch_stmt*));
+	is_switch_stmt* node = (is_switch_stmt*)malloc(sizeof(is_switch_stmt));
 	
 	node->type = t_switch_stmt_case;
 	node->constant = constant;
@@ -687,7 +694,7 @@ is_switch_stmt* insert_switch_stmt_case(is_constant* constant, is_stmt_list* stm
 
 is_switch_stmt_list* insert_switch_stmt_list(is_switch_stmt* stmt, is_switch_stmt_list* next)
 {
-	is_switch_stmt_list* node = (is_switch_stmt_list*)malloc(sizeof(is_switch_stmt_list*));
+	is_switch_stmt_list* node = (is_switch_stmt_list*)malloc(sizeof(is_switch_stmt_list));
 	
 	node->node = stmt;
 	node->next = next;
@@ -857,9 +864,16 @@ is_var_initializer_list* insert_var_initializer_list(is_var_initializer_list* pr
 	node->next = NULL;
 
 	if (prev)
-		prev->next = node;
+	{
+		while (prev->next != NULL)
+			prev = prev->next;
 
-	return node;
+		prev->next = node;
+		return prev;
+	} else
+	{
+		return node;
+	}
 }
 
 is_while* insert_while(is_expr* cond, is_stmt* body)
