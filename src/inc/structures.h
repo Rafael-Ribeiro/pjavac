@@ -214,6 +214,7 @@ typedef enum
 {
 	t_expr_var,
 	t_expr_new_op,
+	t_expr_type_cast,
 	t_expr_constant,
 	t_expr_func_call,
 	t_expr_operation
@@ -226,6 +227,10 @@ typedef struct _is_expr
 	{
 		struct _is_var* var;
 		struct _is_new_op* new_op;
+		struct {
+			struct _is_expr* expr;
+			struct _is_type_decl* type;
+		} type_cast;		
 		struct _is_constant* constant;
 		struct _is_func_call* func_call;
 		struct _is_expr_op* operation;
@@ -578,7 +583,7 @@ typedef struct _is_var
 typedef struct _is_var_def
 {
 	struct _is_id* id;
-	is_dims_empty_list dims;
+	struct _is_dims* dims;
 	struct _is_var_initializer* var_init; /* nullable */
 } is_var_def;
 

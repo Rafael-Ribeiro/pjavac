@@ -19,7 +19,7 @@ void show_id(is_id* node)
 
 void show_constant(is_constant* node)
 {
-	switch(node->type)
+	switch (node->type)
 	{
 		case t_constant_bool:
 			if (node->value.bool_val)
@@ -243,7 +243,7 @@ void show_class_def(is_class_def* node, int tablevel)
 void show_class_stmt(is_class_stmt* node, int tablevel)
 {
 	tab(tablevel);
-	
+
 	if (node->privacy)
 	{
 		show_class_stmt_privacy(*node->privacy);
@@ -257,7 +257,6 @@ void show_class_stmt(is_class_stmt* node, int tablevel)
 	}
 
 	show_member_stmt(node->stmt, tablevel);
-	printf("\n");
 }
 
 void show_class_stmt_list(is_class_stmt_list* node, int tablevel)
@@ -310,8 +309,11 @@ void show_continue(is_continue* node)
 
 void show_dims(is_dims* node)
 {
-	show_dims_sized_list(node->sized);
-	show_dims_empty_list(node->empty);
+	if (node)
+	{
+		show_dims_sized_list(node->sized);
+		show_dims_empty_list(node->empty);
+	}
 }
 
 void show_dims_empty_list(is_dims_empty_list list)
@@ -330,7 +332,7 @@ void show_dims_sized(is_dims_sized* node)
 
 void show_dims_sized_list(is_dims_sized_list* node)
 {
-	while (node)
+	if (node)
 	{
 		show_dims_sized(node->node);
 		show_dims_sized_list(node->next);
@@ -341,7 +343,8 @@ void show_do_while(is_do_while* node, int tablevel)
 {
 	printf("do\n");
 	show_stmt(node->body, tablevel+1);
-	printf(" while(");
+	tab(tablevel);
+	printf("while(");
 	show_expr(node->cond);
 	printf(");");
 }
@@ -357,6 +360,13 @@ void show_expr(is_expr* node)
 
 		case t_expr_new_op:
 			show_new_op(node->data.new_op);
+			break;
+
+		case t_expr_type_cast:
+			printf("(");
+			show_type_decl(node->data.type_cast.type);
+			printf(")");
+			show_expr(node->data.type_cast.expr);
 			break;
 
 		case t_expr_constant:
@@ -599,6 +609,12 @@ void show_loop_stmt(is_loop_stmt* node, int tablevel)
  
 void show_member_stmt(is_member_stmt* node, int tablevel)
 {
+	if (!node)
+	{
+		printf(";\n");
+		return;
+	}
+
 	switch (node->type)
 	{
 		case t_member_stmt_var:
@@ -730,6 +746,8 @@ void show_switch(is_switch* node, int tablevel)
 
 void show_switch_stmt(is_switch_stmt* node, int tablevel)
 {
+	tab(tablevel);
+
 	switch (node->type)
 	{
 		case t_switch_stmt_default:
@@ -890,7 +908,7 @@ void show_var(is_var* node)
 void show_var_def(is_var_def* node)
 {
 	show_id(node->id);
-	show_dims_empty_list(node->dims);
+	show_dims(node->dims);
 
 	if (node->var_init)
 	{

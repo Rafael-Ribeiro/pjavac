@@ -333,6 +333,7 @@ expr
 	: var %prec LOW_PREC											{ $$ = insert_expr_var($1); }
 	| new_op %prec LOW_PREC											{ $$ = insert_expr_new_op($1); }
 	| '(' expr ')'													{ $$ = $2; }
+	| '(' type_decl ')' expr									 	{ $$ = insert_expr_type_cast($4, $2); }
 	| CONSTANT														{ $$ = insert_expr_constant($1); }
 	| func_call														{ $$ = insert_expr_func_call($1); }
 	| expr_op														{ $$ = insert_expr_expr_op($1); }
@@ -450,7 +451,7 @@ stmt
 	| incr_op ';'													{ $$ = insert_stmt_incr_op($1); }
 	| if															{ $$ = insert_stmt_if($1); }
 	| loop_stmt														{ $$ = insert_stmt_loop_stmt($1); }
-	| func_call														{ $$ = insert_stmt_func_call($1); }
+	| func_call	';'													{ $$ = insert_stmt_func_call($1); }
 	| switch														{ $$ = insert_stmt_switch($1); }
 	| break															{ $$ = insert_stmt_break($1); }
 	| continue														{ $$ = insert_stmt_continue($1); }
@@ -523,8 +524,9 @@ var
 
 var_def
 	: ID															{ $$ = insert_var_def($1, 0, NULL); }
+	| ID dims														{ $$ = insert_var_def($1, $2, NULL); }
 	| ID '=' var_initializer										{ $$ = insert_var_def($1, 0, $3); }
-	| ID dims_empty_list '=' var_initializer						{ $$ = insert_var_def($1, $2, $4); }
+	| ID dims '=' var_initializer									{ $$ = insert_var_def($1, $2, $4); }
 	;
 
 var_def_list

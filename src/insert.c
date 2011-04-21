@@ -30,6 +30,8 @@ is_id* insert_id(char* data)
 is_constant* insert_constant_bool(bool value)
 {
 	is_constant* node = (is_constant*)malloc(sizeof(is_constant));
+
+	node->type = t_constant_bool;
 	node->value.bool_val = value;
 
 	return node;
@@ -38,6 +40,8 @@ is_constant* insert_constant_bool(bool value)
 is_constant* insert_constant_long(long long value)
 {
 	is_constant* node = (is_constant*)malloc(sizeof(is_constant));
+
+	node->type = t_constant_long;
 	node->value.long_val = value;
 
 	return node;
@@ -46,6 +50,8 @@ is_constant* insert_constant_long(long long value)
 is_constant* insert_constant_double(long double value)
 {
 	is_constant* node = (is_constant*)malloc(sizeof(is_constant));
+
+	node->type = t_constant_double;
 	node->value.double_val = value;
 
 	return node;
@@ -54,6 +60,8 @@ is_constant* insert_constant_double(long double value)
 is_constant* insert_constant_char(char* value)
 {
 	is_constant* node = (is_constant*)malloc(sizeof(is_constant));
+
+	node->type = t_constant_char;
 	node->value.string_val = __strcpy(value);
 
 	return node;
@@ -62,6 +70,8 @@ is_constant* insert_constant_char(char* value)
 is_constant* insert_constant_string(char* value)
 {
 	is_constant* node = (is_constant*)malloc(sizeof(is_constant));
+
+	node->type = t_constant_string;
 	node->value.string_val = __strcpy(value);
 
 	return node;
@@ -222,6 +232,18 @@ is_expr* insert_expr_new_op(is_new_op* new_op)
 
 	node->type = t_expr_new_op;
 	node->data.new_op = new_op;
+
+	return node;
+}
+
+is_expr* insert_expr_type_cast(is_expr* expr, is_type_decl* type)
+{
+	is_expr* node = (is_expr*)malloc(sizeof(is_expr));
+
+	node->type = t_expr_type_cast;
+
+	node->data.type_cast.expr = expr;
+	node->data.type_cast.type = type;
 
 	return node;
 }
@@ -776,7 +798,7 @@ is_var* insert_var_func_subscript(is_func_call* func_call, is_dims_sized* positi
 	return node;
 }
 
-is_var_def* insert_var_def(is_id* id, is_dims_empty_list dims, is_var_initializer* init)
+is_var_def* insert_var_def(is_id* id, is_dims* dims, is_var_initializer* init)
 {
 	is_var_def* node = (is_var_def*)malloc(sizeof(is_var_def));
 

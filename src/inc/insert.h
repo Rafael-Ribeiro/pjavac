@@ -41,6 +41,7 @@ is_do_while* insert_do_while(is_stmt* stmt, is_expr* cond);
 
 is_expr* insert_expr_var(is_var* var);
 is_expr* insert_expr_new_op(is_new_op* new_op);
+is_expr* insert_expr_type_cast(is_expr* expr, is_type_decl* type); 
 is_expr* insert_expr_constant(is_constant* constant); 
 is_expr* insert_expr_func_call(is_func_call* func_call); 
 is_expr* insert_expr_expr_op(is_expr_op* expr_op); 
@@ -121,7 +122,7 @@ is_var* insert_var_new_op(is_new_op* new_op);
 is_var* insert_var_var_subscript(is_var* var, is_dims_sized* position);
 is_var* insert_var_func_subscript(is_func_call* func_call, is_dims_sized* position);
 
-is_var_def* insert_var_def(is_id* id, is_dims_empty_list dims, is_var_initializer* init);
+is_var_def* insert_var_def(is_id* id, is_dims* dims, is_var_initializer* init);
 
 is_var_def_list* insert_var_def_list(is_var_def* var_def, is_var_def_list* next);
 
