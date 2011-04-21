@@ -10,6 +10,8 @@
 #include "inc/free.h"
 
 #include "y.tab.h"
+
+extern int yyline;
 %}
 
 N8					[0-7]
@@ -122,12 +124,14 @@ JAVA_COMMENT		(\/\/[^\n]*\n)|(\/\*([^\/]|[^\*]\/)*\*\/)
 "?"				{ return '?'; }
 
 <<EOF>>			{ return END; }
- 
+
+\n				{ yyline++; }
 {WS}			{ /* remove whitespace */}
 .				{ return yytext[0]; } /* bad chars */
 
 %%
 int yywrap()
 {
+	yyline = 1;
 	return 1;
 }

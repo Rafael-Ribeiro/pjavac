@@ -1,5 +1,7 @@
 class gcd_rec
 {
+	public final static int a;
+
 	public int asd(int a)
 	{
 		int [][] a = {1,funcCall(1,2,-+-+-+-+-+-++func()[12][123])}; /* this really is valid sintactically (and the parser reports it as so); may not be semantically */

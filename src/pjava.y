@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
+#include <stdarg.h>
 
 #include "inc/structures.h"
 #include "inc/insert.h"
@@ -10,6 +11,10 @@
 #include "inc/free.h"
 
 is_application* main_application;
+bool has_errors;
+int yyline;
+
+int pretty_error(char* format, ...);
 %}
 
 /* TOKENS */
@@ -213,6 +218,7 @@ is_application* main_application;
 %type<val_var_stmt>var_stmt
 %type<val_while>while
 %%
+
 application
 	: class_def END													{ $$ = $1; main_application = $1; return 0; }
 	;
@@ -444,7 +450,7 @@ return
 
 stmt
 	: ';'															{ $$ = NULL; }
-	| '{' '}'														{ $$ = NULL; } 
+	| '{' '}'														{ $$ = NULL; }
 	| '{' stmt_list '}'												{ $$ = insert_stmt_stmt_list($2); }
 	| var_stmt														{ $$ = insert_stmt_var_stmt($1); }
 	| assign_op ';'													{ $$ = insert_stmt_assign_op($1); }
@@ -560,12 +566,35 @@ while
 	;
 
 %%
+int yyerror(char* msg)
+{
+	return pretty_error("%s", msg);
+}
+
+int pretty_error(char* format, ...)
+{
+	va_list argp;
+
+	has_errors = true;
+	fprintf(stderr, "%d: ", yyline);
+
+	va_start(argp, format);
+	vfprintf(stderr, format, argp);
+	va_end(argp);
+
+	fprintf(stderr, "\n");
+	return 0;
+}
+
 int main()
 {
+	yyline = 0;
 	main_application = NULL;
+	has_errors = false;
+
 	yyparse();
 
-	if (main_application)
+	if (main_application && !has_errors)
 	{
 		printf("Valid syntax!\n");
 		show_application(main_application, 0);

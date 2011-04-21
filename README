@@ -1,0 +1,21 @@
+TODO:
+	because of the way error works:
+		
+
+		if we have
+			i[1+
+		in the input, and a rule that tries to match
+			[error]
+
+		1+ --> gets marked as an error
+		discard input until we get a ']'  (possibly never)
+
+	ALSO
+		END tokens seem to be infinite :X
+		this makes the error correction to loop;
+
+	can be checked using the application error rule (take forces a match with a END)
+
+
+
+Vou retirar os error handlers uma vez ke pelos vistos não é pedido e está a dar mais bodes ke resultados

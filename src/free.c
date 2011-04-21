@@ -659,25 +659,56 @@ void free_var_initializer_array(is_var_initializer* node)
 
 void free_var_initializer_expr(is_var_initializer* node)
 {
+	/* FIXME Missing something? Merge may have deleted stuff. */
 	free_expr(node->data.expr);
+}
 
-	free(node);
+void free_var_defs(is_var_defs* node)
+{
+	if (node)
+	{
+		free_type_decl(type);
+		free_
+		free(node);
+	}
+}
+
+
+void free_var_initializer(is_var_initializer* node)
+{
+	if (node)
+	{
+		switch(node->type)
+		{
+			case t_var_initializer_val_arr:
+				free_var_initializer_list(node->data.array);
+				break;
+
+			case t_var_initializer_expr:
+				free_expr(node->data.expr);
+				break;
+		}, 
+		free(node);
+	}
 }
 
 void free_var_initializer_list(is_var_initializer_list* node)
 {
-	free_var_initializer(node->node);
-
-	if (node->next)
+	if (node)
+	{
+		free_var_initializer(node->node);
 		free_var_initializer_list(node->next);
 
-	free(node);
+		free(node);
+	}
 }
 
 void free_while(is_while* node)
 {
-	free_expr(node->cond);
-	free_stmt(node->body);
-
-	free(node);
+	if (node)
+	{
+		free_expr(node->cond);
+		free_stmt(node->body);
+		free(node);
+	}
 }
