@@ -765,7 +765,7 @@ is_unary_op* insert_unary_op_operation(type_unary_op_operator op, is_expr* expr)
 
 is_var* insert_var_id(is_id* id)
 {
-	is_var* node = (is_var*)malloc(sizeof(is_var_def));
+	is_var* node = (is_var*)malloc(sizeof(is_var));
 
 	node->type = t_var_id;
 	node->data.id = id;
@@ -775,7 +775,7 @@ is_var* insert_var_id(is_id* id)
 
 is_var* insert_var_new_op(is_new_op* new_op)
 {
-	is_var* node = (is_var*)malloc(sizeof(is_var_def));
+	is_var* node = (is_var*)malloc(sizeof(is_var));
 
 	node->type = t_var_new_op;
 	node->data.new_op = new_op;
@@ -785,7 +785,7 @@ is_var* insert_var_new_op(is_new_op* new_op)
 
 is_var* insert_var_var_subscript(is_var* var, is_dims_sized* position)
 {
-	is_var* node = (is_var*)malloc(sizeof(is_var_def));
+	is_var* node = (is_var*)malloc(sizeof(is_var));
 
 	node->type = t_var_array;
 	node->data.array.var = var;
@@ -796,7 +796,7 @@ is_var* insert_var_var_subscript(is_var* var, is_dims_sized* position)
 
 is_var* insert_var_func_subscript(is_func_call* func_call, is_dims_sized* position)
 {
-	is_var* node = (is_var*)malloc(sizeof(is_var_def));
+	is_var* node = (is_var*)malloc(sizeof(is_var));
 
 	node->type = t_var_func_call;
 	node->data.func_call.call = func_call;
