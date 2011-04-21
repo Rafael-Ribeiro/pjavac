@@ -84,12 +84,12 @@ void free_binary_op_assign (is_binary_op* node)
 void free_break (is_break* node)
 {
 	free_id(node->label);
-	free(node);void free_constant_bool(is_constant* node)
-{
 	free(node);
 }
 
-
+void free_constant_bool(is_constant* node)
+{
+	free(node);
 }
 
 void free_class_stmt_list (is_class_stmt_list* node)
