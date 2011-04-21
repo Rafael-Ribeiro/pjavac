@@ -979,4 +979,3 @@ void show_while(is_while* node, int tablevel)
 	printf(")\n");
 	show_stmt(node->body, tablevel+1);
 }
-

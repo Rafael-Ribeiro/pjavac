@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
+#include <stdarg.h>
 
 #include "inc/structures.h"
 #include "inc/insert.h"
@@ -10,6 +11,10 @@
 #include "inc/free.h"
 
 is_application* main_application;
+bool has_errors;
+int yyline;
+
+int pretty_error(char* format, ...);
 %}
 
 /* TOKENS */
@@ -213,8 +218,10 @@ is_application* main_application;
 %type<val_var_stmt>var_stmt
 %type<val_while>while
 %%
+
 application
 	: class_def END													{ $$ = $1; main_application = $1; return 0; }
+	| error END														{ yyerror("TODO: this proves that END token is getting always repeated and causes the lock"); $$ = NULL; } 
 	;
 
 array_decl
@@ -265,6 +272,7 @@ binary_op
 break
 	: BREAK ';'														{ $$ = insert_break(NULL); }
 	| BREAK ID ';'													{ $$ = insert_break($2); } /* TODO labeled loops */
+	| BREAK error 													{ yyerror("missing ';' after \"break\"."); $$ = NULL; }
 	;
 
 class_def
@@ -299,6 +307,7 @@ class_stmt_list
 continue
 	: CONTINUE ';'													{ $$ = insert_continue(NULL); }
 	| CONTINUE ID ';'												{ $$ = insert_continue($2); } /* TODO labeled loops */
+	| CONTINUE error 												{ yyerror("missing ';' after \"continue\"."); $$ = NULL; }
 	;
 
 dims
@@ -317,6 +326,7 @@ dims_empty_list
 
 dims_sized
 	: '[' expr ']'													{ $$ = $2; }
+	| '[' error ']'													{ yyerror("invalid dimension."); $$ = NULL; }
 	;
 
 /* this one is left recursive, can we swap it? if not attention to the constructors */
@@ -327,6 +337,7 @@ dims_sized_list
 
 do_while
 	: DO stmt WHILE '(' expr ')' ';'								{ $$ = insert_do_while($2, $5); }
+	| DO stmt WHILE '(' expr ')' error								{ yyerror("missing ';' after do .. while()."); $$ = NULL; }
 	;
 
 expr
@@ -337,6 +348,7 @@ expr
 	| CONSTANT														{ $$ = insert_expr_constant($1); }
 	| func_call														{ $$ = insert_expr_func_call($1); }
 	| expr_op														{ $$ = insert_expr_expr_op($1); }
+	| '(' error ')'													{ yyerror("invalid expression!"); $$ = NULL; }
 	;
 
 expr_list
@@ -440,11 +452,12 @@ new_op
 return
 	: RETURN ';'													{ $$ = insert_return(NULL); }
 	| RETURN expr ';'												{ $$ = insert_return($2); }
+	| RETURN error													{ yyerror("invalid expression!"); $$ = NULL; }
 	;
 
 stmt
 	: ';'															{ $$ = NULL; }
-	| '{' '}'														{ $$ = NULL; } 
+	| '{' '}'														{ $$ = NULL; }
 	| '{' stmt_list '}'												{ $$ = insert_stmt_stmt_list($2); }
 	| var_stmt														{ $$ = insert_stmt_var_stmt($1); }
 	| assign_op ';'													{ $$ = insert_stmt_assign_op($1); }
@@ -456,6 +469,12 @@ stmt
 	| break															{ $$ = insert_stmt_break($1); }
 	| continue														{ $$ = insert_stmt_continue($1); }
 	| return														{ $$ = insert_stmt_return($1); }
+
+	| error ';'														{ yyerror("invalid statement."); $$ = NULL; }
+	| '{' error '}'													{ yyerror("invalid compound statement."); $$ = NULL; }
+	| assign_op error												{ yyerror("missing ';' after assignment operation."); $$ = NULL; }
+	| incr_op error													{ yyerror("missing ';' after increment operation."); $$ = NULL; }
+	| func_call	error												{ yyerror("missing ';' after function call."); $$ = NULL; }
 	;
 
 stmt_list
@@ -473,6 +492,10 @@ switch_stmt
 	| DEFAULT ':' stmt_list											{ $$ = insert_switch_stmt_default($3); }
 	| CASE CONSTANT ':'												{ $$ = insert_switch_stmt_case($2, NULL); }
 	| CASE CONSTANT ':' stmt_list									{ $$ = insert_switch_stmt_case($2, $4); }
+
+	| DEFAULT error													{ yyerror("missing ':' after \"default\" case."); $$ = NULL; }
+	| CASE error ':'												{ yyerror("missing constant in case."); $$ = NULL; }
+	| CASE CONSTANT error											{ pretty_error("missing ':' after %s case.", $2->value); $$ = NULL; }
 	;
 
 switch_stmt_list
@@ -553,6 +576,7 @@ var_initializer_list
 
 var_stmt															
 	: var_defs ';'													{ $$ = $1; }
+	| var_defs error												{ yyerror("missing ';' after variable(s) definition."); $$ = NULL; }
 	;
 
 while
@@ -560,12 +584,35 @@ while
 	;
 
 %%
+int yyerror(char* msg)
+{
+	return pretty_error("%s", msg);
+}
+
+int pretty_error(char* format, ...)
+{
+	va_list argp;
+
+	has_errors = true;
+	fprintf(stderr, "%d: ", yyline);
+
+	va_start(argp, format);
+	vfprintf(stderr, format, argp);
+	va_end(argp);
+
+	fprintf(stderr, "\n");
+	return 0;
+}
+
 int main()
 {
+	yyline = 0;
 	main_application = NULL;
+	has_errors = false;
+
 	yyparse();
 
-	if (main_application)
+	if (main_application && !has_errors)
 	{
 		printf("Valid syntax!\n");
 		show_application(main_application, 0);

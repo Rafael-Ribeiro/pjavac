@@ -871,4 +871,3 @@ is_while* insert_while(is_expr* cond, is_stmt* body)
 
 	return node;
 }
-

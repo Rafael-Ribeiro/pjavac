@@ -1,0 +1,32 @@
+class gcd_rec
+{
+	public final static int a;
+	private void b[20];
+
+	private int a(int[][] c, boolean d)
+	{
+		if (d ? false : c[1]+2)
+			if (y)
+				System.out.println("buedafixe" + 1.2);
+			else
+			{
+				switch (c)
+				{
+					case '1':
+						break;
+		
+					case '2':
+					{
+						c[i] <<= j <<= (int)1;
+						continue what;
+					}
+				}
+			}
+
+		for (;;)
+			do while(1) i++; while (true);
+	
+		i = 2*3+ +1;
+		return c[1] + c[2];
+	}
+}
