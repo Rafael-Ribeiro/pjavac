@@ -208,12 +208,13 @@ void show_binary_op(is_binary_op* node)
 		default: /* never happens, remove warning because of assign */
 			break;
 	}
+
 	printf(" ");
 	show_expr(node->data.operands.right);
 	printf(")");
 }
 
-void show_break(is_break* node, int tablevel)
+void show_break(is_break* node)
 {
 	printf("break");
 
@@ -256,6 +257,7 @@ void show_class_stmt(is_class_stmt* node, int tablevel)
 	}
 
 	show_member_stmt(node->stmt, tablevel);
+	printf("\n");
 }
 
 void show_class_stmt_list(is_class_stmt_list* node, int tablevel)
@@ -295,7 +297,7 @@ void show_class_stmt_scope(is_class_stmt_scope* node)
 	}
 }
  
-void show_continue(is_continue* node, int tablevel)
+void show_continue(is_continue* node)
 {
 	printf("continue");
 
@@ -494,32 +496,98 @@ void show_func_call_arg_list(is_func_call_arg_list* node)
 
 void show_func_def(is_func_def* node, int tablevel)
 {
+	show_type_decl(node->type);
+	printf(" ");
+	
+	show_id(node->id);
+	show_func_def_args(node->args);
+	printf("\n");
 
+	tab(tablevel);
+	printf("{\n");
+	show_stmt_list(node->body, tablevel+1);
+	tab(tablevel);
+	printf("}\n");
 }
 
-void show_func_def_arg(is_func_def_arg* node, int tablevel)
+void show_func_def_arg(is_func_def_arg* node)
 {
-
+	show_type_decl(node->type);
+	printf(" ");
+	show_id(node->id);
 }
 
-void show_func_def_arg_list(is_func_def_arg_list* node, int tablevel)
+void show_func_def_arg_list(is_func_def_arg_list* node)
 {
+	if (node)
+	{
+		show_func_def_arg(node->node);
+		if (node->next)
+		{
+			printf(", ");
+			show_func_def_arg_list(node->next);
+		}
+	}
+}
 
+void show_func_def_args(is_func_def_args* node)
+{
+	printf("(");
+	show_func_def_arg_list(node);
+	printf(")");
 }
 
 void show_if(is_if* node, int tablevel)
 {
+	printf("if (");
+	show_expr(node->cond);
+	printf(")\n");
+	show_stmt(node->then_body, tablevel+1);
 
+	if (node->else_body)
+	{
+		tab(tablevel);
+		printf("else\n");
+		show_stmt(node->else_body, tablevel+1);
+	}
 }
 
 void show_incr_op(is_incr_op* node)
 {
+	if (node->pre)
+		show_var(node->var);
+	
+	switch (node->type)
+	{
+		case t_incr_op_inc:
+			printf("++");
+			break;
 
+		case t_incr_op_dec:
+			printf("--");
+			break;
+	}
+
+	if (!node->pre)
+		show_var(node->var);
 }
 
 void show_loop_stmt(is_loop_stmt* node, int tablevel)
 {
+	switch (node->type)
+	{	
+		case t_loop_stmt_for:
+			show_for(node->data.for_stmt, tablevel);
+			break;
 
+		case t_loop_stmt_while:
+			show_while(node->data.while_stmt, tablevel);
+			break;
+
+		case t_loop_stmt_do_while:
+			show_do_while(node->data.do_while_stmt, tablevel);
+			break;
+	} 
 }
  
 void show_member_stmt(is_member_stmt* node, int tablevel)
@@ -529,7 +597,7 @@ void show_member_stmt(is_member_stmt* node, int tablevel)
 	switch (node->type)
 	{
 		case t_member_stmt_var:
-			show_var_stmt(node->data.var, tablevel);
+			show_var_stmt(node->data.var);
 			break;
 
 		case t_member_stmt_func:
@@ -540,10 +608,11 @@ void show_member_stmt(is_member_stmt* node, int tablevel)
 
 void show_new_op(is_new_op* node)
 {
+	printf("new ");
+	show_type_object(node->type_object);
+	show_dims(node->dims);}
 
-}
-
-void show_return(is_return* node, int tablevel)
+void show_return(is_return* node)
 {
 	printf("return");
 
@@ -556,7 +625,78 @@ void show_return(is_return* node, int tablevel)
 
 void show_stmt(is_stmt* node, int tablevel)
 {
+	if (!node)
+	{
+		tab(tablevel);
+	
+		printf(";\n");
+		return;
+	}
 
+	if (node->type != t_stmt_stmt_list)
+		tab(1);
+
+	tab(tablevel-1);
+	switch (node->type)
+	{
+		case t_stmt_stmt_list:
+			printf("{\n");
+	
+			show_stmt_list(node->data.list, tablevel);		
+
+			tab(tablevel-1);
+			printf("}\n");
+			break;
+
+		case t_stmt_var_stmt:
+			show_var_stmt(node->data.var); /* prints its own ';' to be according to yacc */
+			break;
+
+		case t_stmt_assign:
+			show_assign_op(node->data.assign);
+			printf(";\n");
+			break;
+
+		case t_stmt_incr:
+			show_incr_op(node->data.incr);
+			printf(";\n");
+			break;
+
+		case t_stmt_if:
+			show_if(node->data.if_stmt, tablevel);
+			printf("\n");			/* empty line after if/else */
+			break;
+
+		case t_stmt_loop:
+			show_loop_stmt(node->data.loop, tablevel);
+			printf("\n"); 			/* empty line after loops */
+			break;
+
+		case t_stmt_func_call:
+			show_func_call(node->data.func_call);
+			printf(";\n");
+			break;
+
+		case t_stmt_switch:
+			show_switch(node->data.switch_stmt, tablevel);
+			printf("\n");			/* empty line after switch */
+			break;
+
+		case t_stmt_break:
+			show_break(node->data.break_stmt);
+			printf(";\n");
+			break;
+
+		case t_stmt_continue:
+			show_continue(node->data.continue_stmt);
+			printf(";\n");
+			break;
+
+		case t_stmt_return:
+			show_return(node->data.return_stmt);
+			printf(";\n");
+			break;	
+	}
 }
 
 void show_stmt_list(is_stmt_list* node, int tablevel)
@@ -702,9 +842,10 @@ void show_var_initializer_list(is_var_initializer_list* node, int tablevel)
 
 }
 
-void show_var_stmt(is_var_stmt* node, int tablevel)
+void show_var_stmt(is_var_stmt* node)
 {
 	show_var_defs(node);
+	printf(";\n");
 }
 
 void show_while(is_while* node, int tablevel)
