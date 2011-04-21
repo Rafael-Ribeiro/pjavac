@@ -343,7 +343,8 @@ void show_do_while(is_do_while* node, int tablevel)
 {
 	printf("do\n");
 	show_stmt(node->body, tablevel+1);
-	printf(" while(");
+	tab(tablevel);
+	printf("while(");
 	show_expr(node->cond);
 	printf(");");
 }
@@ -359,6 +360,13 @@ void show_expr(is_expr* node)
 
 		case t_expr_new_op:
 			show_new_op(node->data.new_op);
+			break;
+
+		case t_expr_type_cast:
+			printf("(");
+			show_type_decl(node->data.type_cast.type);
+			printf(")");
+			show_expr(node->data.type_cast.expr);
 			break;
 
 		case t_expr_constant:

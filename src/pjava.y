@@ -333,6 +333,7 @@ expr
 	: var %prec LOW_PREC											{ $$ = insert_expr_var($1); }
 	| new_op %prec LOW_PREC											{ $$ = insert_expr_new_op($1); }
 	| '(' expr ')'													{ $$ = $2; }
+	| '(' type_decl ')' expr									 	{ $$ = insert_expr_type_cast($4, $2); }
 	| CONSTANT														{ $$ = insert_expr_constant($1); }
 	| func_call														{ $$ = insert_expr_func_call($1); }
 	| expr_op														{ $$ = insert_expr_expr_op($1); }

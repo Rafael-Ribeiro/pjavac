@@ -236,6 +236,18 @@ is_expr* insert_expr_new_op(is_new_op* new_op)
 	return node;
 }
 
+is_expr* insert_expr_type_cast(is_expr* expr, is_type_decl* type)
+{
+	is_expr* node = (is_expr*)malloc(sizeof(is_expr));
+
+	node->type = t_expr_type_cast;
+
+	node->data.type_cast.expr = expr;
+	node->data.type_cast.type = type;
+
+	return node;
+}
+
 is_expr* insert_expr_constant(is_constant* constant)
 {
 	is_expr* node = (is_expr*)malloc(sizeof(is_expr));
