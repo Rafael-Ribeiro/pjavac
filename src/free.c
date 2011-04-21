@@ -766,27 +766,29 @@ is_var_initializer* free_var_initializer_expr(is_expr* expr)
 
 	free(node);
 }
-
-is_var_initializer_list* free_var_initializer_list(is_var_initializer_list* prev, is_var_initializer* var_init)
-{
-	is_var_initializer_list* node = (is_var_initializer_list*)malloc(sizeof(is_var_initializer_list));
-
-	node->node = var_init;
-	node->next = NULL;
-
-	if (prev)
-		prev->next = node;
-
-	free(node);
-}
-
-is_while* free_while(is_expr* cond, is_stmt* body)
-{
-	is_while *node = (is_while*)malloc(sizeof(is_while));
-
-	node->cond = cond;
-	node->body = body;
-
-	free(node);
-}
 */
+
+void free_var_initializer_list(is_var_initializer_list* node)
+{
+	if (node)
+	{
+		if (node->node)
+			free(node->node);
+
+		free_var_initializer_list(node->next);
+
+		free(node);
+	}
+}
+
+void free_while(is_while* node)
+{
+	if (node->cond)
+		free(node->cond);
+
+	if (node->body)
+		free(node->body);
+
+	free(node);
+}
+
