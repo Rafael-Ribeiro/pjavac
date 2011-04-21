@@ -37,7 +37,7 @@ void show_constant(is_constant* node)
 			break;
 
 		case t_constant_char:
-			printf("'%c'", node->value.char_val);
+			printf("%s", node->value.string_val);
 			break;
 
 		case t_constant_string:
