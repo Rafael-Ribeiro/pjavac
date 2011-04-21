@@ -165,7 +165,15 @@ typedef struct _is_class_stmt_list
 	struct _is_class_stmt_list* next;
 } is_class_stmt_list;
 
-typedef enum {t_constant_bool, t_constant_long, t_constant_double, t_constant_char, t_constant_string} type_constant;
+typedef enum
+{
+	t_constant_bool,
+	t_constant_long,
+	t_constant_double,
+	t_constant_char,
+	t_constant_string
+} type_constant;
+
 typedef struct _is_constant
 {
 	type_constant type;
@@ -174,7 +182,7 @@ typedef struct _is_constant
 		bool bool_val;
 		long long long_val;
 		long double double_val;
-		char char_val;
+		/* char char_val; it's not used since char is now a '<char>' string (including the inverted commas) */
 		char* string_val;
 	} value;
 } is_constant;
