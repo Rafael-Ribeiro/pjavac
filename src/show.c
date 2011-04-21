@@ -19,7 +19,7 @@ void show_id(is_id* node)
 
 void show_constant(is_constant* node)
 {
-	switch(node->type)
+	switch (node->type)
 	{
 		case t_constant_bool:
 			if (node->value.bool_val)

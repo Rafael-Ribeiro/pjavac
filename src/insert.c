@@ -30,6 +30,8 @@ is_id* insert_id(char* data)
 is_constant* insert_constant_bool(bool value)
 {
 	is_constant* node = (is_constant*)malloc(sizeof(is_constant));
+
+	node->type = t_constant_bool;
 	node->value.bool_val = value;
 
 	return node;
@@ -38,6 +40,8 @@ is_constant* insert_constant_bool(bool value)
 is_constant* insert_constant_long(long long value)
 {
 	is_constant* node = (is_constant*)malloc(sizeof(is_constant));
+
+	node->type = t_constant_long;
 	node->value.long_val = value;
 
 	return node;
@@ -46,6 +50,8 @@ is_constant* insert_constant_long(long long value)
 is_constant* insert_constant_double(long double value)
 {
 	is_constant* node = (is_constant*)malloc(sizeof(is_constant));
+
+	node->type = t_constant_double;
 	node->value.double_val = value;
 
 	return node;
@@ -54,6 +60,8 @@ is_constant* insert_constant_double(long double value)
 is_constant* insert_constant_char(char* value)
 {
 	is_constant* node = (is_constant*)malloc(sizeof(is_constant));
+
+	node->type = t_constant_char;
 	node->value.string_val = __strcpy(value);
 
 	return node;
@@ -62,6 +70,8 @@ is_constant* insert_constant_char(char* value)
 is_constant* insert_constant_string(char* value)
 {
 	is_constant* node = (is_constant*)malloc(sizeof(is_constant));
+
+	node->type = t_constant_string;
 	node->value.string_val = __strcpy(value);
 
 	return node;
