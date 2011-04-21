@@ -560,6 +560,8 @@ var_initializer
 /* this one is left recursive, can we swap it? if not attention to the constructors */
 var_initializer_list
 	: var_initializer												{ $$ = insert_var_initializer_list(NULL, $1); }
+
+
 	| var_initializer_list ',' var_initializer						{ $$ = insert_var_initializer_list($1, $3); }
  	;
 

@@ -196,6 +196,7 @@ is_dims* insert_dims (is_dims_sized_list* sized, is_dims_empty_list empty)
 /* this one is left recursive, can we swap it? if not attention to the constructors */
 is_dims_sized_list* insert_dims_sized_list (is_dims_sized_list* prev, is_dims_sized* dims)
 {
+	is_dims_sized_list* last;
 	is_dims_sized_list* node = (is_dims_sized_list*)malloc(sizeof(is_dims_sized_list));
 
 	node->node = dims;
@@ -203,10 +204,11 @@ is_dims_sized_list* insert_dims_sized_list (is_dims_sized_list* prev, is_dims_si
 
 	if (prev)
 	{
-		while (prev->next != NULL)
-			prev = prev->next;
+		last = prev;
+		while (last->next != NULL)
+			last = last->next;
 
-		prev->next = node;
+		last->next = node;
 		return prev;
 	} else
 	{
@@ -878,17 +880,19 @@ is_var_initializer* insert_var_initializer_expr(is_expr* expr)
 
 is_var_initializer_list* insert_var_initializer_list(is_var_initializer_list* prev, is_var_initializer* var_init)
 {
+	is_var_initializer_list* last;
 	is_var_initializer_list* node = (is_var_initializer_list*)malloc(sizeof(is_var_initializer_list));
 
 	node->node = var_init;
 	node->next = NULL;
 
 	if (prev)
-	{
-		while (prev->next != NULL)
-			prev = prev->next;
+	{	
+		last = prev;
+		while (last->next != NULL)
+			last = last->next;
 
-		prev->next = node;
+		last->next = node;
 		return prev;
 	} else
 	{
