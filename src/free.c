@@ -439,251 +439,207 @@ void free_return(is_return* node)
 
 void free_stmt(is_stmt* node)
 {
-	/* TODO */
-}
+	if (node)
+	{
+		switch (node->type)
+		{
+			case t_stmt_stmt_list:
+				free_stmt_list(node->data.stmt_list);
+				break;
 
-void free_stmt_stmt_list(is_stmt* node)
-{
-	free_stmt_list(node->data.stmt_list);
+			case t_stmt_var_stmt:
+				free_var_stmt(node->data.var);
+				break;
 
-	free(node);
-}
+			case t_stmt_assign:
+				free_assign_op(node->data.assign);
+				break;
 
-void free_stmt_var_stmt(is_stmt* node)
-{
-	free_var_stmt(node->data.var);
+			case t_stmt_incr:
+				free_incr_op(node->data.incr);
+				break;
 
-	free(node);
-}
+			case t_stmt_if:
+				free_if(node->data.if_stmt);
+				break;
 
-void free_stmt_assign_op(is_stmt* node)
-{
-	free_assign_op(node->data.assign);
+			case t_stmt_loop:
+				free_loop_stmt(node->data.loop);
+				break;
 
-	free(node);
-}
+			case t_stmt_func_call:
+				free_func_call(node->data.func_call);
+				break;
 
-void free_stmt_incr_op(is_stmt* node)
-{
-	free_incr_op(node->data.incr);
+			case t_stmt_switch:
+				free_switch(node->data.switch_stmt);
+				break;
 
-	free(node);
-}
+			case t_stmt_break:
+				free_break(node->data.break_stmt);
+				break;
 
-void free_stmt_if(is_stmt* node)
-{
-	free_if(node->data.if_stmt);
+			case t_stmt_continue:
+				free_continue(node->data.continue_stmt);
+				break;
 
-	free(node);
-}
-
-void free_stmt_loop_stmt(is_stmt* node)
-{
-	free_loop_stmt(node->data.loop);
-
-	free(node);
-}
-
-void free_stmt_func_call(is_stmt* node)
-{
-	free_func_call(node->data.func_call);
-
-	free(node);
-}
-
-void free_stmt_switch(is_stmt* node)
-{
-	free_switch(node->data.switch_stmt);
-
-	free(node);
-}
-
-void free_stmt_break(is_stmt* node)
-{
-	free_break(node->data.break_stmt);
-
-	free(node);
-}
-
-void free_stmt_continue(is_stmt* node)
-{
-	free_continue(node->data.continue_stmt);
-
-	free(node);
-}
-
-void free_stmt_return(is_stmt* node)
-{
-	free_return(node->data.return_stmt);
+			case t_stmt_return:
+				free_return(node->data.return_stmt);
+				break;
+		}
+	}
 
 	free(node);
 }
 
 void free_stmt_list(is_stmt_list* node)
 {
-	free_stmt(node->node);
 
-	if (node->next)
+	if (node)
+	{
+		free_stmt(node->node);
 		free_stmt_list(node->next);
 
-	free(node);
+		free(node);
+	}
 }
 
 void free_switch(is_switch* node)
 {
-	free_expr(node->expr);
-	free_switch_stmt_list(node->list);
+	if (node)
+	{
+		free_expr(node->expr);
+		free_switch_stmt_list(node->list);
 
-	free(node);
+		free(node);
+	}
 }
 
 void free_switch_stmt(is_switch_stmt* node)
 {
-	/* TODO */
-}
+	if (node)
+	{
+		switch (node->type)
+		{
+			case t_switch_stmt_default:
+				break;
 
-void free_switch_stmt_default(is_switch_stmt* node)
-{
-	free_stmt_list(node->data.default_stmt_list);
+			case t_switch_stmt_case:
+				free_constant(node->constant);
+		}
 
-	free(node);
-}
-
-void free_switch_stmt_case(is_switch_stmt* node)
-{
-	free_constant(node->data.case_stmt.constant);
-	free_stmt_list(node->data.case_stmt.list);
-
-	free(node);
-}
-
-void free_switch_stmt_list(is_switch_stmt_list* node)
-{
-	free_switch_stmt(node->node);
-
-	if (node->next)
-		free_switch_stmt_list(node->next);
-
-	free(node);
+		free_stmt_list(node->list);
+		free(node);
+	}
 }
 
 void free_ternary_op(is_ternary_op* node)
 {
-	free_expr(node->if_expr);
-	free_expr(node->then_expr);
-	free_expr(node->else_expr);
+	if (node)
+	{
+		free_expr(node->if_expr);
+		free_expr(node->then_expr);
+		free_expr(node->else_expr);
 
-	free(node);
+		free(node);
+	}
 }
 
 void free_type_decl(is_type_decl* node)
 {
-	/* TODO */
-}
+	if (node)
+	{
+		switch (node->type)
+		{
+			case t_type_decl_type_object:
+				free_type_object(node->data.type_object);
+				break;
 
-void free_type_decl_object(is_type_decl* node)
-{
-	free_type_object(node->data.type_object);
-
-	free(node);
-}
-
-void free_type_decl_array(is_type_decl* node)
-{
-	free_array_decl(node->data.array);
-
-	free(node);
+			case t_type_decl_array_decl:
+				free_array_decl(node->data.array);
+				break;
+		}
+		
+		free(node);
+	}
 }
 
 void free_type_object(is_type_object* node)
 {
-	free(node);
+	if (node)
+		free(node);
 }
 
 void free_unary_op(is_unary_op* node)
 {
-	/* TODO */
-}
+	if (node)
+	{
+		switch (node->type)
+		{
+			case t_unary_op_operation:
+				free_expr(node->data.operation.expr);
+				break;
 
-void free_unary_op_incr(is_unary_op* node)
-{
-	free_incr_op(node->data.incr);
-	
-	free(node);
-}
+			case t_unary_op_incr_op:
+				free_incr_op(node->data.incr);
+				break;
+		}
 
-void free_unary_op_operation(is_unary_op* node)
-{
-	free_expr(node->data.operation.expr);
- 
-	free(node);
+		free(node);
+	}
 }
 
 void free_var(is_var* node)
 {
-	/* TODO */
-}
+	if (node)
+	{
+		switch (node->type)
+		{
+			case t_var_id:
+				free_id(node->data.id);
+				break;
 
+			case t_var_new_op:
+				free_new_op(node->data.new_op);
+				break;
+	
+			case t_var_array:
+				free_var(node->data.array.var);
+				free_dims_sized(node->data.array.dims);
+				break;
 
-void free_var_id(is_var* node)
-{
-	free_id(node->data.id);
-
-	free(node);
-}
-
-void free_var_new_op(is_var* node)
-{
-	free_new_op(node->data.new_op);
-
-	free(node);
-}
-
-void free_var_var_subscript(is_var* node)
-{
-	free_var(node->data.array.var);
-	free_dims_sized(node->data.array.dims);
-
-	free(node);
-}
-
-void free_var_func_subscript(is_var* node)
-{
-	free_func_call(node->data.func_call.call);
-	free_dims_sized(node->data.func_call.dims);
-
-	free(node);
+			case t_var_func_call:
+				free_func_call(node->data.func_call.call);
+				free_dims_sized(node->data.func_call.dims);
+				break;
+		}
+		
+		free(node);
+	}
 }
 
 void free_var_def(is_var_def* node)
 {
-	free_id(node->id);
-	free_var_initializer(node->var_init);
+	if (node)
+	{
+		free_id(node->id);
+		free_var_initializer(node->var_init);
 
-	free(node);
+		free(node);
+	}
 }
 
 void free_var_def_list(is_var_def_list* node)
 {
-	free_var_def(node->node);
-	if (node->next)
+	if( node)
+	{
+		free_var_def(node->node);
 		free_var_def_list(node->next);
 
-	free(node);
+		free(node);
+	}
 }
 
-void free_var_initializer_array(is_var_initializer* node)
-{
-	free_var_initializer_list(node->data.array);
-
-	free(node);
-}
-
-void free_var_initializer_expr(is_var_initializer* node)
-{
-	/* FIXME Missing something? Merge may have deleted stuff. */
-	free_expr(node->data.expr);
-}
 
 void free_var_defs(is_var_defs* node)
 {
@@ -694,7 +650,6 @@ void free_var_defs(is_var_defs* node)
 		free(node);
 	}
 }
-
 
 void free_var_initializer(is_var_initializer* node)
 {
@@ -710,6 +665,7 @@ void free_var_initializer(is_var_initializer* node)
 				free_expr(node->data.expr);
 				break;
 		}
+
 		free(node);
 	}
 }
@@ -727,7 +683,7 @@ void free_var_initializer_list(is_var_initializer_list* node)
 
 void free_var_stmt(is_var_stmt* node)
 {
-	/* TODO */
+	free_var_defs(node);
 }
 
 void free_while(is_while* node)
@@ -739,3 +695,4 @@ void free_while(is_while* node)
 		free(node);
 	}
 }
+
