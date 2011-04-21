@@ -132,6 +132,6 @@ JAVA_COMMENT		(\/\/[^\n]*\n)|(\/\*([^\/]|[^\*]\/)*\*\/)
 %%
 int yywrap()
 {
-	yyline = 0;
+	yyline = 1;
 	return 1;
 }
