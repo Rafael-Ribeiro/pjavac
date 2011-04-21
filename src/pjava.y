@@ -154,6 +154,7 @@ int pretty_error(char* format, ...);
 	is_var* val_var;
 	is_var_def* val_var_def;
 	is_var_def_list* val_var_def_list;
+	is_var_def_left* val_var_def_left;
 	is_var_defs* val_var_defs;
 	is_var_initializer* val_var_initializer;
 	is_var_initializer_list* val_var_initializer_list;
@@ -185,7 +186,7 @@ int pretty_error(char* format, ...);
 %type<val_for_cond>for_cond
 %type<val_for_expr>for_expr
 %type<val_for_expr_list>for_expr_list
-%type<val_for_init>for_init
+%type<val_for_init>for_init	
 %type<val_for_inc>for_inc
 %type<val_func_call>func_call
 %type<val_func_call_arg_list>func_call_arg_list
@@ -212,6 +213,7 @@ int pretty_error(char* format, ...);
 %type<val_var>var
 %type<val_var_def>var_def
 %type<val_var_def_list>var_def_list
+%type<val_var_def_left>var_def_left
 %type<val_var_defs>var_defs
 %type<val_var_initializer>var_initializer
 %type<val_var_initializer_list>var_initializer_list
@@ -529,15 +531,19 @@ var
 	;
 
 var_def
-	: ID															{ $$ = insert_var_def($1, 0, NULL); }
-	| ID dims														{ $$ = insert_var_def($1, $2, NULL); }
-	| ID '=' var_initializer										{ $$ = insert_var_def($1, 0, $3); }
-	| ID dims '=' var_initializer									{ $$ = insert_var_def($1, $2, $4); }
+	: var_def_left													{ $$ = insert_var_def($1, NULL); }
+	| var_def_left '=' var_initializer								{ $$ = insert_var_def($1, $3); }
 	;
 
 var_def_list
 	: var_def														{ $$ = insert_var_def_list($1, NULL); }
 	| var_def ',' var_def_list										{ $$ = insert_var_def_list($1, $3); }
+	;
+
+var_def_left
+	: ID															{ $$ = insert_var_def_left_empty($1, 0); }
+	| ID dims														{ $$ = insert_var_def_left_dims($1, $2); }
+	| ID dims_empty_list											{ $$ = insert_var_def_left_empty($1, $2); }
 	;
 
 var_defs

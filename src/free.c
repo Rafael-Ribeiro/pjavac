@@ -146,7 +146,6 @@ void free_dims (is_dims* node)
 	if (node)
 	{
 		free_dims_sized_list(node->sized);
-
 		free(node);
 	}
 }
@@ -662,7 +661,7 @@ void free_var_def(is_var_def* node)
 {
 	if (node)
 	{
-		free_id(node->id);
+		free_var_def_left(node->left);
 		free_var_initializer(node->var_init);
 
 		free(node);
@@ -680,7 +679,24 @@ void free_var_def_list(is_var_def_list* node)
 	}
 }
 
+void free_var_def_left(is_var_def_left* node)
+{
+	if (node)
+	{
+		switch (node->type)
+		{
+			case t_var_def_left_dims:
+				free_dims(node->data.dims);
+				break;
 
+			default:
+				break;			
+		}
+
+		free_id(node->id);
+		free(node);
+	}
+}
 void free_var_defs(is_var_defs* node)
 {
 	if (node)

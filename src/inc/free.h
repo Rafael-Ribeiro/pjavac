@@ -98,6 +98,7 @@ void free_var_var_subscript(is_var *node);
 void free_var_func_subscript(is_var *node);
 void free_var_def(is_var_def *node);
 void free_var_def_list(is_var_def_list *node);
+void free_var_def_left(is_var_def_left *node);
 void free_var_defs(is_var_defs *node);
 void free_var_initializer(is_var_initializer *node);
 void free_var_initializer_array(is_var_initializer *node);

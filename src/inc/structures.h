@@ -42,6 +42,7 @@ struct _is_unary_op;
 struct _is_var;
 struct _is_var_def;
 struct _is_var_def_list;
+struct _is_var_def_left;
 struct _is_var_defs;
 struct _is_var_initializer;
 struct _is_var_initializer_list;
@@ -582,8 +583,7 @@ typedef struct _is_var
 
 typedef struct _is_var_def
 {
-	struct _is_id* id;
-	struct _is_dims* dims;
+	struct _is_var_def_left* left;
 	struct _is_var_initializer* var_init; /* nullable */
 } is_var_def;
 
@@ -592,6 +592,19 @@ typedef struct _is_var_def_list
 	struct _is_var_def *node;
 	struct _is_var_def_list* next; /* nullable */
 } is_var_def_list;
+
+typedef enum {t_var_def_left_dims, t_var_def_left_empty} type_var_def_left;
+typedef struct _is_var_def_left
+{
+	type_var_def_left type;
+
+	union
+	{
+		struct _is_dims* dims;
+		is_dims_empty_list empty;		
+	} data; 
+	struct _is_id* id;
+} is_var_def_left;
 
 typedef struct _is_var_defs
 {

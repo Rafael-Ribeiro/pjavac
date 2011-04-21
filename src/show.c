@@ -907,8 +907,7 @@ void show_var(is_var* node)
 
 void show_var_def(is_var_def* node)
 {
-	show_id(node->id);
-	show_dims(node->dims);
+	show_var_def_left(node->left);
 
 	if (node->var_init)
 	{
@@ -927,6 +926,22 @@ void show_var_def_list(is_var_def_list* node)
 			printf(", ");
 			show_var_def_list(node->next);
 		}
+	}
+}
+
+void show_var_def_left(is_var_def_left* node)
+{
+	show_id(node->id);
+
+	switch (node->type)
+	{
+		case t_var_def_left_empty:
+			show_dims_empty_list(node->data.empty);
+			break;
+
+		case t_var_def_left_dims:
+			show_dims(node->data.dims);
+			break;
 	}
 }
 

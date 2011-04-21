@@ -805,17 +805,37 @@ is_var* insert_var_func_subscript(is_func_call* func_call, is_dims_sized* positi
 	return node;
 }
 
-is_var_def* insert_var_def(is_id* id, is_dims* dims, is_var_initializer* init)
+is_var_def* insert_var_def(is_var_def_left* left, is_var_initializer* init)
 {
 	is_var_def* node = (is_var_def*)malloc(sizeof(is_var_def));
 
-	node->id = id;
-	node->dims = dims;
+	node->left = left;
 	node->var_init = init;
 
 	return node;
 }
 
+is_var_def_left* insert_var_def_left_dims(is_id* id, is_dims* dims)
+{
+	is_var_def_left* node = (is_var_def_left*)malloc(sizeof(is_var_def_left));
+
+	node->type = t_var_def_left_dims;	
+	node->id = id;
+	node->data.dims = dims;
+
+	return node;
+}
+
+is_var_def_left* insert_var_def_left_empty(is_id* id, is_dims_empty_list empty)
+{
+	is_var_def_left* node = (is_var_def_left*)malloc(sizeof(is_var_def_left));
+
+	node->type = t_var_def_left_empty;	
+	node->id = id;
+	node->data.empty = empty;
+
+	return node;
+}
 is_var_def_list* insert_var_def_list(is_var_def* var_def, is_var_def_list* next)
 {
 	is_var_def_list* node = (is_var_def_list*)malloc(sizeof(is_var_def_list));

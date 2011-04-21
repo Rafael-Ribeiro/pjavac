@@ -61,6 +61,7 @@ void show_unary_op(is_unary_op* node);
 void show_var(is_var* node);
 void show_var_def(is_var_def* node);
 void show_var_def_list(is_var_def_list* node);
+void show_var_def_left(is_var_def_left* node);
 void show_var_defs(is_var_defs* node);
 void show_var_stmt(is_var_stmt* node);
 void show_var_initializer(is_var_initializer* node);
