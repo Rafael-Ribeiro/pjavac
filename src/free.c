@@ -209,6 +209,7 @@ void free_expr(is_expr* node)
 				free_expr_op(node->data.operation);
 				break;
 		}
+		free(node);
 	}
 }
 
