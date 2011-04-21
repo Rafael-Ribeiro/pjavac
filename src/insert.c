@@ -646,7 +646,8 @@ is_switch_stmt* insert_switch_stmt_default(is_stmt_list* stmt_list)
 	is_switch_stmt* node = (is_switch_stmt*)malloc(sizeof(is_switch_stmt*));
 	
 	node->type = t_switch_stmt_default;
-	node->data.default_stmt_list = stmt_list;
+	node->constant = NULL;
+	node->list = stmt_list;
 
 	return node;
 }
@@ -656,8 +657,8 @@ is_switch_stmt* insert_switch_stmt_case(is_constant* constant, is_stmt_list* stm
 	is_switch_stmt* node = (is_switch_stmt*)malloc(sizeof(is_switch_stmt*));
 	
 	node->type = t_switch_stmt_case;
-	node->data.case_stmt.constant = constant;
-	node->data.case_stmt.list = stmt_list;
+	node->constant = constant;
+	node->list = stmt_list;
 
 	return node;
 }

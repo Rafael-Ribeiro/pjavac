@@ -348,6 +348,7 @@ void show_do_while(is_do_while* node, int tablevel)
  
 void show_expr(is_expr* node)
 {
+	printf("(");
 	switch(node->type)
 	{
 		case t_expr_var:
@@ -370,6 +371,7 @@ void show_expr(is_expr* node)
 			show_expr_op(node->data.operation);
 			break;
 	}
+	printf(")");
 }
 
 void show_expr_list(is_expr_list* node)
@@ -418,7 +420,8 @@ void show_for(is_for* node, int tablevel)
 
 void show_for_cond(is_for_cond* node)
 {
-	show_expr(node);
+	if (node)
+		show_expr(node);
 }
 
 void show_for_expr(is_for_expr* node)
@@ -454,20 +457,24 @@ void show_for_expr_list(is_for_expr_list* node)
 
 void show_for_inc(is_for_inc* node)
 {
-	show_for_expr_list(node);
+	if (node)
+		show_for_expr_list(node);
 }
 
 void show_for_init(is_for_init* node)
 {
-	switch (node->type)
+	if (node)
 	{
-		case t_for_init_var_defs:
-			show_var_defs(node->data.var_defs);
-			break;
+		switch (node->type)
+		{
+			case t_for_init_var_defs:
+				show_var_defs(node->data.var_defs);
+				break;
 
-		case t_for_init_for_expr_list:
-			show_for_expr_list(node->data.expr_list);
-			break;
+			case t_for_init_for_expr_list:
+				show_for_expr_list(node->data.expr_list);
+				break;
+		}
 	}
 }
 
@@ -592,8 +599,6 @@ void show_loop_stmt(is_loop_stmt* node, int tablevel)
  
 void show_member_stmt(is_member_stmt* node, int tablevel)
 {
-	tab(tablevel);
-
 	switch (node->type)
 	{
 		case t_member_stmt_var:
@@ -701,27 +706,67 @@ void show_stmt(is_stmt* node, int tablevel)
 
 void show_stmt_list(is_stmt_list* node, int tablevel)
 {
-
+	if (node)
+	{
+		show_stmt(node->node, tablevel);
+		show_stmt_list(node->next, tablevel);
+	}
 }
  
 void show_switch(is_switch* node, int tablevel)
 {
+	printf("switch(");
+	show_expr(node->expr);
+	printf(")\n");
 
+	tab(tablevel);
+	printf("{\n");
+
+	show_switch_stmt_list(node->list, tablevel+1);
+
+	tab(tablevel);
+	printf("}\n");
 }
 
 void show_switch_stmt(is_switch_stmt* node, int tablevel)
 {
+	switch (node->type)
+	{
+		case t_switch_stmt_default:
+			printf("default:\n");
+			break;
 
+		case t_switch_stmt_case:
+			printf("case ");
+			show_constant(node->constant);
+			printf(":\n");
+	}
+
+	show_stmt_list(node->list, tablevel+1);
 }
 
 void show_switch_stmt_list(is_switch_stmt_list* node, int tablevel)
 {
-
+	if (node)
+	{
+		show_switch_stmt(node->node, tablevel);
+		if (node->next)
+		{
+			printf("\n");
+			show_switch_stmt_list(node->next, tablevel);
+		}
+	}
 }
 
 void show_ternary_op(is_ternary_op* node)
 {
-
+	printf("(");
+	show_expr(node->if_expr);
+	printf(" ? ");
+	show_expr(node->then_expr);
+	printf(" : ");
+	show_expr(node->else_expr);
+	printf(")");
 }
 
 void show_type_decl(is_type_decl* node)
@@ -787,6 +832,34 @@ void show_type_object(is_type_object* node)
 
 void show_unary_op(is_unary_op* node)
 {
+	switch (node->type)
+	{
+		case t_unary_op_incr_op:
+			show_incr_op(node->data.incr);
+			break;
+
+		case t_unary_op_operation:
+			switch (node->data.operation.op)
+			{
+				case t_unary_op_operator_plus:
+					printf("+");
+					break;
+
+				case t_unary_op_operator_minus:
+					printf("-");
+					break;
+
+				case t_unary_op_operator_not:
+					printf("!");
+					break;
+
+				case t_unary_op_operator_bin_not:
+					printf("~");
+					break;
+			}
+			show_expr(node->data.operation.expr);
+			break;
+	}
 
 }
 
@@ -799,9 +872,7 @@ void show_var(is_var* node)
 			break;
 
 		case t_var_new_op:
-			printf("(");			
 			show_new_op(node->data.new_op);
-			printf(")");
 			break;
 
 		case t_var_array:
@@ -818,28 +889,63 @@ void show_var(is_var* node)
 
 void show_var_def(is_var_def* node)
 {
+	show_id(node->id);
+	show_dims_empty_list(node->dims);
 
+	if (node->var_init)
+	{
+		printf(" = ");
+		show_var_initializer(node->var_init);
+	}
 }
 
 void show_var_def_list(is_var_def_list* node)
 {
-	
+	if (node)
+	{
+		show_var_def(node->node);
+		if (node->next)
+		{
+			printf(", ");
+			show_var_def_list(node->next);
+		}
+	}
 }
 
 void show_var_defs(is_var_defs* node)
 {
 	show_type_decl(node->type);
+	printf(" ");
 	show_var_def_list(node->list);
 }
 
-void show_var_initializer(is_var_initializer* node, int tablevel)
+void show_var_initializer(is_var_initializer* node)
 {
+	switch (node->type)
+	{
+		case t_var_initializer_val_arr:
+			printf("{");
+			show_var_initializer_list(node->data.array);
+			printf("}");
+			break;
 
+		case t_var_initializer_expr:
+			show_expr(node->data.expr);
+			break;
+	}
 }
 
-void show_var_initializer_list(is_var_initializer_list* node, int tablevel)
+void show_var_initializer_list(is_var_initializer_list* node)
 {
-
+	if (node)
+	{
+		show_var_initializer(node->node);
+		if (node->next)
+		{
+			printf(", ");
+			show_var_initializer_list(node->next);
+		}
+	}
 }
 
 void show_var_stmt(is_var_stmt* node)
@@ -850,6 +956,9 @@ void show_var_stmt(is_var_stmt* node)
 
 void show_while(is_while* node, int tablevel)
 {
-
+	printf("while(");
+	show_expr(node->cond);
+	printf(")\n");
+	show_stmt(node->body, tablevel+1);
 }
 

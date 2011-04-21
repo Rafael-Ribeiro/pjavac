@@ -458,15 +458,9 @@ typedef enum
 typedef struct _is_switch_stmt
 {
 	type_switch_stmt type;
-	union
-	{
-		struct _is_stmt_list *default_stmt_list;
-		struct
-		{
-			struct _is_stmt_list *list;
-			struct _is_constant *constant;
-		} case_stmt;
-	} data;
+	struct _is_stmt_list *list;
+	struct _is_constant *constant; /* nullable, if default */
+	
 } is_switch_stmt;
 
 typedef struct _is_switch_stmt_list
@@ -576,8 +570,8 @@ typedef struct _is_var
 typedef struct _is_var_def
 {
 	struct _is_id* id;
-	struct _is_var_initializer* var_init; /* nullable */
 	is_dims_empty_list dims;
+	struct _is_var_initializer* var_init; /* nullable */
 } is_var_def;
 
 typedef struct _is_var_def_list
