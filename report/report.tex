@@ -46,14 +46,26 @@
 \section{Introduction}
 \section{Abstract Syntax}
 %TODO aliases
+%TODO is_assign_operator
 \begin{tabular}{ll}
 	is\_array\_decl 			& $\to$ <is\_type\_object: type> <is\_dims\_empty\_list: empty> \\
-	is\_assign\_op				& $\to$ <is\_var: var> <is\_expr: expr> \\
+	is\_assign\_op				& $\to$ <is\_var: var> <is\_assign\_operator: op> <is\_expr: expr> \\
+	is\_assing\_operator		& $\to$ is\_EQUAL \\
+								& $\vee$ is\_SHIFT\_R\_ASSIGN \\
+								& $\vee$ is\_SHIFT\_L\_ASSIGN \\
+								& $\vee$ is\_ADD\_ASSIGN \\
+								& $\vee$ is\_SUB\_ASSIGM \\
+								& $\vee$ is\_MUL\_ASSIGN \\
+								& $\vee$ is\_DIV\_ASSIGN \\
+								& $\vee$ is\_MOD\_ASSIGN \\
+								& $\vee$ is\_AND\_ASSIGN \\
+								& $\vee$ is\_XOR\_ASSIGN \\
+								& $\vee$ is\_OR\_ASSIGN \\
 	is\_binary\_op				& $\to$ <is\_assign\_op: assign> $\vee$ (<is\_expr: left> <is\_expr: right) \\
-	is\_break 					& $\to$ $\emptyset$ $\vee$ <is\_id: id> \\
+	is\_break 					& $\to$ $\emptyset$ $\vee$ <is\_id: label> \\
 	is\_class\_def				& $\to$ <is\_id: id> <is\_class\_stmt\_list: body> \\
-	is\_class\_stmt\_privacy	& $\to$ \emph{t\_class\_stmt\_privacy\_public} $\vee$ \emph{t\_class\_stmt\_privacy\_private} \\	
-	is\_class\_stmt\_scope		& $\to$ <bool: b\_final> <bool: b\_static> \\
+	is\_class\_stmt\_privacy	& $\to$ is\_PRIVATE $\vee$ is\_PUBLIC\\	
+	is\_class\_stmt\_scope		& $\to$ ($\emptyset$ $\vee$ is\_FINAL) $\vee$ ($\emptyset$ $\vee$ is\_STATIC) \\
 	is\_ & $\to$ <is\_: > <is\_: > \\
 	is\_ & $\to$ <is\_: > <is\_: > \\
 	is\_ & $\to$ <is\_: > <is\_: > \\
@@ -65,46 +77,7 @@
 	is\_ & $\to$ <is\_: > <is\_: > \\
 	is\_ & $\to$ <is\_: > <is\_: > \\
 \begin{comment}
-typedef enum
-{
-	t_class_stmt_privacy_public,
-	t_class_stmt_privacy_private
-} is_class_stmt_privacy;
 
-typedef struct _is_class_stmt
-{
-	is_class_stmt_privacy* privacy; /* nullable */
-	struct _is_class_stmt_scope* scope;	/* nullable */
-	struct _is_member_stmt* stmt;
-} is_class_stmt;
-
-typedef struct _is_class_stmt_list
-{
-	struct _is_class_stmt* node;
-	struct _is_class_stmt_list* next;
-} is_class_stmt_list;
-
-typedef enum
-{
-	t_constant_bool,
-	t_constant_long,
-	t_constant_double,
-	t_constant_char,
-	t_constant_string
-} type_constant;
-
-typedef struct _is_constant
-{
-	type_constant type;
-	union
-	{
-		bool bool_val;
-		long long long_val;
-		long double double_val;
-		/* char char_val; it's not used since char is now a '<char>' string (including the inverted commas) */
-		char* string_val;
-	} value;
-} is_constant;
 \end{comment}
 
 \begin{comment}
