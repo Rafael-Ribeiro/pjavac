@@ -66,6 +66,7 @@ JAVA_COMMENT		(\/\/[^\n]*\n)|(\/\*([^\/]|[^\*]\/)*\*\/)
 "return"				{ return RETURN; }
 "short"					{ return SHORT; }
 "static"				{ return STATIC; }
+"String"				{ return STRING; }
 "switch"				{ return SWITCH; }
 "void"					{ return VOID; }
 "while"					{ return WHILE; }

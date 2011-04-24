@@ -834,7 +834,11 @@ void show_type_native(is_type_native val)
 			break;
 
 		case t_type_native_short:
-			printf("shor");
+			printf("short");
+			break;
+
+		case t_type_native_string:
+			printf("String");
 			break;
 
 		case t_type_native_void:

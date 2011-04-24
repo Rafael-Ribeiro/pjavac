@@ -516,6 +516,7 @@ typedef enum
 	t_type_native_int,
 	t_type_native_long,
 	t_type_native_short,
+	t_type_native_string,
 	t_type_native_void
 } is_type_native;
 

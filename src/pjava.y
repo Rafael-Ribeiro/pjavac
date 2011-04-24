@@ -43,6 +43,7 @@ int pretty_error(char* format, ...);
 %token RETURN
 %token SHORT
 %token STATIC
+%token STRING
 %token SWITCH
 %token VOID
 %token WHILE
@@ -506,6 +507,7 @@ type_native
 	| INT															{ $$ = t_type_native_int; }
 	| LONG															{ $$ = t_type_native_long; }
 	| SHORT															{ $$ = t_type_native_short; }
+	| STRING														{ $$ = t_type_native_string; }
 	| VOID															{ $$ = t_type_native_void; }
 	;
 
