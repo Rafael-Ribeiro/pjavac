@@ -45,12 +45,12 @@
 
 \section{Introduction}
 \section{Abstract Syntax}
+%TODO section explaining why is_CONSTANT is missing
 %TODO aliases
-%TODO is_assign_operator
 \begin{tabular}{ll}
 	is\_array\_decl 			& $\to$ <is\_type\_object: type> <is\_dims\_empty\_list: empty> \\
 	is\_assign\_op				& $\to$ <is\_var: var> <is\_assign\_operator: op> <is\_expr: expr> \\
-	is\_assing\_operator		& $\to$ is\_EQUAL \\
+	is\_type_assign\_op			& $\to$ is\_EQUAL \\
 								& $\vee$ is\_SHIFT\_R\_ASSIGN \\
 								& $\vee$ is\_SHIFT\_L\_ASSIGN \\
 								& $\vee$ is\_ADD\_ASSIGN \\
@@ -65,18 +65,41 @@
 	is\_break 					& $\to$ $\emptyset$ $\vee$ <is\_id: label> \\
 	is\_class\_def				& $\to$ <is\_id: id> <is\_class\_stmt\_list: body> \\
 	is\_class\_stmt\_privacy	& $\to$ is\_PRIVATE $\vee$ is\_PUBLIC\\	
-	is\_class\_stmt\_scope		& $\to$ ($\emptyset$ $\vee$ is\_FINAL) $\vee$ ($\emptyset$ $\vee$ is\_STATIC) \\
-	is\_ & $\to$ <is\_: > <is\_: > \\
-	is\_ & $\to$ <is\_: > <is\_: > \\
-	is\_ & $\to$ <is\_: > <is\_: > \\
-	is\_ & $\to$ <is\_: > <is\_: > \\
-	is\_ & $\to$ <is\_: > <is\_: > \\
-	is\_ & $\to$ <is\_: > <is\_: > \\
-	is\_ & $\to$ <is\_: > <is\_: > \\
-	is\_ & $\to$ <is\_: > <is\_: > \\
-	is\_ & $\to$ <is\_: > <is\_: > \\
-	is\_ & $\to$ <is\_: > <is\_: > \\
+	is\_class\_stmt\_scope		& $\to$ ($\emptyset$ $\vee$ is\_FINAL) ($\emptyset$ $\vee$ is\_STATIC) \\
+	is\_class\_stmt 			& $\to$ <is\_class\_stmt\_scope: scope> <is\_member\_stmt: stmt> \\
+	is\_continue				& $\to$ $\emptyset$ $\vee$ <is\_id: label> \\
+	is\_dims					& $\to$ <is\_dims\_sized\_list: sized> (<is\_dims\_empty\_list: empty> $\vee$ $\emptyset$) \\
+	is\_ 						& $\to$ <is\_: > <is\_: > \\
+	is\_ 						& $\to$ <is\_: > <is\_: > \\
+	is\_ 						& $\to$ <is\_: > <is\_: > \\
+	is\_ 						& $\to$ <is\_: > <is\_: > \\
+	is\_ 						& $\to$ <is\_: > <is\_: > \\
+	is\_ 						& $\to$ <is\_: > <is\_: > \\
+
 \begin{comment}
+	bool bool_val;
+		long long long_val;
+		long double double_val;
+		/* char char_val; it's not used since char is now a '<char>' string (including the inverted commas) */
+		char* string_val;
+
+dims
+	: dims_sized_list												{ $$ = insert_dims($1, 0); }
+	| dims_sized_list dims_empty_list								{ $$ = insert_dims($1, $2); }
+	;
+
+dims_empty
+	: '[' ']'														{ }
+	;
+
+dims_empty_list
+	: dims_empty													{ $$ = 1; }
+	| dims_empty_list dims_empty									{ $$ = $1 + 1; }
+	;
+
+dims_sized
+	: '[' expr ']'													{ $$ = $2; }
+	;
 
 \end{comment}
 
