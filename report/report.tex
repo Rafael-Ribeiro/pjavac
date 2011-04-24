@@ -49,12 +49,23 @@
 %TODO is_assign_operator
 \begin{tabular}{ll}
 	is\_array\_decl 			& $\to$ <is\_type\_object: type> <is\_dims\_empty\_list: empty> \\
-	is\_assign\_op				& $\to$ <is\_var: var> <is_assign_operator: op> <is\_expr: expr> \\
+	is\_assign\_op				& $\to$ <is\_var: var> <is\_assign\_operator: op> <is\_expr: expr> \\
+	is\_assing\_operator		& $\to$ is\_EQUAL \\
+								& $\vee$ is\_SHIFT\_R\_ASSIGN \\
+								& $\vee$ is\_SHIFT\_L\_ASSIGN \\
+								& $\vee$ is\_ADD\_ASSIGN \\
+								& $\vee$ is\_SUB\_ASSIGM \\
+								& $\vee$ is\_MUL\_ASSIGN \\
+								& $\vee$ is\_DIV\_ASSIGN \\
+								& $\vee$ is\_MOD\_ASSIGN \\
+								& $\vee$ is\_AND\_ASSIGN \\
+								& $\vee$ is\_XOR\_ASSIGN \\
+								& $\vee$ is\_OR\_ASSIGN \\
 	is\_binary\_op				& $\to$ <is\_assign\_op: assign> $\vee$ (<is\_expr: left> <is\_expr: right) \\
 	is\_break 					& $\to$ $\emptyset$ $\vee$ <is\_id: label> \\
 	is\_class\_def				& $\to$ <is\_id: id> <is\_class\_stmt\_list: body> \\
 	is\_class\_stmt\_privacy	& $\to$ is\_PRIVATE $\vee$ is\_PUBLIC\\	
-	is\_class\_stmt\_scope		& $\to$ <bool: b\_final> <bool: b\_static> \\
+	is\_class\_stmt\_scope		& $\to$ ($\emptyset$ $\vee$ is\_FINAL) $\vee$ ($\emptyset$ $\vee$ is\_STATIC) \\
 	is\_ & $\to$ <is\_: > <is\_: > \\
 	is\_ & $\to$ <is\_: > <is\_: > \\
 	is\_ & $\to$ <is\_: > <is\_: > \\
