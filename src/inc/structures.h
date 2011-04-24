@@ -377,9 +377,8 @@ typedef enum
 
 typedef struct _is_loop_stmt
 {
-	/* TODO: is_id* label; */
 	type_loop_stmt type;
-	struct _is_id* id; /* nullable */
+	struct _is_id* loop_label; /* nullable */
 	union
 	{
 		struct _is_for* for_stmt;

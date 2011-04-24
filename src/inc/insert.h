@@ -76,9 +76,9 @@ is_if* insert_if(is_expr* cond, is_stmt* then_body, is_stmt* else_body);
 
 is_incr_op* insert_incr_op(type_incr_op type, bool pre, is_var* var);
 
-is_loop_stmt* insert_loop_stmt_for(is_id* id, is_for* for_stmt); 
-is_loop_stmt* insert_loop_stmt_while(is_id* id, is_while* while_stmt);
-is_loop_stmt* insert_loop_stmt_do_while(is_id* id, is_do_while* do_while_stmt);
+is_loop_stmt* insert_loop_stmt_for(is_id* loop_label, is_for* for_stmt); 
+is_loop_stmt* insert_loop_stmt_while(is_id* loop_label, is_while* while_stmt);
+is_loop_stmt* insert_loop_stmt_do_while(is_id* loop_label, is_do_while* do_while_stmt);
 
 is_member_stmt* insert_member_stmt_var(is_var_stmt* var);
 is_member_stmt* insert_member_stmt_func_def(is_func_def* func_def);
