@@ -1,0 +1,48 @@
+\documentclass[a4paper]{article}
+
+\usepackage[portuguese]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+
+\newcommand{\documentTitle}{PJAVA Compiler} %Macro definition
+\newcommand{\documentAuthors}{João Rafael (2008111876, jprafael@student.dei.uc.pt) \and José Ribeiro (2008112181, jbaia@student.dei.uc.pt)} %Macro definition
+
+\title{\documentTitle}
+\author{\documentAuthors{}}
+
+\usepackage{hyperref}
+\hypersetup{
+	pdftitle = \documentTitle
+	,pdfauthor = \documentAuthors
+	,pdfsubject = {Project \#1 Report}
+	,pdfkeywords = {PJAVA Compiler}
+	,pdfborder = {0 0 0}
+}
+
+\usepackage{subfig}
+\usepackage{amsmath}
+\usepackage{wrapfig}
+\usepackage{array}
+\usepackage{anysize}
+\usepackage{lscape}
+\usepackage[pdftex]{graphicx}
+
+\marginsize{3.5cm}{3.5cm}{3cm}{3cm}
+
+\makeatletter
+
+\begin{document}
+\renewcommand{\figurename}{Figure}
+\maketitle
+\cleardoublepage
+
+\tableofcontents
+\cleardoublepage
+
+\setlength{\parindent}{1cm}
+\setlength{\parskip}{0.3cm}
+
+\section{Introduction}
+\section{Abstract Syntax}
+is\_array\_decl $\to$ <is\_type\_object: type> <is\_dims\_empty\_list: empty>
+\end{document}
