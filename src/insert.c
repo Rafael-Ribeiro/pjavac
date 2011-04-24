@@ -474,31 +474,34 @@ is_incr_op* insert_incr_op(type_incr_op type, bool pre, is_var* var)
 	return node;
 }
 
-is_loop_stmt* insert_loop_stmt_for(is_for* for_stmt)
+is_loop_stmt* insert_loop_stmt_for(is_id* id, is_for* for_stmt)
 {
 	is_loop_stmt *node = (is_loop_stmt*)malloc(sizeof(is_loop_stmt));
 
 	node->type = t_loop_stmt_for;
+	node->id = id;
 	node->data.for_stmt = for_stmt;
 
 	return node;
 }
 
-is_loop_stmt* insert_loop_stmt_while(is_while* while_stmt)
+is_loop_stmt* insert_loop_stmt_while(is_id* id, is_while* while_stmt)
 {
 	is_loop_stmt *node = (is_loop_stmt*)malloc(sizeof(is_loop_stmt));
 
 	node->type = t_loop_stmt_while;
+	node->id = id;
 	node->data.while_stmt = while_stmt;
 
 	return node;
 }
 
-is_loop_stmt* insert_loop_stmt_do_while(is_do_while* do_while_stmt)
+is_loop_stmt* insert_loop_stmt_do_while(is_id* id, is_do_while* do_while_stmt)
 {
 	is_loop_stmt *node = (is_loop_stmt*)malloc(sizeof(is_loop_stmt));
 
 	node->type = t_loop_stmt_do_while;
+	node->id = id;
 	node->data.do_while_stmt = do_while_stmt;
 
 	return node;

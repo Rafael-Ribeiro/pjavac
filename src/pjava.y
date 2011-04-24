@@ -431,9 +431,12 @@ incr_op
 	;
 
 loop_stmt
-	: for															{ $$ = insert_loop_stmt_for($1); }
-	| while															{ $$ = insert_loop_stmt_while($1); }
-	| do_while														{ $$ = insert_loop_stmt_do_while($1); }
+	: for															{ $$ = insert_loop_stmt_for(NULL, $1); }
+	| ID ':' for													{ $$ = insert_loop_stmt_for($1, $3); }
+	| while															{ $$ = insert_loop_stmt_while(NULL, $1); }
+	| ID ':' while													{ $$ = insert_loop_stmt_while($1, $3); }
+	| do_while														{ $$ = insert_loop_stmt_do_while(NULL, $1); }
+	| ID ':' do_while												{ $$ = insert_loop_stmt_do_while($1, $3); }
 	;
 
 member_stmt

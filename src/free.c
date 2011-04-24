@@ -405,6 +405,7 @@ void free_incr_op(is_incr_op* node)
 
 void free_loop_stmt(is_loop_stmt* node)
 {
+	
 	if (node)
 	{
 		switch (node->type)
@@ -422,6 +423,7 @@ void free_loop_stmt(is_loop_stmt* node)
 				break;
 		}
 
+		free_id(node->id);
 		free(node);
 	}
 }

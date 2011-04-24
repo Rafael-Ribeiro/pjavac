@@ -591,6 +591,12 @@ void show_incr_op(is_incr_op* node)
 
 void show_loop_stmt(is_loop_stmt* node, int tablevel)
 {
+	if (node->id)
+	{
+		show_id(node->id);
+		printf(": ");
+	}
+
 	switch (node->type)
 	{	
 		case t_loop_stmt_for:
