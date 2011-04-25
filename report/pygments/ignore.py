@@ -1,0 +1,1 @@
+/usr/local/lib/python2.6/dist-packages/Pygments-1.3.1-py2.6.egg/pygments/styles/ignore.py
