@@ -32,6 +32,8 @@
 
 \marginsize{3.5cm}{3.5cm}{3cm}{3cm}
 
+\usemintedstyle{default}
+
 \makeatletter
 
 \begin{document}
@@ -47,7 +49,10 @@
 
 \section{Introduction}
 
+\cleardoublepage
 \section {Syntax}
+
+\cleardoublepage
 \subsection{Abstract Syntax}
 \indent \indent Apesar de aparecerem nomeados na definição da sintaxe abstracta, is\_ID, \\
 is\_CONSTANT e outros tipos (identificados com a mesma nomenclatura),
@@ -182,6 +187,7 @@ Neste caso a regra is\_func\_call não contém is\_ID.
 	is\_while 					& $\to$ & <is\_expr : cond> <is\_stmt : body> \\
 \end{longtable}
 
+\cleardoublepage
 \section {Grammar}
 \begin{minted}[mathescape]{antlr}
 application
@@ -300,7 +306,7 @@ do_while
 	;
 
 expr
-	: var %prec LOW_PREC
+	: var %prec LOW_PREC { }
 	| new_op %prec LOW_PREC
 	| '(' expr ')'
 	| '(' type_decl ')' expr
@@ -380,7 +386,7 @@ func_def_args
 	;
 
 if
-	: IF '(' expr ')' stmt %prec LOW_PREC
+	: IF '(' expr ')' stmt %prec LOW_PREC  /* $\cos()$ */
 	| IF '(' expr ')' stmt ELSE stmt
 	;
 
