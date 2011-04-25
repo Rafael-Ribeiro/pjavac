@@ -54,6 +54,7 @@ De forma análoga, a regra is\_empty\_dims é omitida da AS uma vez que a inform
 Uma vez que a linguagem a implementar é procedimental, decidimos implementar o método \texttt{System.out.println()} como uma função normal.
 Neste caso a regra is\_func\_call não contém is\_ID. 
 
+\cleardoublepage
 \begin{longtable}{lcl}
 	is\_array\_decl 			& $\to$ & <is\_type\_object : type> <is\_dims\_empty\_list : empty> \\
 	is\_assign\_op				& $\to$ & <is\_var : var> <is\_type\_assign\_op : op> <is\_expr : expr> \\
@@ -93,7 +94,7 @@ Neste caso a regra is\_func\_call não contém is\_ID.
 	is\_class\_stmt\_scope		& $\to$ &($\emptyset$ $\vee$ is\_FINAL) ($\emptyset$ $\vee$ is\_STATIC) \\
 	is\_class\_stmt 			& $\to$ & <is\_class\_stmt\_scope : scope> <is\_member\_stmt : stmt> \\
 	is\_continue				& $\to$ & $\emptyset$ $\vee$ <is\_id : label> \\
-	is\_dims					& $\to$ & <is\_dims\_sized\_list : sized> (<is\_dims\_empty\_list : empty> $\vee$ $\emptyset$) \\
+	is\_dims					& $\to$ & <is\_dims\_sized\_list : sized> ($\emptyset$ $\vee$ <is\_dims\_empty\_list : empty>) \\
 	is\_dims\_sized				& $\to$ & <is\_expr : expr> \\
 	is\_do\_while				& $\to$ & <is\_stmt : body> <is\_expr : cond> \\
 	is\_expr					& $\to$ & <is\_var : var> \\
