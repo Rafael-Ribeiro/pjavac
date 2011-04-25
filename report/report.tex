@@ -50,6 +50,9 @@ is\_ID, is\_CONSTANT e outros tipos (identificados com a mesma nomenclatura),
 não são expressos segundo uma regra pois são tokens obtidos apartir da análise lexical do programa fonte.
 De forma análoga, a regra is\_empty\_dims é omitida da AS uma vez que a informação semântica que esta indica não depende do seu conteúdo.
 
+Uma vez que a linguagem a implementar é procedimental, decidimos implementar o método \texttt{System.out.println()} como uma função normal.
+Neste caso a regra is_func_call não contém is_ID. 
+
 %TODO aliases
 \begin{tabular}{ll}
 	is\_array\_decl 			& $\to$ <is\_type\_object: type> <is\_dims\_empty\_list: empty> \\
