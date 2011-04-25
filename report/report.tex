@@ -45,12 +45,15 @@
 
 \section{Introduction}
 \section{Abstract Syntax}
-%TODO section explaining why is_CONSTANT is missing
+\indent \indent Apesar de aparecerem nomeados na definição da sintaxe abstracta, 
+is\_ID, is\_CONSTANT e outros tipos (identificados com a mesma nomenclatura),
+não são expressos segundo uma regra pois são tokens obidos apartir da análise lexical do programa fonte.
+
 %TODO aliases
 \begin{tabular}{ll}
 	is\_array\_decl 			& $\to$ <is\_type\_object: type> <is\_dims\_empty\_list: empty> \\
 	is\_assign\_op				& $\to$ <is\_var: var> <is\_assign\_operator: op> <is\_expr: expr> \\
-	is\_type_assign\_op			& $\to$ is\_EQUAL \\
+	is\_type\_assign\_op		& $\to$ is\_EQUAL \\
 								& $\vee$ is\_SHIFT\_R\_ASSIGN \\
 								& $\vee$ is\_SHIFT\_L\_ASSIGN \\
 								& $\vee$ is\_ADD\_ASSIGN \\
