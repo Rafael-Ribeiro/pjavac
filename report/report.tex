@@ -108,9 +108,11 @@ Neste caso a regra is\_func\_call não contém is\_ID.
 	is\_expr\_op				& $\to$ & <is\_unary\_op : unary> \\
 								& $\vee$ & <is\_binary\_op : binary>\\
 								& $\vee$ & <is\_ternary\_op : ternary>\\
-	is\_for						& $\to$ & ($\emptyset$ $\vee$ <is\_for\_init : init>) ($\emptyset$ $\vee$ <is\_for\_cond : cond>) \\ % put ... to indicate newline? (see .pdf)
-								&       & ($\emptyset$ $\vee$ <is\_for\_inc : inc>) ($\emptyset$ $\vee$ <is\_stmt : body>) \\
-	is\_for\_expr				& $\to$ & <is\_incr\_op : incr> $\vee$ <is\_assign\_op : assign> $\vee$ <is\_func\_call : func\_call> \\
+	is\_for						& $\to$ & ($\emptyset$ $\vee$ <is\_for\_init : init>) ($\emptyset$ $\vee$ <is\_for\_cond : cond>) $\cdots$ \\
+								&       & $\cdots$ ($\emptyset$ $\vee$ <is\_for\_inc : inc>) <is\_stmt : body> \\
+	is\_for\_expr				& $\to$ & <is\_incr\_op : incr> \\
+								& $\vee$ & <is\_assign\_op : assign> \\
+								& $\vee$ & <is\_func\_call : func\_call> \\
 	is\_for\_init				& $\to$ & <is\_var\_defs : var\_defs> $\vee$ <is\_for\_expr\_list: expr\_list> \\
 	is\_func\_call				& $\to$ & <is\_id : id> ($\emptyset$ $\vee$ <is\_func\_call\_arg\_list : args>) \\
 	is\_func\_def				& $\to$ & <is\_type\_decl : type> <is\_id : id> \\ % put ... to indicate newline? (see .pdf)
