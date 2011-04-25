@@ -71,8 +71,7 @@ Neste caso a regra is\_func\_call não contém is\_ID.
 								& $\vee$ & <is\_AND\_ASSIGN> \\
 								& $\vee$ & <is\_XOR\_ASSIGN> \\
 								& $\vee$ & <is\_OR\_ASSIGN> \\
-	is\_binary\_op				& $\to$ & <is\_assign\_op : assign> \\
-								& $\vee$ & (<is\_expr : left> <is\_type\_binary\_op : oper> <is\_expr : right>) \\
+	is\_binary\_op				& $\to$ & <is\_assign\_op : assign> $\vee$ (<is\_expr : left> <is\_type\_binary\_op : oper> <is\_expr : right>) \\
 	is\_type\_binary\_op		& $\to$ & <is\_ADD> \\
 								& $\vee$ & <is\_SUB> \\
 								& $\vee$ & <is\_MUL> \\
