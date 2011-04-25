@@ -115,7 +115,7 @@ Neste caso a regra is\_func\_call não contém is\_ID.
 								& $\vee$ & <is\_ternary\_op : ternary>\\
 	is\_for						& $\to$ & ($\lambda$ $\vee$ <is\_for\_init : init>) ($\lambda$ $\vee$ <is\_for\_cond : cond>) $\cdots$ \\
 								& $\cdots$ & ($\lambda$ $\vee$ <is\_for\_inc : inc>) <is\_stmt : body> \\
-	is\_for\_cond				& $\to$ & <is\_expr : expr> \\	
+	is\_for\_cond				& $\to$ & $\lambda$ $\vee$ <is\_expr : expr> \\	
 	is\_for\_expr				& $\to$ & <is\_incr\_op : incr> \\
 								& $\vee$ & <is\_assign\_op : assign> \\
 								& $\vee$ & <is\_func\_call : func\_call> \\
@@ -183,7 +183,7 @@ Neste caso a regra is\_func\_call não contém is\_ID.
 \end{longtable}
 
 \section {Grammar}
-\begin{minted}{c++}
+\begin{minted}[mathescape]{antlr}
 application
 	: class_def END													{ $$ = $1; main_application = $1; return 0; }
 	;
