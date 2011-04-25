@@ -57,6 +57,7 @@ Neste caso a regra is\_func\_call não contém is\_ID.
 
 \cleardoublepage
 \begin{longtable}{lcl}
+	is\_application				& $\to$ & <is\_class\_def : class> \\
 	is\_array\_decl 			& $\to$ & <is\_type\_object : type> <is\_dims\_empty\_list : empty> \\
 	is\_assign\_op				& $\to$ & <is\_var : var> <is\_type\_assign\_op : op> <is\_expr : expr> \\
 	is\_type\_assign\_op		& $\to$ & is\_EQUAL \\
@@ -110,12 +111,16 @@ Neste caso a regra is\_func\_call não contém is\_ID.
 								& $\vee$ & <is\_ternary\_op : ternary>\\
 	is\_for						& $\to$ & ($\emptyset$ $\vee$ <is\_for\_init : init>) ($\emptyset$ $\vee$ <is\_for\_cond : cond>) \\ % put ... to indicate newline? (see .pdf)
 								&       & ($\emptyset$ $\vee$ <is\_for\_inc : inc>) ($\emptyset$ $\vee$ <is\_stmt : body>) \\
+	is\_for\_cond				& $\to$ & <is\_expr : expr> \\	
 	is\_for\_expr				& $\to$ & <is\_incr\_op : incr> $\vee$ <is\_assign\_op : assign> $\vee$ <is\_func\_call : func\_call> \\
+	is\_for\_inc				& $\to$ & <is\_for\_expr\_list : list> \\ 	
 	is\_for\_init				& $\to$ & <is\_var\_defs : var\_defs> $\vee$ <is\_for\_expr\_list: expr\_list> \\
 	is\_func\_call				& $\to$ & <is\_id : id> ($\emptyset$ $\vee$ <is\_func\_call\_arg\_list : args>) \\
+	is\_func\_call\_arg\_list	& $\to$ & <is\_expr\_list : expr\_list> \\	
 	is\_func\_def				& $\to$ & <is\_type\_decl : type> <is\_id : id> \\ % put ... to indicate newline? (see .pdf)
 								&       & <is\_func\_def\_args : args> <is\_stmt\_list : body> \\
 	is\_func\_def\_arg			& $\to$ & <is\_type\_decl : type> <is\_id : id> \\
+	is\_func\_def\_args			& $\to$ & <is\_func\_def\_arg\_list : list> \\		
 	is\_if						& $\to$ & <is\_expr : cond> <is\_stmt : then\_body> ($\emptyset$ $\vee$ <is\_stmt : else\_body>) \\
 	is\_incr\_op				& $\to$ &(<is\_incr\_op\_operator : operator> <is\_var : var>) \\
 								& $\vee$ & (<is\_var : var> <is\_incr\_op\_operator : operator>) \\
@@ -164,6 +169,7 @@ Neste caso a regra is\_func\_call não contém is\_ID.
 	is\_var\_def\_left		 	& $\to$ & <is\_id: id> (<is\_dims : dims> $\vee$ is\_dims\_empty\_list : empty) \\
 	is\_var\_defs		 		& $\to$ & <is\_type\_decl: type> <is\_var\_def\_list : list> \\
 	is\_var\_initializer 		& $\to$ & <is\_var\_initializer\_list: array> $\vee$ <is\_expr : expr> \\
+	is\_var\_stmt				& $\to$ & <is\_var\_defs: var\_defs> \\	
 	is\_while 					& $\to$ & <is\_expr : cond> <is\_stmt : body> \\
 \end{longtable}
 
