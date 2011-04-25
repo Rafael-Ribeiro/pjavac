@@ -423,7 +423,7 @@ void free_loop_stmt(is_loop_stmt* node)
 				break;
 		}
 
-		free_id(node->id);
+		free_id(node->loop_label);
 		free(node);
 	}
 }

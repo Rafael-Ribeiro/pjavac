@@ -108,10 +108,38 @@ dims_sized
 
 %==================================================== SEPARATOR ====================================================
 
+\begin{comment}
+
+
+
+\end{comment}
+
 	& \\
 	& \\ %visual separator
 	& \\
 
+	\begin{comment}
+		- see is_stmt (repeated stmt_list)
+	\end{comment}
+	is\_loop\_stmt							& $\to$ ($\emptyset$ $\vee$ <is\_id : loop\_label>) (<is\_for : for\_stmt> $\vee$ <is\_while : while\_stmt> \\ 
+											& $\vee$ <is\_do\_while : do\_while\_stmt>) \\
+	is\_member\_stmt						& $\to$ <is\_var\_stmt : var> $\vee$ <is\_func\_def : func\_def> \\
+	is\_new\_op								& $\to$ <is\_type\_object : type\_object> <is\_dims : dims> \\
+	is\_return								& $\to$ $\emptyset$ $\vee$ <is\_expr : value> \\
+	is\_stmt								& $\to$ <is\_stmt\_list : stmt\_list> \\
+											& $\vee$ <is\_var\_stmt : var> \\
+											& $\vee$ <is\_assign\_op : assign> \\
+											& $\vee$ <is\_incr\_op : incr> \\
+											& $\vee$ <is\_if : if\_stmt> \\
+											& $\vee$ <is\_loop\_stmt : loop> \\
+											& $\vee$ <is\_func\_call : func\_call> \\
+											& $\vee$ <is\_switch : switch\_stmt> \\
+											& $\vee$ <is\_break : break\_stmt> \\
+											& $\vee$ <is\_continue : continue\_stmt> \\
+											& $\vee$ <is\_return : return\_stmt> \\
+	is\_switch								& $\to$ <is\_expr : expr> <is\_switch\_stmt\_list : list> \\
+	is\_switch\_stmt						& $\to$ <is\_stmt\_list : list> ($\emptyset$ $\vee$ <is\_constant : constant> \\
+	is\_ternary\_op							& $\to$ <is\_expr : if\_expr> <is\_expr : then\_expr> <is\_expr : else\_expr> \\
 	is\_type\_decl							& $\to$ <is\_type\_object : type\_object> $\vee$ <is\_array\_decl : array> \\
 	is\_type\_native						& $\to$ <is\_BOOL> \\
 											& $\vee$ <is\_BYTE> \\
