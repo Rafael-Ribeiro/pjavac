@@ -436,7 +436,6 @@ typedef struct _is_stmt
 	{
 		struct _is_stmt_list *stmt_list;
 		is_var_stmt *var;
-		struct _is_stmt_list *list;
 		struct _is_assign_op *assign;
 		struct _is_incr_op *incr;
 		struct _is_if *if_stmt;

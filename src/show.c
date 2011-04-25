@@ -669,7 +669,7 @@ void show_stmt(is_stmt* node, int tablevel)
 		case t_stmt_stmt_list:
 			printf("{\n");
 	
-			show_stmt_list(node->data.list, tablevel);		
+			show_stmt_list(node->data.stmt_list, tablevel);		
 
 			tab(tablevel-1);
 			printf("}\n");

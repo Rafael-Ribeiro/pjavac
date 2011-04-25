@@ -45,12 +45,16 @@
 
 \section{Introduction}
 \section{Abstract Syntax}
+\indent \indent Apesar de aparecerem nomeados na definição da sintaxe abstracta, 
+is\_ID, is\_CONSTANT e outros tipos (identificados com a mesma nomenclatura),
+não são expressos segundo uma regra pois são tokens obtidos apartir da análise lexical do programa fonte.
+De forma análoga, a regra is\_empty\_dims é omitida da AS uma vez que a informação semântica que esta indica não depende do seu conteúdo.
+
 %TODO aliases
-%TODO is_assign_operator
 \begin{tabular}{ll}
 	is\_array\_decl 			& $\to$ <is\_type\_object: type> <is\_dims\_empty\_list: empty> \\
 	is\_assign\_op				& $\to$ <is\_var: var> <is\_assign\_operator: op> <is\_expr: expr> \\
-	is\_assing\_operator		& $\to$ is\_EQUAL \\
+	is\_type\_assign\_op		& $\to$ is\_EQUAL \\
 								& $\vee$ is\_SHIFT\_R\_ASSIGN \\
 								& $\vee$ is\_SHIFT\_L\_ASSIGN \\
 								& $\vee$ is\_ADD\_ASSIGN \\
@@ -65,19 +69,30 @@
 	is\_break 					& $\to$ $\emptyset$ $\vee$ <is\_id: label> \\
 	is\_class\_def				& $\to$ <is\_id: id> <is\_class\_stmt\_list: body> \\
 	is\_class\_stmt\_privacy	& $\to$ is\_PRIVATE $\vee$ is\_PUBLIC\\	
-	is\_class\_stmt\_scope		& $\to$ ($\emptyset$ $\vee$ is\_FINAL) $\vee$ ($\emptyset$ $\vee$ is\_STATIC) \\
-	is\_ & $\to$ <is\_: > <is\_: > \\
-	is\_ & $\to$ <is\_: > <is\_: > \\
-	is\_ & $\to$ <is\_: > <is\_: > \\
-	is\_ & $\to$ <is\_: > <is\_: > \\
-	is\_ & $\to$ <is\_: > <is\_: > \\
-	is\_ & $\to$ <is\_: > <is\_: > \\
-	is\_ & $\to$ <is\_: > <is\_: > \\
-	is\_ & $\to$ <is\_: > <is\_: > \\
-	is\_ & $\to$ <is\_: > <is\_: > \\
-	is\_ & $\to$ <is\_: > <is\_: > \\
+	is\_class\_stmt\_scope		& $\to$ ($\emptyset$ $\vee$ is\_FINAL) ($\emptyset$ $\vee$ is\_STATIC) \\
+	is\_class\_stmt 			& $\to$ <is\_class\_stmt\_scope: scope> <is\_member\_stmt: stmt> \\
+	is\_continue				& $\to$ $\emptyset$ $\vee$ <is\_id: label> \\
+	is\_dims					& $\to$ <is\_dims\_sized\_list: sized> (<is\_dims\_empty\_list: empty> $\vee$ $\emptyset$) \\
+	is\_dims\_sized				& $\to$ <is\_expr: expr> \\
+	is\_do\_while				& $\to$ <is\_stmt: body> <is\_expr: cond> \\
+	is\_expr					& $\to$ <is\_var: var> \\
+								& $\vee$ <is\_new\_op: new\_op> \\
+								& $\vee$ <is\_type\_decl: type> <is\_expr: expr>\\
+								& $\vee$ <is\_CONSTANT: constant> \\
+								& $\vee$ <is\_func\_call: func\_call> \\
+								& $\vee$ <is\_expr\_op: operation> \\
+
+	is\_expr\_op				& $\to$ <is\_unary\_op: unary> \\
+								& \;$\vee$ <is\_binary\_op: binary>\\
+								& $\vee$ <is\_binary\_op: ternary>\\
+
 \begin{comment}
 
+expr_op
+	: unary_op														{ $$ = insert_expr_op_unary($1); }
+	| binary_op														{ $$ = insert_expr_op_binary($1); }
+	| ternary_op													{ $$ = insert_expr_op_ternary($1); }
+	;
 \end{comment}
 
 %==================================================== SEPARATOR ====================================================
