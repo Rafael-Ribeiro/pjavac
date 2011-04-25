@@ -84,17 +84,26 @@
 
 \begin{comment}
 
-
-
 \end{comment}
 
 	& \\
 	& \\ %visual separator
 	& \\
 
-	\begin{comment}
-		- see is_stmt (repeated stmt_list)
-	\end{comment}
+	is\_expr\_op							& $\to$ <is\_unary\_op : unary> $\vee$ \\ % put ... to indicate newline? (see .pdf)
+											& <is\_binary\_op : binary> $\vee$ <is\_ternary\_op : ternary> \\
+	is\_for									& $\to$ ($\emptyset$ $\vee$ <is\_for\_init : init>) ($\emptyset$ $\vee$ <is\_for\_cond : cond>) \\ % put ... to indicate newline? (see .pdf)
+											& ($\emptyset$ $\vee$ <is\_for\_inc : inc>) ($\emptyset$ $\vee$ <is\_stmt : body>) \\
+	is\_for\_expr							& $\to$ <is\_incr\_op : incr> $\vee$ <is\_assign\_op : assign> $\vee$ <is\_func\_call : func\_call> \\
+	is\_for\_init							& $\to$ <is\_var\_defs : var\_defs> $\vee$ <is\_for\_expr\_list : expr\_list> \\
+	is\_func\_call							& $\to$ <is\_id : id> ($\emptyset$ $\vee$ <is\_func\_call\_arg\_list : args>) \\
+	is\_func\_def							& $\to$ <is\_type\_decl : type> <is\_id : id> \\ % put ... to indicate newline? (see .pdf)
+											& <is\_func\_def\_args : args> <is\_stmt\_list : body> \\
+	is\_func\_def\_arg						& $\to$ <is\_type\_decl : type> <is\_id : id> \\
+	is\_if									& $\to$ <is\_expr : cond> <is\_stmt : then\_body> ($\emptyset$ $\vee$ <is\_stmt : else\_body>) \\
+	is\_incr\_op							& $\to$ (<is\_incr\_op\_operator : operator> <is\_var : var>) \\
+											& $\vee$ (<is\_var : var> <is\_incr\_op\_operator : operator>) \\
+	is\_incr\_op\_operator					& $\to$ is\_INC $\vee$ is\_DEC \\
 	is\_loop\_stmt							& $\to$ ($\emptyset$ $\vee$ <is\_id : loop\_label>) (<is\_for : for\_stmt> $\vee$ <is\_while : while\_stmt> \\ 
 											& $\vee$ <is\_do\_while : do\_while\_stmt>) \\
 	is\_member\_stmt						& $\to$ <is\_var\_stmt : var> $\vee$ <is\_func\_def : func\_def> \\
