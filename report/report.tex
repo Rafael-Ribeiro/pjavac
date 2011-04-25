@@ -27,6 +27,7 @@
 \usepackage{anysize}
 \usepackage{lscape}
 \usepackage[pdftex]{graphicx}
+\usepackage{longtable}
 
 \marginsize{3.5cm}{3.5cm}{3cm}{3cm}
 
@@ -53,7 +54,7 @@ De forma análoga, a regra is\_empty\_dims é omitida da AS uma vez que a inform
 Uma vez que a linguagem a implementar é procedimental, decidimos implementar o método \texttt{System.out.println()} como uma função normal.
 Neste caso a regra is\_func\_call não contém is\_ID. 
 
-\begin{tabular}{lcl}
+\begin{longtable}{lcl}
 	is\_array\_decl 			& $\to$ & <is\_type\_object : type> <is\_dims\_empty\_list : empty> \\
 	is\_assign\_op				& $\to$ & <is\_var : var> <is\_type\_assign\_op : op> <is\_expr : expr> \\
 	is\_type\_assign\_op		& $\to$ & is\_EQUAL \\
@@ -162,6 +163,6 @@ Neste caso a regra is\_func\_call não contém is\_ID.
 	is\_var\_defs		 		& $\to$ & <is\_type\_decl: type> <is\_var\_def\_list : list> \\
 	is\_var\_initializer 		& $\to$ & <is\_var\_initializer\_list: array> $\vee$ <is\_expr : expr> \\
 	is\_while 					& $\to$ & <is\_expr : cond> <is\_stmt : body> \\
-\end{tabular}
+\end{longtable}
 
 \end{document}
