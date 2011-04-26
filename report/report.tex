@@ -55,13 +55,6 @@ Todas as restantes funcionalidades estão implementadas de acordo com a específ
 
 \cleardoublepage
 \subsection{Abstract Syntax}
-\indent \indent Apesar de aparecerem nomeados na definição da sintaxe abstracta, is\_ID, \\
-is\_CONSTANT e outros tipos (identificados com a mesma nomenclatura),
-não são expressos segundo uma regra pois são tokens obtidos a partir da análise lexical do programa fonte.
-De forma análoga, a regra is\_empty\_dims é omitida da AS uma vez que a informação semântica que esta indica não depende do seu conteúdo.
-Assim na implementação de is\_empty\_dims\_list é apenas necessário guardar um inteiro, correspondente ao número de vezes que a regra é repetida.
-
-\cleardoublepage
 \begin{longtable}{lcl}
 	is\_application				& $\to$ & <is\_class\_def : class> \\
 	is\_array\_decl 			& $\to$ & <is\_type\_object : type> <is\_dims\_empty\_list : empty> \\
@@ -184,6 +177,13 @@ Assim na implementação de is\_empty\_dims\_list é apenas necessário guardar 
 	is\_var\_stmt				& $\to$ & <is\_var\_defs: var\_defs> \\	
 	is\_while 					& $\to$ & <is\_expr : cond> <is\_stmt : body> \\
 \end{longtable}
+
+\indent \indent Apesar de aparecerem nomeados na definição da sintaxe abstracta, is\_ID, \\
+is\_CONSTANT e outros tipos (identificados com a mesma nomenclatura),
+não são expressos segundo uma regra pois são tokens obtidos a partir da análise lexical do programa fonte.
+
+\begin{comment}De forma análoga, a regra is\_empty\_dims é omitida da AS uma vez que a informação semântica que esta indica não depende do seu conteúdo.
+Assim na implementação de is\_empty\_dims\_list é apenas necessário guardar um inteiro, correspondente ao número de vezes que a regra é repetida.\end{comment}
 
 \cleardoublepage
 \section {Grammar}
