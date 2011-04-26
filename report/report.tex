@@ -47,145 +47,15 @@
 \setlength{\parindent}{1cm}
 \setlength{\parskip}{0.3cm}
 
-\section {Syntax}
+\section{Syntax Analysis}
+
 \indent \indent Tal como indicado no enunciado do projecto, na linguagem PJAVA apenas se pretende explorar a vertente procedimental do JAVA. 
 Deste modo, decidimos que implementar \texttt{packages} seria desnecessário.
-Devido a esta escolha, o método \texttt{System.out.println()} é implementado como uma função \emph{builtin} (que será distinguida na semântica). 
+Devido a esta escolha, o método \texttt{System.out.println()} é implementado como uma função \emph{builtin} (que será distinguida na semântica).
 
 \cleardoublepage
-\subsection{Abstract Syntax}
-\begin{longtable}{lcl}
-	is\_application				& $\to$ & <is\_class\_def : class> \\
-	is\_array\_decl 			& $\to$ & <is\_type\_object : type> <is\_dims\_empty\_list : empty> \\
-	is\_assign\_op				& $\to$ & <is\_var : var> <is\_type\_assign\_op : op> <is\_expr : expr> \\
-	is\_type\_assign\_op		& $\to$ & <is\_EQUAL> \\
-								& $\vee$ & <is\_SHIFT\_R\_ASSIGN> \\
-								& $\vee$ & <is\_SHIFT\_L\_ASSIGN> \\
-								& $\vee$ & <is\_ADD\_ASSIGN> \\
-								& $\vee$ & <is\_SUB\_ASSIGM> \\
-								& $\vee$ & <is\_MUL\_ASSIGN> \\
-								& $\vee$ & <is\_DIV\_ASSIGN> \\
-								& $\vee$ & <is\_MOD\_ASSIGN> \\
-								& $\vee$ & <is\_AND\_ASSIGN> \\
-								& $\vee$ & <is\_XOR\_ASSIGN> \\
-								& $\vee$ & <is\_OR\_ASSIGN> \\
-	is\_binary\_op				& $\to$ & <is\_assign\_op : assign> \\
-								& $\vee$ & (<is\_expr : left> <is\_type\_binary\_op : oper> <is\_expr : right>) \\
-	is\_type\_binary\_op		& $\to$ & <is\_ADD> \\
-								& $\vee$ & <is\_SUB> \\
-								& $\vee$ & <is\_MUL> \\
-								& $\vee$ & <is\_DIV> \\
-								& $\vee$ & <is\_MOD> \\
-								& $\vee$ & <is\_AND> \\
-								& $\vee$ & <is\_OR> \\
-								& $\vee$ & <is\_XOR> \\
-								& $\vee$ & <is\_SHIFT\_R>\\
-								& $\vee$ & <is\_SHIFT\_L> \\
-								& $\vee$ & <is\_LOGIC\_AND>\\
-								& $\vee$ & <is\_LOGIC\_OR> \\
-								& $\vee$ & <is\_LESS> \\
-								& $\vee$ & <is\_GREAT> \\
-								& $\vee$ & <is\_LESS\_EQ> \\
-								& $\vee$ & <is\_GREAT\_EQ> \\
-								& $\vee$ & <is\_EQ3> \\
-								& $\vee$ & <is\_NEQ3> \\
-	is\_break 					& $\to$ & $\lambda$ $\vee$ <is\_ID : label> \\
-	is\_class\_def				& $\to$ & <is\_ID : id> <is\_class\_stmt\_list : body> \\
-	is\_class\_stmt\_privacy	& $\to$ & is\_PRIVATE $\vee$ <is\_PUBLIC>\\	
-	is\_class\_stmt\_scope		& $\to$ &($\lambda$ $\vee$ <is\_FINAL>) ($\lambda$ $\vee$ <is\_STATIC>) \\
-	is\_class\_stmt 			& $\to$ & <is\_class\_stmt\_scope : scope> <is\_member\_stmt : stmt> \\
-	is\_continue				& $\to$ & $\lambda$ $\vee$ <is\_ID : label> \\
-	is\_dims					& $\to$ & <is\_dims\_sized\_list : sized> ($\lambda$ $\vee$ <is\_dims\_empty\_list : empty>) \\
-	is\_dims\_sized				& $\to$ & <is\_expr : expr> \\
-	is\_do\_while				& $\to$ & <is\_stmt : body> <is\_expr : cond> \\
-	is\_expr					& $\to$ & <is\_var : var> \\
-								& $\vee$ & <is\_new\_op : new\_op> \\
-								& $\vee$ & (<is\_type\_decl : type> <is\_expr : expr>) \\
-								& $\vee$ & <is\_CONSTANT : constant> \\
-								& $\vee$ & <is\_func\_call : func\_call> \\
-								& $\vee$ & <is\_expr\_op : operation> \\
 
-	is\_expr\_op				& $\to$ & <is\_unary\_op : unary> \\
-								& $\vee$ & <is\_binary\_op : binary>\\
-								& $\vee$ & <is\_ternary\_op : ternary>\\
-	is\_for						& $\to$ & ($\lambda$ $\vee$ <is\_for\_init : init>) ($\lambda$ $\vee$ <is\_for\_cond : cond>) $\cdots$ \\
-								& $\cdots$ & ($\lambda$ $\vee$ <is\_for\_inc : inc>) <is\_stmt : body> \\
-	is\_for\_cond				& $\to$ & $\lambda$ $\vee$ <is\_expr : expr> \\	
-	is\_for\_expr				& $\to$ & <is\_incr\_op : incr> \\
-								& $\vee$ & <is\_assign\_op : assign> \\
-								& $\vee$ & <is\_func\_call : func\_call> \\
-	is\_for\_inc				& $\to$ & <is\_for\_expr\_list : list> \\ 	
-	is\_for\_init				& $\to$ & <is\_var\_defs : var\_defs> $\vee$ <is\_for\_expr\_list: expr\_list> \\
-	is\_func\_call				& $\to$ & <is\_ID : id> ($\lambda$ $\vee$ <is\_func\_call\_arg\_list : args>) \\
-	is\_func\_call\_arg\_list	& $\to$ & <is\_expr\_list : expr\_list> \\	
-	is\_func\_def				& $\to$ & <is\_type\_decl : type> <is\_ID : id> \\
-								&       & <is\_func\_def\_args : args> <is\_stmt\_list : body> \\
-	is\_func\_def\_arg			& $\to$ & <is\_type\_decl : type> <is\_ID : id> \\
-	is\_func\_def\_args			& $\to$ & <is\_func\_def\_arg\_list : list> \\		
-	is\_if						& $\to$ & <is\_expr : cond> <is\_stmt : then\_body> ($\lambda$ $\vee$ <is\_stmt : else\_body>) \\
-	is\_incr\_op				& $\to$ &(<is\_incr\_op\_operator : operator> <is\_var : var>) \\
-								& $\vee$ & (<is\_var : var> <is\_incr\_op\_operator : operator>) \\
-	is\_incr\_op\_operator		& $\to$ & <is\_INC> $\vee$ <is\_DEC> \\
-	is\_loop\_stmt				& $\to$ & ($\lambda$ $\vee$ <is\_ID : loop\_label>)\\
-								& ( & <is\_for : for\_stmt> \\
-								& $\vee$ & <is\_while : while\_stmt> \\ 
-								& $\vee$ & <is\_do\_while : do\_while\_stmt> \\
-								& ) & \\
-	is\_member\_stmt			& $\to$ & <is\_var\_stmt : var> $\vee$ <is\_func\_def : func\_def> \\
-	is\_new\_op					& $\to$ & <is\_type\_object : type\_object> <is\_dims : dims> \\
-	is\_return					& $\to$ & $\lambda$ $\vee$ <is\_expr : value> \\
-	is\_stmt					& $\to$ & <is\_stmt\_list : stmt\_list> \\
-								& $\vee$ & <is\_var\_stmt : var> \\
-								& $\vee$ & <is\_assign\_op : assign> \\
-								& $\vee$ & <is\_incr\_op : incr> \\
-								& $\vee$ & <is\_if : if\_stmt> \\
-								& $\vee$ & <is\_loop\_stmt : loop> \\
-								& $\vee$ & <is\_func\_call : func\_call> \\
-								& $\vee$ & <is\_switch : switch\_stmt> \\
-								& $\vee$ & <is\_break : break\_stmt> \\
-								& $\vee$ & <is\_continue : continue\_stmt> \\
-								& $\vee$ & <is\_return : return\_stmt> \\
-	is\_switch					& $\to$ & <is\_expr : expr> <is\_switch\_stmt\_list : list> \\
-	is\_switch\_stmt			& $\to$ & <is\_stmt\_list : list> ($\lambda$ $\vee$ <is\_CONSTANT : constant> \\
-	is\_ternary\_op				& $\to$ & <is\_expr : if\_expr> <is\_expr : then\_expr> <is\_expr : else\_expr> \\
-	is\_type\_decl				& $\to$ & <is\_type\_object : type\_object> $\vee$ <is\_array\_decl : array> \\
-	is\_type\_native			& $\to$ & <is\_BOOL> \\
-								& $\vee$ & <is\_BYTE> \\
-								& $\vee$ & <is\_CHAR> \\
-								& $\vee$ & <is\_DOUBLE> \\
-								& $\vee$ & <is\_FLOAT> \\
-								& $\vee$ & <is\_INT> \\
-								& $\vee$ & <is\_LONG> \\
-								& $\vee$ & <is\_SHORT> \\
-								& $\vee$ & <is\_STRING> \\
-								& $\vee$ & <is\_VOID> \\
-	is\_type\_object			& $\to$ & <is\_type\_native: type> \\
-	is\_unary\_op				& $\to$ & <is\_incr\_op: incr> $\vee$ (<is\_unary\_op\_operator: op> <is\_expr: expr>) \\
-	is\_unary\_op\_operator		& $\to$ & <is\_PLUS> \\
-								& $\vee$ & <is\_MINUS> \\
-								& $\vee$ & <is\_NOT> \\
-								& $\vee$ & <is\_BIN\_NOT> \\
-	is\_var					 	& $\to$ & <is\_ID: id> \\
-								& $\vee$ & <is\_new\_op: new\_op> \\
-								& $\vee$ & (<is\_var : var> <is\_dims\_sized : dims>) \\
-								& $\vee$ & (<is\_func\_call : func\_call> <is\_dims\_sized : dims>) \\
-	is\_var\_def			 	& $\to$ & <is\_var\_def\_left: left> ($\lambda$ $\vee$ <is\_var\_initializer : var\_init>) \\
-	is\_var\_def\_left		 	& $\to$ & <is\_ID: id> (<is\_dims : dims> $\vee$ is\_dims\_empty\_list : empty) \\
-	is\_var\_defs		 		& $\to$ & <is\_type\_decl: type> <is\_var\_def\_list : list> \\
-	is\_var\_initializer 		& $\to$ & <is\_var\_initializer\_list: array> $\vee$ <is\_expr : expr> \\
-	is\_var\_stmt				& $\to$ & <is\_var\_defs: var\_defs> \\	
-	is\_while 					& $\to$ & <is\_expr : cond> <is\_stmt : body> \\
-\end{longtable}
-
-\indent \indent Apesar de aparecerem nomeados na definição da sintaxe abstracta, is\_ID, \\
-is\_CONSTANT e outros tipos (identificados com a mesma nomenclatura),
-não são expressos segundo uma regra pois são tokens obtidos a partir da análise lexical do programa fonte.
-
-\begin{comment}De forma análoga, a regra is\_empty\_dims é omitida da AS uma vez que a informação semântica que esta indica não depende do seu conteúdo.
-Assim na implementação de is\_empty\_dims\_list é apenas necessário guardar um inteiro, correspondente ao número de vezes que a regra é repetida.\end{comment}
-
-\cleardoublepage
-\section {Grammar}
+\subsection {Grammar}
 \begin{minted}[mathescape]{antlr}
 application
 	: class_def END
@@ -537,5 +407,144 @@ while
 	: WHILE '(' expr ')' stmt
 	;
 \end{minted}
+
+\cleardoublepage
+
+\subsection{Abstract Syntax}
+
+% Cheguei aqui porque derivei da gramática...
+
+\begin{longtable}{lcl}
+	is\_application				& $\to$ & <is\_class\_def : class> \\
+	is\_array\_decl 			& $\to$ & <is\_type\_object : type> <is\_dims\_empty\_list : empty> \\
+	is\_assign\_op				& $\to$ & <is\_var : var> <is\_type\_assign\_op : op> <is\_expr : expr> \\
+	is\_type\_assign\_op		& $\to$ & <is\_EQUAL> \\
+								& $\vee$ & <is\_SHIFT\_R\_ASSIGN> \\
+								& $\vee$ & <is\_SHIFT\_L\_ASSIGN> \\
+								& $\vee$ & <is\_ADD\_ASSIGN> \\
+								& $\vee$ & <is\_SUB\_ASSIGM> \\
+								& $\vee$ & <is\_MUL\_ASSIGN> \\
+								& $\vee$ & <is\_DIV\_ASSIGN> \\
+								& $\vee$ & <is\_MOD\_ASSIGN> \\
+								& $\vee$ & <is\_AND\_ASSIGN> \\
+								& $\vee$ & <is\_XOR\_ASSIGN> \\
+								& $\vee$ & <is\_OR\_ASSIGN> \\
+	is\_binary\_op				& $\to$ & <is\_assign\_op : assign> \\
+								& $\vee$ & (<is\_expr : left> <is\_type\_binary\_op : oper> <is\_expr : right>) \\
+	is\_type\_binary\_op		& $\to$ & <is\_ADD> \\
+								& $\vee$ & <is\_SUB> \\
+								& $\vee$ & <is\_MUL> \\
+								& $\vee$ & <is\_DIV> \\
+								& $\vee$ & <is\_MOD> \\
+								& $\vee$ & <is\_AND> \\
+								& $\vee$ & <is\_OR> \\
+								& $\vee$ & <is\_XOR> \\
+								& $\vee$ & <is\_SHIFT\_R>\\
+								& $\vee$ & <is\_SHIFT\_L> \\
+								& $\vee$ & <is\_LOGIC\_AND>\\
+								& $\vee$ & <is\_LOGIC\_OR> \\
+								& $\vee$ & <is\_LESS> \\
+								& $\vee$ & <is\_GREAT> \\
+								& $\vee$ & <is\_LESS\_EQ> \\
+								& $\vee$ & <is\_GREAT\_EQ> \\
+								& $\vee$ & <is\_EQ3> \\
+								& $\vee$ & <is\_NEQ3> \\
+	is\_break 					& $\to$ & $\lambda$ $\vee$ <is\_ID : label> \\
+	is\_class\_def				& $\to$ & <is\_ID : id> <is\_class\_stmt\_list : body> \\
+	is\_class\_stmt\_privacy	& $\to$ & is\_PRIVATE $\vee$ <is\_PUBLIC>\\	
+	is\_class\_stmt\_scope		& $\to$ &($\lambda$ $\vee$ <is\_FINAL>) ($\lambda$ $\vee$ <is\_STATIC>) \\
+	is\_class\_stmt 			& $\to$ & <is\_class\_stmt\_scope : scope> <is\_member\_stmt : stmt> \\
+	is\_continue				& $\to$ & $\lambda$ $\vee$ <is\_ID : label> \\
+	is\_dims					& $\to$ & <is\_dims\_sized\_list : sized> ($\lambda$ $\vee$ <is\_dims\_empty\_list : empty>) \\
+	is\_dims\_sized				& $\to$ & <is\_expr : expr> \\
+	is\_do\_while				& $\to$ & <is\_stmt : body> <is\_expr : cond> \\
+	is\_expr					& $\to$ & <is\_var : var> \\
+								& $\vee$ & <is\_new\_op : new\_op> \\
+								& $\vee$ & (<is\_type\_decl : type> <is\_expr : expr>) \\
+								& $\vee$ & <is\_CONSTANT : constant> \\
+								& $\vee$ & <is\_func\_call : func\_call> \\
+								& $\vee$ & <is\_expr\_op : operation> \\
+
+	is\_expr\_op				& $\to$ & <is\_unary\_op : unary> \\
+								& $\vee$ & <is\_binary\_op : binary>\\
+								& $\vee$ & <is\_ternary\_op : ternary>\\
+	is\_for						& $\to$ & ($\lambda$ $\vee$ <is\_for\_init : init>) ($\lambda$ $\vee$ <is\_for\_cond : cond>) $\cdots$ \\
+								& $\cdots$ & ($\lambda$ $\vee$ <is\_for\_inc : inc>) <is\_stmt : body> \\
+	is\_for\_cond				& $\to$ & $\lambda$ $\vee$ <is\_expr : expr> \\	
+	is\_for\_expr				& $\to$ & <is\_incr\_op : incr> \\
+								& $\vee$ & <is\_assign\_op : assign> \\
+								& $\vee$ & <is\_func\_call : func\_call> \\
+	is\_for\_inc				& $\to$ & <is\_for\_expr\_list : list> \\ 	
+	is\_for\_init				& $\to$ & <is\_var\_defs : var\_defs> $\vee$ <is\_for\_expr\_list: expr\_list> \\
+	is\_func\_call				& $\to$ & <is\_ID : id> ($\lambda$ $\vee$ <is\_func\_call\_arg\_list : args>) \\
+	is\_func\_call\_arg\_list	& $\to$ & <is\_expr\_list : expr\_list> \\	
+	is\_func\_def				& $\to$ & <is\_type\_decl : type> <is\_ID : id> \\
+								&       & <is\_func\_def\_args : args> <is\_stmt\_list : body> \\
+	is\_func\_def\_arg			& $\to$ & <is\_type\_decl : type> <is\_ID : id> \\
+	is\_func\_def\_args			& $\to$ & <is\_func\_def\_arg\_list : list> \\		
+	is\_if						& $\to$ & <is\_expr : cond> <is\_stmt : then\_body> ($\lambda$ $\vee$ <is\_stmt : else\_body>) \\
+	is\_incr\_op				& $\to$ &(<is\_incr\_op\_operator : operator> <is\_var : var>) \\
+								& $\vee$ & (<is\_var : var> <is\_incr\_op\_operator : operator>) \\
+	is\_incr\_op\_operator		& $\to$ & <is\_INC> $\vee$ <is\_DEC> \\
+	is\_loop\_stmt				& $\to$ & ($\lambda$ $\vee$ <is\_ID : loop\_label>)\\
+								& ( & <is\_for : for\_stmt> \\
+								& $\vee$ & <is\_while : while\_stmt> \\ 
+								& $\vee$ & <is\_do\_while : do\_while\_stmt> \\
+								& ) & \\
+	is\_member\_stmt			& $\to$ & <is\_var\_stmt : var> $\vee$ <is\_func\_def : func\_def> \\
+	is\_new\_op					& $\to$ & <is\_type\_object : type\_object> <is\_dims : dims> \\
+	is\_return					& $\to$ & $\lambda$ $\vee$ <is\_expr : value> \\
+	is\_stmt					& $\to$ & <is\_stmt\_list : stmt\_list> \\
+								& $\vee$ & <is\_var\_stmt : var> \\
+								& $\vee$ & <is\_assign\_op : assign> \\
+								& $\vee$ & <is\_incr\_op : incr> \\
+								& $\vee$ & <is\_if : if\_stmt> \\
+								& $\vee$ & <is\_loop\_stmt : loop> \\
+								& $\vee$ & <is\_func\_call : func\_call> \\
+								& $\vee$ & <is\_switch : switch\_stmt> \\
+								& $\vee$ & <is\_break : break\_stmt> \\
+								& $\vee$ & <is\_continue : continue\_stmt> \\
+								& $\vee$ & <is\_return : return\_stmt> \\
+	is\_switch					& $\to$ & <is\_expr : expr> <is\_switch\_stmt\_list : list> \\
+	is\_switch\_stmt			& $\to$ & <is\_stmt\_list : list> ($\lambda$ $\vee$ <is\_CONSTANT : constant> \\
+	is\_ternary\_op				& $\to$ & <is\_expr : if\_expr> <is\_expr : then\_expr> <is\_expr : else\_expr> \\
+	is\_type\_decl				& $\to$ & <is\_type\_object : type\_object> $\vee$ <is\_array\_decl : array> \\
+	is\_type\_native			& $\to$ & <is\_BOOL> \\
+								& $\vee$ & <is\_BYTE> \\
+								& $\vee$ & <is\_CHAR> \\
+								& $\vee$ & <is\_DOUBLE> \\
+								& $\vee$ & <is\_FLOAT> \\
+								& $\vee$ & <is\_INT> \\
+								& $\vee$ & <is\_LONG> \\
+								& $\vee$ & <is\_SHORT> \\
+								& $\vee$ & <is\_STRING> \\
+								& $\vee$ & <is\_VOID> \\
+	is\_type\_object			& $\to$ & <is\_type\_native: type> \\
+	is\_unary\_op				& $\to$ & <is\_incr\_op: incr> $\vee$ (<is\_unary\_op\_operator: op> <is\_expr: expr>) \\
+	is\_unary\_op\_operator		& $\to$ & <is\_PLUS> \\
+								& $\vee$ & <is\_MINUS> \\
+								& $\vee$ & <is\_NOT> \\
+								& $\vee$ & <is\_BIN\_NOT> \\
+	is\_var					 	& $\to$ & <is\_ID: id> \\
+								& $\vee$ & <is\_new\_op: new\_op> \\
+								& $\vee$ & (<is\_var : var> <is\_dims\_sized : dims>) \\
+								& $\vee$ & (<is\_func\_call : func\_call> <is\_dims\_sized : dims>) \\
+	is\_var\_def			 	& $\to$ & <is\_var\_def\_left: left> ($\lambda$ $\vee$ <is\_var\_initializer : var\_init>) \\
+	is\_var\_def\_left		 	& $\to$ & <is\_ID: id> (<is\_dims : dims> $\vee$ is\_dims\_empty\_list : empty) \\
+	is\_var\_defs		 		& $\to$ & <is\_type\_decl: type> <is\_var\_def\_list : list> \\
+	is\_var\_initializer 		& $\to$ & <is\_var\_initializer\_list: array> $\vee$ <is\_expr : expr> \\
+	is\_var\_stmt				& $\to$ & <is\_var\_defs: var\_defs> \\	
+	is\_while 					& $\to$ & <is\_expr : cond> <is\_stmt : body> \\
+\end{longtable}
+
+\cleardoublepage
+
+\subsection{Abstract Syntax Tree Implementation}
+\indent \indent Apesar de aparecerem nomeados na definição da sintaxe abstracta, is\_ID, \\
+is\_CONSTANT e outros tipos (identificados com a mesma nomenclatura),
+não são expressos segundo uma regra pois são tokens obtidos a partir da análise lexical do programa fonte.
+
+\begin{comment}De forma análoga, a regra is\_empty\_dims é omitida da AS uma vez que a informação semântica que esta indica não depende do seu conteúdo.
+Assim na implementação de is\_empty\_dims\_list é apenas necessário guardar um inteiro, correspondente ao número de vezes que a regra é repetida.\end{comment}
 
 \end{document}
