@@ -51,6 +51,7 @@
 \indent \indent Tal como indicado no enunciado do projecto, na linguagem PJAVA apenas se pretende explorar a vertente procedimental do JAVA. 
 Deste modo, decidimos que implementar \texttt{packages} seria desnecessário.
 Devido a esta escolha, o método \texttt{System.out.println()} é implementado como uma função \emph{builtin} (que será distinguida na semântica). 
+Todas as restantes funcionalidades estão implementadas de acordo com a específicação.
 
 \cleardoublepage
 \subsection{Abstract Syntax}
@@ -426,7 +427,7 @@ stmt
 	| incr_op ';'
 	| if
 	| loop_stmt
-	| func_call	';'
+	| func_call ';'
 	| switch
 	| break
 	| continue
@@ -530,7 +531,7 @@ var_initializer_list
  	;
 
 var_stmt															
-	: var_defs ';'	
+	: var_defs ';'
 	;
 
 while
