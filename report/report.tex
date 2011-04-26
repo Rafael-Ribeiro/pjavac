@@ -51,7 +51,10 @@
 
 \indent \indent Tal como indicado no enunciado do projecto, na linguagem PJAVA apenas se pretende explorar a vertente procedimental do JAVA. 
 Deste modo, decidimos que implementar \texttt{packages} seria desnecessário.
-Devido a esta escolha, o método \texttt{System.out.println()} é implementado como uma função \emph{builtin} (que será distinguida na semântica). 
+Devido a esta escolha, o método \texttt{System.out.println()} é implementado como uma função \emph{built-in} (que será distinguida na semântica).
+
+Outras funcionalidades da linguagem que necessitem implicitamente ou explicitamente de um objecto também não foram implementadas (\texttt{try-catch-finally}, \texttt{syncronized}, \\ \texttt{instanceof}, entre outros).
+
 Todas as restantes funcionalidades estão implementadas de acordo com a específicação.
 
 \cleardoublepage
@@ -155,6 +158,11 @@ dims_empty
 	: '[' ']'
 	;
 
+\end{minted}
+
+\cleardoublepage
+
+\begin{minted}[mathescape]{antlr}
 dims_empty_list
 	: dims_empty
 	| dims_empty_list dims_empty
@@ -202,6 +210,11 @@ for_cond
 	| expr
 	;
 
+\end{minted}
+
+\cleardoublepage
+
+\begin{minted}[mathescape]{antlr}
 for_expr
 	: incr_op
 	| assign_op
@@ -288,6 +301,11 @@ return
 	| RETURN expr ';'
 	;
 
+\end{minted}
+
+\cleardoublepage
+
+\begin{minted}[mathescape]{antlr}
 stmt
 	: ';'
 	| '{' '}'
@@ -335,6 +353,11 @@ type_decl
 	| array_decl
 	;
 
+\end{minted}
+
+\cleardoublepage
+
+\begin{minted}[mathescape]{antlr}
 type_native
 	: BOOL
 	| BYTE
@@ -384,6 +407,11 @@ var_def_left
 	| ID dims_empty_list
 	;
 
+\end{minted}
+
+\cleardoublepage
+
+\begin{minted}[mathescape]{antlr}
 var_defs
 	: type_decl var_def_list
 	;
@@ -398,7 +426,7 @@ var_initializer
 var_initializer_list
 	: var_initializer
 	| var_initializer_list ',' var_initializer
- 	;
+	;
 
 var_stmt															
 	: var_defs ';'
@@ -413,8 +441,32 @@ while
 
 \subsection{Abstract Syntax}
 
-% Cheguei aqui porque derivei da gramática...
+\indent \indent A partir da definição da gramática é possível extrair a sintaxe abstracta, subdividindo cada disjunção de regras numa disjunção de predicados.
+Aos nomes das regras acrescentamos o prefixo "is\_" ao seu predicado correspondente;
+dessa mesma forma, acrescentamos o sufixo "\_list" às regras que constituem listas de elementos.
+A disjunção dessas regras (no YACC representada pelo símbolo |) é transformada na disjunção de predicados utilizando para isso
+o símbolo de disjunção lógico $\vee$.
 
+\indent Por exemplo, na regra
+\begin{minted}[mathescape]{antlr}
+type_decl
+	: type_object
+	| array_decl
+	;
+\end{minted}
+
+o seu correspondente na sintaxe abstracta é \\ \\
+is\_type\_decl $\to$ <is\_type\_object : type\_object> $\vee$ <is\_array\_decl : array> \\
+
+\indent \indent Apesar de aparecerem referidos na definição da sintaxe abstracta, is\_ID, \\
+is\_CONSTANT e outros tipos (identificados com a mesma nomenclatura),
+não são expressos segundo uma regra pois são tokens obtidos a partir da análise lexical do programa fonte.
+
+Segue-se a especificação da sintaxe abstracta.
+
+\cleardoublepage
+
+\subsubsection{Abstract Syntax Specification}
 \begin{longtable}{lcl}
 	is\_application				& $\to$ & <is\_class\_def : class> \\
 	is\_array\_decl 			& $\to$ & <is\_type\_object : type> <is\_dims\_empty\_list : empty> \\
@@ -541,11 +593,20 @@ while
 \cleardoublepage
 
 \subsection{Abstract Syntax Tree Implementation}
-\indent \indent Apesar de aparecerem nomeados na definição da sintaxe abstracta, is\_ID, \\
-is\_CONSTANT e outros tipos (identificados com a mesma nomenclatura),
-não são expressos segundo uma regra pois são tokens obtidos a partir da análise lexical do programa fonte.
+A implementação das estruturas da árvore de sintaxe abstracta foi feita segundo as seguintes regras:
+\begin{itemize}
+	\item Cada conjunção de predicados é colocada numa \texttt{struct};
+	\item Cada disjunção, de ou predicados ou conjunções de predicados, é colocada numa \texttt{union},
+		utilizando um \texttt{enum} auxiliar de identificação do campo da \texttt{union} utilizado
+		(nalguns casos determinando implicitamente o valor de um campo);
+	\item Todas os predicados que seleccionam apenas objectos elementares são \texttt{typedef}'d para o seu objecto elementar correspondente,
+		dado que estas regras foram mantidas com o objectivo de facilitar futuras extensões sintácticas da linguagem.
+\end{itemize}
 
-\begin{comment}De forma análoga, a regra is\_empty\_dims é omitida da AS uma vez que a informação semântica que esta indica não depende do seu conteúdo.
-Assim na implementação de is\_empty\_dims\_list é apenas necessário guardar um inteiro, correspondente ao número de vezes que a regra é repetida.\end{comment}
+A regra is\_empty\_dims é omitida da AS uma vez que a informação semântica que esta indica não depende do seu conteúdo, mas sim da sua existência.
+Assim, na implementação de is\_empty\_dims\_list é apenas necessário guardar um inteiro, correspondente ao número de vezes que a regra é repetida.
 
-\end{document}
+\end{document}type_decl
+	: type_object													{ $$ = insert_type_decl_object($1); }
+	| array_decl													{ $$ = insert_type_decl_array($1); }
+	;
