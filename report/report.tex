@@ -48,11 +48,9 @@
 \setlength{\parskip}{0.3cm}
 
 \section {Syntax}
-\indent \indent Tal como indicado no enunciado do projecto, na linguagem PJAVA apenas se pretende explorar a vertente procedimental da linguagem, 
-
- 
-\indent Uma vez que a linguagem a implementar é procedimental, decidimos implementar o método \texttt{System.out.println()} como uma função normal.
-Neste caso a regra is\_func\_call não contém is\_ID. 
+\indent \indent Tal como indicado no enunciado do projecto, na linguagem PJAVA apenas se pretende explorar a vertente procedimental do JAVA. 
+Deste modo, decidimos que implementar \texttt{packages} seria desnecessário.
+Devido a esta escolha, o método \texttt{System.out.println()} é implementado como uma função \emph{builtin} (que será distinguida na semântica). 
 
 \cleardoublepage
 \subsection{Abstract Syntax}
@@ -295,7 +293,7 @@ dims_sized
 	: '[' expr ']'
 	;
 
-dims_sized_list
+dims_sized_list 
 	: dims_sized
 	| dims_sized_list dims_sized
 	; 
@@ -305,7 +303,7 @@ do_while
 	;
 
 expr
-	: var %prec LOW_PREC { }
+	: var %prec LOW_PREC
 	| new_op %prec LOW_PREC
 	| '(' expr ')'
 	| '(' type_decl ')' expr
@@ -357,7 +355,6 @@ for_inc
  	
 func_call
 	: ID func_call_arg_list
-	| SYSOUT func_call_arg_list
 	;
 
 func_call_arg_list
@@ -385,7 +382,7 @@ func_def_args
 	;
 
 if
-	: IF '(' expr ')' stmt %prec LOW_PREC  /* $\cos()$ */
+	: IF '(' expr ')' stmt %prec LOW_PREC
 	| IF '(' expr ')' stmt ELSE stmt
 	;
 
@@ -533,7 +530,7 @@ var_initializer_list
  	;
 
 var_stmt															
-	: var_defs ';'
+	: var_defs ';'	
 	;
 
 while

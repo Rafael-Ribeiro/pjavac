@@ -326,16 +326,7 @@ void free_func_call(is_func_call* node)
 {
 	if (node)
 	{
-		switch (node->type)
-		{
-			case t_func_call_id:
-				free_id(node->id);
-				break;
-
-			case t_func_call_sysout:
-				break;
-		}
-
+		free_id(node->id);
 		free_func_call_arg_list(node->args);
 		free(node);
 	}

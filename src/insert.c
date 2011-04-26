@@ -399,27 +399,16 @@ is_for_init* insert_for_init_for_expr_list(is_for_expr_list* expr_list)
 	return node;
 }
 
-is_func_call* insert_func_call_id(is_id* id, is_func_call_arg_list* args)
+is_func_call* insert_func_call(is_id* id, is_func_call_arg_list* args)
 {
 	is_func_call* node = (is_func_call*)malloc(sizeof(is_func_call));
 
-	node->type = t_func_call_id;
 	node->id = id;
 	node->args = args;
 
 	return node;
 }
 
-is_func_call* insert_func_call_sysout(is_func_call_arg_list* args)
-{
-	is_func_call* node = (is_func_call*)malloc(sizeof(is_func_call));
-
-	node->type = t_func_call_sysout;
-	node->id = NULL;
-	node->args = args;
-
-	return node;
-}
 
 is_func_def* insert_func_def(is_type_decl* type, is_id* id, is_func_def_arg_list* args, is_stmt_list* body)
 {

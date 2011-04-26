@@ -48,7 +48,6 @@ int pretty_error(char* format, ...);
 %token VOID
 %token WHILE
 
-%token SYSOUT
 %token<val_id>ID
 
 %token SHIFT_R_ASSIGN
@@ -390,8 +389,7 @@ for_inc
 	;
  	
 func_call
-	: ID func_call_arg_list											{ $$ = insert_func_call_id($1, $2); }
-	| SYSOUT func_call_arg_list										{ $$ = insert_func_call_sysout($2); }
+	: ID func_call_arg_list											{ $$ = insert_func_call($1, $2); }
 	;
 
 func_call_arg_list
