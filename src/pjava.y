@@ -461,7 +461,7 @@ stmt
 	| incr_op ';'													{ $$ = insert_stmt_incr_op($1); }
 	| if															{ $$ = insert_stmt_if($1); }
 	| loop_stmt														{ $$ = insert_stmt_loop_stmt($1); }
-	| func_call	';'													{ $$ = insert_stmt_func_call($1); }
+	| func_call ';'													{ $$ = insert_stmt_func_call($1); }
 	| switch														{ $$ = insert_stmt_switch($1); }
 	| break															{ $$ = insert_stmt_break($1); }
 	| continue														{ $$ = insert_stmt_continue($1); }
