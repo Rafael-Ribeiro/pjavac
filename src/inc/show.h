@@ -7,7 +7,7 @@ void show_id(is_id* node);
 void show_constant(is_constant* node);
 
 /* YACC */
-void show_dims_empty_list(is_dims_empty_list val);
+void show_dims_empty_list(is_dims_empty_list* val);
 
 /* enums */
 void show_class_stmt_privacy(is_class_stmt_privacy val);

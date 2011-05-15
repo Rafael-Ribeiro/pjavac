@@ -316,11 +316,12 @@ void show_dims(is_dims* node)
 	}
 }
 
-void show_dims_empty_list(is_dims_empty_list list)
+void show_dims_empty_list(is_dims_empty_list* list)
 {
 	int i;
-	for (i = 0; i < list; i++)
-		printf("[]");
+	if (list)
+		for (i = 0; i < list->size; i++)
+			printf("[]");
 }
 
 void show_dims_sized(is_dims_sized* node)

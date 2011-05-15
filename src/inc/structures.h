@@ -11,6 +11,7 @@ struct _is_class_stmt_scope;
 struct _is_constant;
 struct _is_continue;
 struct _is_dims;
+struct _is_dims_empty_list;
 struct _is_dims_sized_list;
 struct _is_do_while;
 struct _is_expr;
@@ -51,7 +52,6 @@ struct _is_while;
 
 /***********************************************************************/
 /* just because we can, this ones will be in the structures themselves */
-typedef int is_dims_empty_list;
 typedef struct _is_expr is_dims_sized;
 typedef struct _is_expr is_for_cond;
 typedef struct _is_for_expr_list is_for_inc;
@@ -64,8 +64,10 @@ typedef struct _is_func_def_arg_list is_func_def_args;
 
 typedef struct _is_array_decl
 {
+	int line;
+
 	struct _is_type_object* type;
-	is_dims_empty_list dims;
+	struct _is_dims_empty_list* dims;
 } is_array_decl;
 
 typedef enum
@@ -85,6 +87,8 @@ typedef enum
 
 typedef struct _is_assign_op
 {
+	int line;
+
 	type_assign_op type;
 	struct _is_var* var;
 	struct _is_expr* expr;
@@ -117,6 +121,8 @@ typedef enum
 
 typedef struct _is_binary_op
 {
+	int line;
+
 	type_binary_op type;
 
 	union
@@ -132,11 +138,15 @@ typedef struct _is_binary_op
 
 typedef struct _is_break
 {
+	int line;
+
 	struct _is_id* label;	/* nullable */
 } is_break;
 
 typedef struct _is_class_def
 {
+	int line;
+
 	struct _is_id* id;
 	struct _is_class_stmt_list* body;
 } is_class_def;
@@ -149,12 +159,16 @@ typedef enum
 
 typedef struct _is_class_stmt_scope
 {
+	int line;
+
 	bool b_final;
 	bool b_static;
 } is_class_stmt_scope;
 
 typedef struct _is_class_stmt
 {
+	int line;
+
 	is_class_stmt_privacy* privacy; /* nullable */
 	struct _is_class_stmt_scope* scope;	/* nullable */
 	struct _is_member_stmt* stmt;
@@ -162,6 +176,8 @@ typedef struct _is_class_stmt
 
 typedef struct _is_class_stmt_list
 {
+	int line;
+
 	struct _is_class_stmt* node;
 	struct _is_class_stmt_list* next;
 } is_class_stmt_list;
@@ -177,6 +193,8 @@ typedef enum
 
 typedef struct _is_constant
 {
+	int line;
+
 	type_constant type;
 	union
 	{
@@ -190,23 +208,38 @@ typedef struct _is_constant
 
 typedef struct _is_continue
 {
+	int line;
+
 	struct _is_id* label;	/* nullable */
 } is_continue;
 
 typedef struct _is_dims
 {
+	int line;
+
 	struct _is_dims_sized_list* sized;
-	is_dims_empty_list empty; /* NOT nullable, 0 if not existant, 1+ otherwise */
+	struct _is_dims_empty_list* empty; /* NOT nullable, 0 if not existant, 1+ otherwise */
 } is_dims;
+
+typedef struct _is_dims_empty_list
+{
+	int line;
+
+	int size;
+} is_dims_empty_list;
 
 typedef struct _is_dims_sized_list
 {
+	int line;
+
 	is_dims_sized* node;
 	struct _is_dims_sized_list* next;
 } is_dims_sized_list;
 
 typedef struct _is_do_while
 {
+	int line;
+
 	struct _is_stmt* body;
 	struct _is_expr* cond;
 } is_do_while;
@@ -223,12 +256,15 @@ typedef enum
 
 typedef struct _is_expr
 {
+	int line;
+
 	type_expr type;
 	union
 	{
 		struct _is_var* var;
 		struct _is_new_op* new_op;
-		struct {
+		struct
+		{
 			struct _is_expr* expr;
 			struct _is_type_decl* type;
 		} type_cast;		
@@ -240,6 +276,8 @@ typedef struct _is_expr
 
 typedef struct _is_expr_list
 {
+	int line;
+
 	struct _is_expr* node;
 	struct _is_expr_list* next;
 } is_expr_list;
@@ -253,6 +291,8 @@ typedef enum
 
 typedef struct _is_expr_op
 {
+	int line;
+
 	type_expr_op type;
 	union
 	{
@@ -264,6 +304,8 @@ typedef struct _is_expr_op
 
 typedef struct _is_for
 {
+	int line;
+
 	struct _is_for_init* init; 	/* nullable */
 	is_for_cond* cond; 		/* nullable */
 	is_for_inc* inc; 	/* nullable */
@@ -279,6 +321,8 @@ typedef enum
 
 typedef struct _is_for_expr
 {
+	int line;
+
 	type_for_expr type;
 	union
 	{
@@ -290,6 +334,8 @@ typedef struct _is_for_expr
 
 typedef struct _is_for_expr_list
 {
+	int line;
+
 	struct _is_for_expr* node;
 	struct _is_for_expr_list* next;
 } is_for_expr_list;
@@ -302,6 +348,8 @@ typedef enum
 
 typedef struct _is_for_init
 {
+	int line;
+
 	type_for_init type;
 	union
 	{
@@ -312,12 +360,16 @@ typedef struct _is_for_init
 
 typedef struct _is_func_call
 {
+	int line;
+
 	struct _is_id* id; /* NOT nullable */
 	is_func_call_arg_list* args; /* nullable (no args provided) */
 } is_func_call;
 
 typedef struct _is_func_def
 {
+	int line;
+
 	struct _is_type_decl* type;
 	struct _is_id* id;
 	is_func_def_args* args;
@@ -326,23 +378,31 @@ typedef struct _is_func_def
 
 typedef struct _is_func_def_arg
 {
+	int line;
+
 	struct _is_type_decl* type;
 	struct _is_id* id;
 } is_func_def_arg;
 
 typedef struct _is_func_def_arg_list
 {
+	int line;
+
 	struct _is_func_def_arg* node;
 	struct _is_func_def_arg_list* next;
 } is_func_def_arg_list;
 
 typedef struct _is_id
 {
+	int line;
+
 	char* name;
 } is_id;
 
 typedef struct _is_if
 {
+	int line;
+
 	struct _is_expr* cond;
 	struct _is_stmt* then_body;
 	struct _is_stmt* else_body; /* nullable */
@@ -356,6 +416,8 @@ typedef enum
 
 typedef struct _is_incr_op
 {
+	int line;
+
 	type_incr_op type;
 	bool pre;
 	struct _is_var* var;
@@ -370,6 +432,8 @@ typedef enum
 
 typedef struct _is_loop_stmt
 {
+	int line;
+
 	type_loop_stmt type;
 	struct _is_id* loop_label; /* nullable */
 	union
@@ -388,6 +452,8 @@ typedef enum
 
 typedef struct _is_member_stmt
 {
+	int line;
+
 	type_member_stmt type;
 	union
 	{
@@ -398,12 +464,16 @@ typedef struct _is_member_stmt
 
 typedef struct _is_new_op
 {
+	int line;
+
 	struct _is_type_object *type_object;
 	struct _is_dims *dims;
 } is_new_op;
 
 typedef struct _is_return
 {
+	int line;
+
 	is_expr *value; /* nullable */
 } is_return;
 
@@ -424,6 +494,8 @@ typedef enum
 
 typedef struct _is_stmt
 {
+	int line;
+
 	type_stmt type;
 	union
 	{
@@ -444,12 +516,16 @@ typedef struct _is_stmt
 /* was missing */
 typedef struct _is_stmt_list
 {
+	int line;
+
 	struct _is_stmt* node;
 	struct _is_stmt_list* next;
 } is_stmt_list;
 
 typedef struct _is_switch
 {
+	int line;
+
 	struct _is_expr *expr;
 	struct _is_switch_stmt_list *list; /* nullable */
 } is_switch;
@@ -462,20 +538,25 @@ typedef enum
 
 typedef struct _is_switch_stmt
 {
+	int line;
+
 	type_switch_stmt type;
 	struct _is_stmt_list *list;
 	struct _is_constant *constant; /* nullable, if default */
-	
 } is_switch_stmt;
 
 typedef struct _is_switch_stmt_list
 {
+	int line;
+
 	struct _is_switch_stmt *node;
 	struct _is_switch_stmt_list *next; /* nullable */
 } is_switch_stmt_list;
 
 typedef struct _is_ternary_op
 {
+	int line;
+
 	struct _is_expr* if_expr;
 	struct _is_expr* then_expr;
 	struct _is_expr* else_expr;
@@ -489,6 +570,8 @@ typedef enum
 
 typedef struct _is_type_decl
 {
+	int line;
+
 	type_type_decl type;
 	union
 	{
@@ -513,6 +596,8 @@ typedef enum
 
 typedef struct _is_type_object
 {
+	int line;
+
 	is_type_native type;
 } is_type_object;
 
@@ -533,6 +618,8 @@ typedef enum
 /* FIXME: refactor disto para como esta agora; ou é uma incr op, ou é uma operaçao, que recebe o operador OK? */
 typedef struct _is_unary_op
 {
+	int line;
+
 	type_unary_op type;
 	union
 	{
@@ -555,6 +642,8 @@ typedef enum
 
 typedef struct _is_var
 {
+	int line;
+
 	type_var type;
 	union
 	{
@@ -575,12 +664,16 @@ typedef struct _is_var
 
 typedef struct _is_var_def
 {
+	int line;
+
 	struct _is_var_def_left* left;
 	struct _is_var_initializer* var_init; /* nullable */
 } is_var_def;
 
 typedef struct _is_var_def_list
 {
+	int line;
+
 	struct _is_var_def *node;
 	struct _is_var_def_list* next; /* nullable */
 } is_var_def_list;
@@ -588,18 +681,22 @@ typedef struct _is_var_def_list
 typedef enum {t_var_def_left_dims, t_var_def_left_empty} type_var_def_left;
 typedef struct _is_var_def_left
 {
+	int line;
+
 	type_var_def_left type;
 
 	union
 	{
 		struct _is_dims* dims;
-		is_dims_empty_list empty;		
+		struct _is_dims_empty_list* empty;		
 	} data; 
 	struct _is_id* id;
 } is_var_def_left;
 
 typedef struct _is_var_defs
 {
+	int line;
+
 	struct _is_type_decl* type;
 	struct _is_var_def_list* list;
 } is_var_defs;
@@ -607,6 +704,8 @@ typedef struct _is_var_defs
 typedef enum {t_var_initializer_val_arr, t_var_initializer_expr} type_var_initializer;
 typedef struct _is_var_initializer
 {
+	int line;
+
 	type_var_initializer type;
 
 	union
@@ -618,12 +717,16 @@ typedef struct _is_var_initializer
 
 typedef struct _is_var_initializer_list
 {
+	int line;
+
 	struct _is_var_initializer *node;
 	struct _is_var_initializer_list *next; /* nullable */
 } is_var_initializer_list;
 
 typedef struct _is_while
 {
+	int line;
+
 	struct _is_expr* cond;
 	struct _is_stmt* body;
 } is_while;

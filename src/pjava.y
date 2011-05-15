@@ -116,7 +116,7 @@ int pretty_error(char* format, ...);
 	is_continue* val_continue;
 	is_dims* val_dims;
 	/*%type<val_dims_empty* val_dims_empty*/
-	is_dims_empty_list val_dims_empty_list;	
+	is_dims_empty_list* val_dims_empty_list;	
 	is_dims_sized* val_dims_sized;
 	is_dims_sized_list* val_dims_sized_list;
 	is_do_while* val_do_while;
@@ -319,8 +319,8 @@ dims_empty
 	;
 
 dims_empty_list
-	: dims_empty													{ $$ = 1; }
-	| dims_empty_list dims_empty									{ $$ = $1 + 1; }
+	: dims_empty													{ $$ = insert_dims_empty_list(NULL); }
+	| dims_empty_list dims_empty									{ $$ = insert_dims_empty_list($1); }
 	;
 
 dims_sized

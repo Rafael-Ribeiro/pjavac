@@ -14,7 +14,7 @@ is_constant* insert_constant_char(char* value);
 is_constant* insert_constant_string(char* value);
 
 /* YACC */
-is_array_decl* insert_array_decl(is_type_object* type, is_dims_empty_list dims);
+is_array_decl* insert_array_decl(is_type_object* type, is_dims_empty_list* dims);
 is_assign_op* insert_assign_op(is_var* var, type_assign_op type, is_expr* expr);
 is_binary_op* insert_binary_op_operation(is_expr* left, type_binary_op operation, is_expr* right);
 is_binary_op* insert_binary_op_assign(is_assign_op* assign);
@@ -32,9 +32,9 @@ is_class_stmt_scope* insert_class_stmt_scope(bool _final, bool _static); /* stat
 
 is_continue* insert_continue(is_id* label);
 
-is_dims* insert_dims(is_dims_sized_list* sized, is_dims_empty_list empty);
+is_dims* insert_dims(is_dims_sized_list* sized, is_dims_empty_list* empty);
 
-/* this one is left recursive, can we swap it? if not attention to the constructors */
+is_dims_empty_list* insert_dims_empty_list(is_dims_empty_list* prev);
 is_dims_sized_list* insert_dims_sized_list(is_dims_sized_list* prev, is_dims_sized* dims);
 
 is_do_while* insert_do_while(is_stmt* stmt, is_expr* cond); 
@@ -126,7 +126,7 @@ is_var_def* insert_var_def(is_var_def_left* left, is_var_initializer* init);
 is_var_def_list* insert_var_def_list(is_var_def* var_def, is_var_def_list* next);
 
 is_var_def_left* insert_var_def_left_dims(is_id* id, is_dims* dims);
-is_var_def_left* insert_var_def_left_empty(is_id* id, is_dims_empty_list empty);
+is_var_def_left* insert_var_def_left_empty(is_id* id, is_dims_empty_list* empty);
 
 is_var_defs* insert_var_defs(is_type_decl* type, is_var_def_list* list);
 

@@ -29,7 +29,7 @@ JAVA_COMMENT		(\/\/[^\n]*\n)|(\/\*([^\/]|[^\*]\/)*\*\/)
 
 %%
 
-{JAVA_COMMENT}		{ }
+{JAVA_COMMENT}		{ int i=0; while (yytext[i]) if (yytext[i++] == '\n') yyline++; }
 
 {N8}+{INT_SPEC}*						{ yylval.val_constant = insert_constant_long(strtoll(yytext, NULL, 10)); return CONSTANT; } /* LITERALS */
 {N10}+{EXP}?{INT_SPEC}*					{ yylval.val_constant = insert_constant_long(strtoll(yytext, NULL, 8)); return CONSTANT; }
