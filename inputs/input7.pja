@@ -1,0 +1,30 @@
+class teste
+{
+
+	public static int[][] func()
+	{
+		return new int[13][14];
+	}
+	
+	/**
+	 * @param args
+	 */
+	public static void main(String[] args)
+	{
+		int array[] = {1,2,3,4,++func()[0][1]};
+		/* array.clone(); */
+		int i = 0,j = 0, k = 0;
+		for (func(); i < 4; func());
+		char a = '3';
+		int func = 1;
+
+		i += (int)a + func;
+
+		cenas:
+		for (i = 0; i < 3; i++)
+			continue cenas;
+
+		System.out.println("The end");
+	}
+}
+
