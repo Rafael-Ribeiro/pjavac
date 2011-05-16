@@ -8,12 +8,12 @@
 
 extern SCOPE* symtab;
 
-/*
-	OPERATORS TABLE
-*/
+/* OPERATORS TABLE */
+is_type_native operators_native[MAX_OPERATORS][MAX_NATIVE_TYPES][MAX_NATIVE_TYPES]; /* = { ......................... } */
 
-type_ a[MAX_OPERATORS][MAX_OPERANDS][MAX_OPERANDS]
 /*
+	OPERATORS TABLE ELEMENTS
+
 	t_assign_op_eq,
 	t_assign_op_shift_r_eq,
 	t_assign_op_shift_l_eq,
@@ -65,8 +65,6 @@ type_ a[MAX_OPERATORS][MAX_OPERANDS][MAX_OPERANDS]
 	t_type_native_string,
 	t_type_native_void
 */
-
-
 
 
 /* LEX */
