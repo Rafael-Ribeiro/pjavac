@@ -73,7 +73,7 @@ SYMBOL* symbol_lookup(NODE* node, char* id);
 	SCOPES
 */
 SCOPE* scope_new(SCOPE* parent);
-void scope_delete(SCOPE* scope);
+SCOPE* scope_delete(SCOPE* scope);
 void scope_insert(SCOPE* scope, SYMBOL* symbol);
 SYMBOL* scope_lookup(SCOPE* scope, char *id);
 

@@ -79,14 +79,14 @@ int check_class_def(is_class_def* node)
 	int errors = 0;
 	SYMBOL* symbol;
 	
-	symbol = scope_lookup(symtab, node->id);
+	symbol = scope_lookup(symtab, node->id->name);
 	if (symbol)
 	{
 		errors++;
-		pretty_error(node->line, "symbol %s is already defined (previous declaration was here: %d)", node->name, symbol->line);
+		pretty_error(node->line, "symbol %s is already defined (previous declaration was here: %d)", node->id->name, symbol->line);
 	}
 
-	scope_insert(symtab, symbol_new_class(node->id);
+	scope_insert(symtab, symbol_new_class(node->id->name));
 
 	symtab = scope_new(symtab);
 	errors += check_class_stmt_list(node->body);
@@ -192,7 +192,7 @@ int check_do_while(is_do_while* node)
 	errors += check_expr(node->cond);
 	if (errors == 0)
 	{
-		if (!type_bool_like(node->s_type))
+		if (!type_bool_like(node->cond->s_type))
 		{
 			errors++;
 			pretty_error(node->line, "invalid array condition (must be boolean)");
@@ -333,6 +333,12 @@ int check_if(is_if* node)
 }
 
 int check_incr_op(is_incr_op* node)
+{
+	int errors = 0;
+	return errors;
+}
+
+int check_label(is_id* node)
 {
 	int errors = 0;
 	return errors;

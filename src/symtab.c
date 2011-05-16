@@ -17,8 +17,8 @@ SYMBOL* symbol_new_var(char* id, is_type_decl *type)
 	symbol->id = __strdup(id);
 	symbol->type = t_symbol_var;
 
-	symbol->data.var.type = type;
-	symbol->data.var.initialized = false;
+	symbol->data.var_data.type = type;
+	symbol->data.var_data.initialized = false;
 
 	return symbol;
 }
