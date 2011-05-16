@@ -352,9 +352,6 @@ is_expr_list* insert_expr_list (is_expr* expr, is_expr_list* next)
 	node->next = next;
 	node->line = yyline;
 
-	/* semantics */
-	node->s_type = NULL;
-
 	return node;
 }
 
@@ -1035,9 +1032,6 @@ is_var_initializer_list* insert_var_initializer_list(is_var_initializer_list* pr
 	node->node = var_init;
 	node->next = NULL;
 	node->line = yyline;
-
-	/* semantics */
-	node->s_type = NULL;
 
 	if (!prev)
 		return node;

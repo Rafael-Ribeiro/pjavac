@@ -2,6 +2,7 @@
 #include <stdbool.h>
 
 #include "inc/structures.h"
+#include "inc/utils.h"
 #include "inc/symtab.h"
 #include "inc/check.h"
 
@@ -74,7 +75,7 @@ int check_id(is_id* node)
 {
 	SYMBOL* symbol;
 
-	symbol = symbolLookup(symtab, node->name);
+	symbol = scope_lookup(symtab, node->name);
 	if (!symbol)
 	{
 		pretty_error(node->line, "undefined symbol %s", node->name);

@@ -593,6 +593,9 @@ void free_ternary_op(is_ternary_op* node)
 		free_expr(node->then_expr);
 		free_expr(node->else_expr);
 
+		/* semantics */
+		free_type_decl(node->s_type);
+
 		free(node);
 	}
 }
@@ -637,6 +640,9 @@ void free_unary_op(is_unary_op* node)
 				break;
 		}
 
+		/* semantics */
+		free_type_decl(node->s_type);
+
 		free(node);
 	}
 }
@@ -665,6 +671,9 @@ void free_var(is_var* node)
 				free_dims_sized(node->data.func_call.dims);
 				break;
 		}
+
+		/* semantics */
+		free_type_decl(node->s_type);
 		
 		free(node);
 	}
