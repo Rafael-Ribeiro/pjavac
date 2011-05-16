@@ -841,6 +841,9 @@ is_var* insert_var_id(is_id* id)
 	node->data.id = id;
 	node->line = yyline;
 
+	/* semantics */
+	node->s_type = NULL;
+
 	return node;
 }
 
@@ -851,6 +854,9 @@ is_var* insert_var_new_op(is_new_op* new_op)
 	node->type = t_var_new_op;
 	node->data.new_op = new_op;
 	node->line = yyline;
+
+	/* semantics */
+	node->s_type = NULL;
 
 	return node;
 }
@@ -864,6 +870,9 @@ is_var* insert_var_var_subscript(is_var* var, is_dims_sized* position)
 	node->data.array.dims = position;
 	node->line = yyline;
 
+	/* semantics */
+	node->s_type = NULL;
+
 	return node;
 }
 
@@ -875,6 +884,9 @@ is_var* insert_var_func_subscript(is_func_call* func_call, is_dims_sized* positi
 	node->data.func_call.call = func_call;
 	node->data.func_call.dims = position;
 	node->line = yyline;
+
+	/* semantics */
+	node->s_type = NULL;
 
 	return node;
 }
@@ -944,6 +956,9 @@ is_var_initializer* insert_var_initializer_array(is_var_initializer_list* list)
 	node->data.array = list;
 	node->line = yyline;
 
+	/* semantics */
+	node->s_type = NULL;
+
 	return node;
 }
 
@@ -954,6 +969,9 @@ is_var_initializer* insert_var_initializer_expr(is_expr* expr)
 	node->type = t_var_initializer_expr;
 	node->data.expr = expr;
 	node->line = yyline;
+
+	/* semantics */
+	node->s_type = NULL;
 
 	return node;
 }
@@ -966,6 +984,9 @@ is_var_initializer_list* insert_var_initializer_list(is_var_initializer_list* pr
 	node->node = var_init;
 	node->next = NULL;
 	node->line = yyline;
+
+	/* semantics */
+	node->s_type = NULL;
 
 	if (!prev)
 		return node;
