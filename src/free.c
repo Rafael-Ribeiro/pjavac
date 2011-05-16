@@ -390,6 +390,9 @@ void free_incr_op(is_incr_op* node)
 	{
 		free_var(node->var);
 
+		/* semantics */
+		free_type_decl(node->s_type);
+
 		free(node);
 	}
 }
@@ -573,6 +576,9 @@ void free_ternary_op(is_ternary_op* node)
 		free_expr(node->then_expr);
 		free_expr(node->else_expr);
 
+		/* semantics */
+		free_type_decl(node->s_type);
+
 		free(node);
 	}
 }
@@ -591,6 +597,9 @@ void free_type_decl(is_type_decl* node)
 				free_array_decl(node->data.array);
 				break;
 		}
+
+		/* semantics */
+		free_type_decl(node->s_type);
 		
 		free(node);
 	}
@@ -616,6 +625,9 @@ void free_unary_op(is_unary_op* node)
 				free_incr_op(node->data.incr);
 				break;
 		}
+
+		/* semantics */
+		free_type_decl(node->s_type);
 
 		free(node);
 	}
@@ -645,6 +657,9 @@ void free_var(is_var* node)
 				free_dims_sized(node->data.func_call.dims);
 				break;
 		}
+
+		/* semantics */
+		free_type_decl(node->s_type);
 		
 		free(node);
 	}
@@ -725,6 +740,9 @@ void free_var_initializer_list(is_var_initializer_list* node)
 	{
 		free_var_initializer(node->node);
 		free_var_initializer_list(node->next);
+
+		/* semantics */
+		free_type_decl(node->s_type);
 
 		free(node);
 	}
