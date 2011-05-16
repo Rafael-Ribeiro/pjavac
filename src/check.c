@@ -5,6 +5,7 @@
 #include "inc/utils.h"
 #include "inc/symtab.h"
 #include "inc/check.h"
+#include "inc/types.h"
 
 extern SCOPE* symtab;
 

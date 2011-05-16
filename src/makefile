@@ -3,10 +3,10 @@ LINK_FLAGS = -lm -g
 
 all: main soft-clean
 
-main: insert.o show.o free.o utils.o check.o symtab.o
+main: insert.o show.o free.o utils.o check.o symtab.o types.o
 	lex pjava.l
 	yacc -d pjava.y -v
-	cc -o pjava y.tab.c lex.yy.c insert.o show.o free.o utils.o check.o symtab.o -ll -ly ${LINK_FLAGS}
+	cc -o pjava y.tab.c lex.yy.c insert.o show.o free.o utils.o check.o symtab.o types.o -ll -ly ${LINK_FLAGS}
 
 insert.o: insert.c
 	cc -c -o insert.o insert.c ${COMP_FLAGS}
@@ -25,6 +25,9 @@ check.o: check.c
 
 symtab.o: symtab.c
 	cc -c -o symtab.o symtab.c ${COMP_FLAGS}
+
+types.o: types.c
+	cc -c -o types.o types.c ${COMP_FLAGS}
 
 soft-clean:
 	rm -f *.o ~*
