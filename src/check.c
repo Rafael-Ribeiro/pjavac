@@ -8,65 +8,6 @@
 
 extern SCOPE* symtab;
 
-/* OPERATORS TABLE */
-is_type_native operators_native[MAX_OPERATORS][MAX_NATIVE_TYPES][MAX_NATIVE_TYPES]; /* = { ......................... } */
-
-/*
-	OPERATORS TABLE ELEMENTS
-
-	t_assign_op_eq,
-	t_assign_op_shift_r_eq,
-	t_assign_op_shift_l_eq,
-	t_assign_op_add_eq,
-	t_assign_op_sub_eq,
-	t_assign_op_mul_eq,
-	t_assign_op_div_eq,
-	t_assign_op_mod_eq,
-	t_assign_op_and_eq,
-	t_assign_op_xor_eq,
-	t_assign_op_or_eq
-
-	t_binary_op_add,
-	t_binary_op_sub,
-	t_binary_op_mul,
-	t_binary_op_div,
-	t_binary_op_mod,
-	t_binary_op_and,
-	t_binary_op_or,
-	t_binary_op_xor,
-	t_binary_op_shift_r,
-	t_binary_op_shift_l,
-	t_binary_op_logic_and,
-	t_binary_op_logic_or,
-	t_binary_op_eq,
-	t_binary_op_ne,
-	t_binary_op_l,
-	t_binary_op_g,
-	t_binary_op_le,
-	t_binary_op_ge,
-	t_binary_op_eq3,
-	t_binary_op_ne3,
-	t_binary_op_assign
-
-	t_unary_op_operator_plus,
-	t_unary_op_operator_minus,
-	t_unary_op_operator_not,
-	t_unary_op_operator_bin_not
-
-
-	t_type_native_bool,
-	t_type_native_byte,
-	t_type_native_char,
-	t_type_native_double,
-	t_type_native_float,
-	t_type_native_int,
-	t_type_native_long,
-	t_type_native_short,
-	t_type_native_string,
-	t_type_native_void
-*/
-
-
 /* LEX */
 
 int check_id(is_id* node)
@@ -108,36 +49,74 @@ int check_array_decl(is_array_decl* node)
 int check_assign_op(is_assign_op* node)
 {
 	int errors = 0;
-	
-	
+	/* TODO check operators */
+	/* TODO: set type*/
+
 	return errors;
 }
 
 int check_binary_op_operation(is_binary_op* node)
 {
 	int errors = 0;
+	/* TODO check operators */
+	/* TODO: set type*/
 	return errors;
 }
 
 int check_break(is_break* node)
 {
 	int errors = 0;
+
+	if (node->label)
+		errors += check_label(node->label);
+
 	return errors;
 }
 
 int check_class_def(is_class_def* node)
 {
 	int errors = 0;
+	SYMBOL* symbol;
+	
+	symbol = scope_lookup(symtab, node->id);
+	if (symbol)
+	{
+		errors++;
+		pretty_error(node->line, "symbol %s is already defined (previous declaration was here: %d)", node->name, symbol->line);
+	}
+
+	scope_insert(symtab, symbol_new_class(node->id);
+
+	symtab = scope_new(symtab);
+	errors += check_class_stmt_list(node->body);
+	symtab = scope_delete(symtab);
+
 	return errors;
 }
 
 int check_class_stmt(is_class_stmt* node)
 {
 	int errors = 0;
+
+	errors += check_class_stmt_scope(node->scope);
+	errors += check_class_stmt_privacy(node->privacy);
+	errors += check_member_stmt(node->stmt);
+
 	return errors;
 }
  
 int check_class_stmt_list(is_class_stmt_list* node)
+{
+	int errors = 0;
+	
+	errors += check_class_stmt(node->node);
+	errors += check_class_stmt_list(node->next);
+
+	return errors;
+}
+
+/* TODO: check scope and privacy */
+int check_class_stmt_privacy(is_class_stmt_privacy* node)
 {
 	int errors = 0;
 	return errors;
@@ -148,46 +127,117 @@ int check_class_stmt_scope(is_class_stmt_scope* node)
 	int errors = 0;
 	return errors;
 }
- 
+
 int check_continue(is_continue* node)
 {
 	int errors = 0;
+
+	if (node->label)
+		errors += check_label(node->label);
+
 	return errors;
 }
 
 int check_dims(is_dims* node)
 {
 	int errors = 0;
+
+	errors += check_dims_sized_list(node->sized);
+	errors += check_dims_empty_list(node->empty);
+
 	return errors;
 }
 
 int check_dims_empty_list(is_dims_empty_list* val)
 {
-	int errors = 0;
-	return errors;
+	/* nothing to do */
+	return 0;
 }
 
 int check_dims_sized(is_dims_sized* node)
 {
 	int errors = 0;
+
+	errors += check_expr(node);
+	if (errors == 0)
+	{
+		if (!type_long_like(node->s_type))
+		{
+			errors++;
+			pretty_error(node->line, "invalid array size (must be long like)");
+		}
+	}
+
 	return errors;
 }
 
 int check_dims_sized_list(is_dims_sized_list* node)
 {
 	int errors = 0;
+
+	if (node)
+	{
+		errors += check_dims_sized(node->node);
+		errors += check_dims_sized_list(node->next);
+	}
+
 	return errors;
 }
 
 int check_do_while(is_do_while* node)
 {
 	int errors = 0;
+	
+	errors += check_expr(node->cond);
+	if (errors == 0)
+	{
+		if (!type_bool_like(node->s_type))
+		{
+			errors++;
+			pretty_error(node->line, "invalid array condition (must be boolean)");
+		}
+	}
+
+	/* FIXME:
+		force an adition of a scope
+		this makes do int a; while(i=0); int a; semantically valid while it should be syntactically invalid 
+	*/
+	symtab = scope_new(symtab);
+	errors += check_stmt(node->body);
+	symtab = scope_delete(symtab);
+	
 	return errors;
 }
  
 int check_expr(is_expr* node)
 {
 	int errors = 0;
+
+	switch (node->type)
+	{
+		case t_expr_var:
+			errors += check_var(node->data.var);
+			node->s_type = node->data.var->s_type;
+			break;
+
+		case t_expr_new_op:
+			errors += check_new_op(node->data.new_op);
+			node->s_type = node->data.new_op->s_type;
+			break;
+
+		case t_expr_type_cast:
+			break;
+
+		case t_expr_constant:
+			break;
+
+		case t_expr_func_call:
+			break;
+
+		case t_expr_operation:
+			break;
+	}
+
 	return errors;
 }
 

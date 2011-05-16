@@ -246,8 +246,8 @@ typedef struct _is_do_while
 {
 	int line;
 
-	struct _is_stmt* body;
 	struct _is_expr* cond;
+	struct _is_stmt* body;
 } is_do_while;
 
 typedef enum

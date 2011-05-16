@@ -45,13 +45,11 @@ SYMBOL* symbol_new_label(char* id /*, ...*/)
 	return symbol;
 }
 
-SYMBOL* symbol_new_class(char* id /*, ...*/)
+SYMBOL* symbol_new_class(char* id)
 {
 	SYMBOL* symbol = (SYMBOL*)malloc(sizeof(SYMBOL));
 	symbol->id = __strdup(id);
 	symbol->type = t_symbol_class;
-
-	/* TODO */
 
 	return symbol;
 }
@@ -93,10 +91,15 @@ SCOPE* scope_new(SCOPE* parent)
 	return scope;
 }
 
-void scope_delete(SCOPE* scope)
+SCOPE* scope_delete(SCOPE* scope)
 {
+	SCOPE* parent;
+	parent = scope->parent;
+
 	node_delete(scope->node);
 	free(scope);
+
+	return parent;
 }
 
 void scope_insert(SCOPE* scope, SYMBOL* symbol)

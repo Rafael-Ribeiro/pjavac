@@ -590,9 +590,19 @@ int main()
 	if (main_application && !has_errors)
 	{
 		printf("Valid syntax!\n");
-		show_application(main_application, 0);
-		free_application(main_application);
+
+		symtab = scope_new(NULL);
+
+		if (check_application(main_application) == 0)
+		{
+			printf("Valid semantics!\n");
+			show_application(main_application, 0);
+		}
+
+		scope_delete(symtab);
 	}
+
+	free_application(main_application);
 
 	return 0;
 }
