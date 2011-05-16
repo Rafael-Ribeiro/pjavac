@@ -93,6 +93,9 @@ is_assign_op* insert_assign_op (is_var* var, type_assign_op type, is_expr* expr)
 	node->expr = expr;
 	node->line = yyline;
 
+	/* semantics */
+	node->s_type = NULL;
+
 	return node;
 }
 
@@ -105,6 +108,9 @@ is_binary_op* insert_binary_op_operation (is_expr* left, type_binary_op type, is
 	node->data.operands.right = right;
 	node->line = yyline;
 
+	/* semantics */
+	node->s_type = NULL;
+
 	return node;
 }
 
@@ -115,6 +121,9 @@ is_binary_op* insert_binary_op_assign (is_assign_op* assign)
 	node->type = t_binary_op_assign;
 	node->data.assign = assign;
 	node->line = yyline;
+
+	/* semantics */
+	node->s_type = NULL;
 
 	return node;
 }
@@ -257,6 +266,9 @@ is_expr* insert_expr_var(is_var* var)
 	node->data.var = var;
 	node->line = yyline;
 
+	/* semantics */
+	node->s_type = NULL;
+
 	return node;
 }
 
@@ -267,6 +279,9 @@ is_expr* insert_expr_new_op(is_new_op* new_op)
 	node->type = t_expr_new_op;
 	node->data.new_op = new_op;
 	node->line = yyline;
+
+	/* semantics */
+	node->s_type = NULL;
 
 	return node;
 }
@@ -281,6 +296,9 @@ is_expr* insert_expr_type_cast(is_expr* expr, is_type_decl* type)
 	node->data.type_cast.type = type;
 	node->line = yyline;
 
+	/* semantics */
+	node->s_type = NULL;
+
 	return node;
 }
 
@@ -291,6 +309,9 @@ is_expr* insert_expr_constant(is_constant* constant)
 	node->type = t_expr_constant;
 	node->data.constant = constant;
 	node->line = yyline;
+
+	/* semantics */
+	node->s_type = NULL;
 
 	return node;
 }
@@ -303,6 +324,9 @@ is_expr* insert_expr_func_call(is_func_call* func_call)
 	node->data.func_call = func_call;
 	node->line = yyline;
 
+	/* semantics */
+	node->s_type = NULL;
+
 	return node;
 }
 
@@ -313,6 +337,9 @@ is_expr* insert_expr_expr_op(is_expr_op* expr_op)
 	node->type = t_expr_operation;
 	node->data.operation = expr_op;
 	node->line = yyline;
+
+	/* semantics */
+	node->s_type = NULL;
 
 	return node;
 }
@@ -325,6 +352,9 @@ is_expr_list* insert_expr_list (is_expr* expr, is_expr_list* next)
 	node->next = next;
 	node->line = yyline;
 
+	/* semantics */
+	node->s_type = NULL;
+
 	return node;
 }
 
@@ -335,6 +365,9 @@ is_expr_op* insert_expr_op_unary (is_unary_op* op)
 	node->type = t_expr_op_unary;
 	node->data.unary = op;
 	node->line = yyline;
+
+	/* semantics */
+	node->s_type = NULL;
 
 	return node;
 }
@@ -347,6 +380,9 @@ is_expr_op* insert_expr_op_binary(is_binary_op* op)
 	node->data.binary = op;
 	node->line = yyline;
 
+	/* semantics */
+	node->s_type = NULL;
+
 	return node;
 }
 
@@ -357,6 +393,9 @@ is_expr_op* insert_expr_op_ternary(is_ternary_op* op)
 	node->type = t_expr_op_ternary;
 	node->data.ternary = op;
 	node->line = yyline;
+
+	/* semantics */
+	node->s_type = NULL;
 
 	return node;
 }
@@ -448,6 +487,9 @@ is_func_call* insert_func_call(is_id* id, is_func_call_arg_list* args)
 	node->args = args;
 	node->line = yyline;
 
+	/* semantics */
+	node->s_type = NULL;
+
 	return node;
 }
 
@@ -506,6 +548,9 @@ is_incr_op* insert_incr_op(type_incr_op type, bool pre, is_var* var)
 	node->pre = pre;
 	node->var = var;
 	node->line = yyline;
+
+	/* semantics */
+	node->s_type = NULL;
 
 	return node;
 }
@@ -575,6 +620,9 @@ is_new_op* insert_new_op(is_type_object* type, is_dims* dims)
 	node->type_object = type;
 	node->dims = dims;
 	node->line = yyline;
+
+	/* semantics */
+	node->s_type = NULL;
 
 	return node;
 }
@@ -774,6 +822,9 @@ is_ternary_op* insert_ternary_op(is_expr* cond, is_expr* then_expr, is_expr* els
 	node->then_expr = then_expr;
 	node->else_expr = else_expr;
 	node->line = yyline;
+
+	/* semantics */
+	node->s_type = NULL;
 
 	return node;
 }

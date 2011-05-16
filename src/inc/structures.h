@@ -534,7 +534,6 @@ typedef struct _is_stmt
 	} data;
 } is_stmt;
 
-/* was missing */
 typedef struct _is_stmt_list
 {
 	int line;
