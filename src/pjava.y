@@ -3,18 +3,17 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
-#include <stdarg.h>
 
 #include "inc/structures.h"
 #include "inc/insert.h"
 #include "inc/show.h"
+#include "inc/symtab.h"
 #include "inc/free.h"
 
 is_application* main_application;
 bool has_errors;
 int yyline;
-
-int pretty_error(char* format, ...);
+SCOPE* symtab;
 %}
 
 /* TOKENS */
@@ -577,27 +576,12 @@ while
 %%
 int yyerror(char* msg)
 {
-	return pretty_error("%s", msg);
-}
-
-int pretty_error(char* format, ...)
-{
-	va_list argp;
-
-	has_errors = true;
-	fprintf(stderr, "%d: ", yyline);
-
-	va_start(argp, format);
-	vfprintf(stderr, format, argp);
-	va_end(argp);
-
-	fprintf(stderr, "\n");
-	return 0;
+	return pretty_error(yyline, "%s", msg);
 }
 
 int main()
 {
-	yyline = 0;
+	yyline = 1;
 	main_application = NULL;
 	has_errors = false;
 

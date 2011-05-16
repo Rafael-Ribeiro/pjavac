@@ -7,12 +7,6 @@ int check_id(is_id* node);
 int check_constant(is_constant* node);
 
 /* YACC */
-int check_dims_empty_list(is_dims_empty_list val);
-
-/* enums */
-int check_class_stmt_privacy(is_class_stmt_privacy val);
-int check_type_native(is_type_native val);
-
 /* nodes */
 int check_application(is_application* node);
 int check_array_decl(is_array_decl* node);
@@ -25,6 +19,7 @@ int check_class_stmt_list(is_class_stmt_list* node);
 int check_class_stmt_scope(is_class_stmt_scope* node); 
 int check_continue(is_continue* node);
 int check_dims(is_dims* node);
+int check_dims_empty_list(is_dims_empty_list* val);
 int check_dims_sized(is_dims_sized* node);
 int check_dims_sized_list(is_dims_sized_list* node);
 int check_do_while(is_do_while* node); 

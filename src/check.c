@@ -2,60 +2,54 @@
 #include <stdbool.h>
 
 #include "inc/structures.h"
+#include "inc/symtab.h"
 #include "inc/check.h"
+
+extern SCOPE* symtab;
 
 /* LEX */
 
 int check_id(is_id* node)
 {
-	int errors = 0;
-	return errors;
+	SYMBOL* symbol;
+
+	symbol = symbolLookup(symtab, node->name);
+	if (!symbol)
+	{
+		pretty_error(node->line, "undefined symbol %s", node->name);
+		return 1;
+	}
+
+	return 0;
 }
 
 int check_constant(is_constant* node)
 {
-	int errors = 0;
-	return errors;
+	return 0; /* syntax-validated */
 }
 
 /* YACC */
-int check_dims_empty_list(is_dims_empty_list val)
-{
-	int errors = 0;
-	return errors;
-}
-
-
-/* enums */
-int check_class_stmt_privacy(is_class_stmt_privacy val)
-{
-	int errors = 0;
-	return errors;
-}
-
-int check_type_native(is_type_native val)
-{
-	int errors = 0;
-	return errors;
-}
-
-
 /* nodes */
 int check_application(is_application* node)
 {
-	int errors = 0;
-	return errors;
+	return check_class_def(node);
 }
 
 int check_array_decl(is_array_decl* node)
 {
 	int errors = 0;
+
+	errors += check_type_object(node->type);
+	errors += check_dims_empty_list(node->dims);
+
 	return errors;
 }
 
 int check_assign_op(is_assign_op* node)
 {
 	int errors = 0;
+	
+	
 	return errors;
 }
 
@@ -102,6 +96,12 @@ int check_continue(is_continue* node)
 }
 
 int check_dims(is_dims* node)
+{
+	int errors = 0;
+	return errors;
+}
+
+int check_dims_empty_list(is_dims_empty_list* val)
 {
 	int errors = 0;
 	return errors;

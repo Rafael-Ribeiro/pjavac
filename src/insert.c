@@ -1,26 +1,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
-#include <string.h>
 
 #include "inc/structures.h"
+#include "inc/utils.h"
 #include "inc/free.h"
 
 extern int yyline;
 
 /* LEX */
-char* __strdup(const char* data)
-{
-	char* dest;
-	int len;
-
-	len = strlen(data) + 1; /* +1 to include \0 on both malloc and strncpy */
-	dest = (char*)malloc(sizeof(char)*len);
-	strncpy(dest, data, len);
-
-	return dest;
-}
-
 is_id* insert_id(char* data)
 {
 	is_id* node = (is_id*)malloc(sizeof(is_id));

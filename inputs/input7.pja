@@ -12,7 +12,7 @@ class teste
 	public static void main(String[] args)
 	{
 		int array[] = {1,2,3,4,++func()[0][1]};
-		/* array.clone(); */
+		array.clone();
 		int i = 0,j = 0, k = 0;
 		for (func(); i < 4; func());
 		char a = '3';
