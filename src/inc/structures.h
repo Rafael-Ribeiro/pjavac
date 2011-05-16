@@ -92,6 +92,9 @@ typedef struct _is_assign_op
 	type_assign_op type;
 	struct _is_var* var;
 	struct _is_expr* expr;
+
+	/* semantics */
+	struct _is_type_decl* s_type;
 } is_assign_op;
 
 typedef enum
@@ -134,6 +137,9 @@ typedef struct _is_binary_op
 		} operands;
 		struct _is_assign_op* assign;
 	} data;
+
+	/* semantics */
+	struct _is_type_decl* s_type;
 } is_binary_op;
 
 typedef struct _is_break
@@ -272,6 +278,9 @@ typedef struct _is_expr
 		struct _is_func_call* func_call;
 		struct _is_expr_op* operation;
 	} data;
+
+	/* semantics */
+	struct _is_type_decl* s_type;
 } is_expr;
 
 typedef struct _is_expr_list
@@ -300,6 +309,9 @@ typedef struct _is_expr_op
 		struct _is_binary_op* binary;
 		struct _is_ternary_op* ternary;
 	} data;
+
+	/* semantics */
+	struct _is_type_decl* s_type;
 } is_expr_op;
 
 typedef struct _is_for
@@ -364,6 +376,9 @@ typedef struct _is_func_call
 
 	struct _is_id* id; /* NOT nullable */
 	is_func_call_arg_list* args; /* nullable (no args provided) */
+
+	/* semantics */
+	struct _is_type_decl* s_type;
 } is_func_call;
 
 typedef struct _is_func_def
@@ -421,6 +436,9 @@ typedef struct _is_incr_op
 	type_incr_op type;
 	bool pre;
 	struct _is_var* var;
+
+	/* semantics */
+	struct _is_type_decl* s_type;
 } is_incr_op;
 
 typedef enum
@@ -468,6 +486,9 @@ typedef struct _is_new_op
 
 	struct _is_type_object *type_object;
 	struct _is_dims *dims;
+
+	/* semantics */
+	struct _is_type_decl* s_type;
 } is_new_op;
 
 typedef struct _is_return
@@ -560,6 +581,14 @@ typedef struct _is_ternary_op
 	struct _is_expr* if_expr;
 	struct _is_expr* then_expr;
 	struct _is_expr* else_expr;
+
+	/*
+	 * semantics
+	 *
+	 * the most abrangent type IF it exists, error otherwise (e.g.: String and int)
+	 * (note that this only applies while there is a single class hierarchy)
+	 */
+	struct _is_type_decl* s_type;
 } is_ternary_op;
 
 typedef enum
@@ -605,6 +634,7 @@ typedef enum
 {
 	t_unary_op_operation,
 	t_unary_op_incr_op
+
 } type_unary_op;
 
 typedef enum
@@ -630,6 +660,9 @@ typedef struct _is_unary_op
 		} operation;
 		is_incr_op *incr;
 	} data;
+
+	/* semantics */
+	struct _is_type_decl* s_type;
 } is_unary_op;
 
 typedef enum
@@ -660,6 +693,9 @@ typedef struct _is_var
 			is_dims_sized* dims;
 		} func_call;
 	} data;
+
+	/* semantics */
+	struct _is_type_decl* s_type;
 } is_var;
 
 typedef struct _is_var_def
@@ -713,6 +749,9 @@ typedef struct _is_var_initializer
 		struct _is_var_initializer_list* array; /* nullable */
 		struct _is_expr* expr;
 	} data;
+
+	/* semantics */
+	struct _is_type_decl* s_type;
 } is_var_initializer;
 
 typedef struct _is_var_initializer_list
