@@ -1,11 +1,33 @@
 #ifndef NODE_H
 #define NODE_H
 
+typedef enum
+{
+	t_symbol_var,
+	t_symbol_func,
+	t_symbol_label,
+	t_symbol_class
+} type_symbol;
+
 typedef struct _SYMBOL
 {
 	char *id;
-	/* TODO */
+	type_symbol type;
 
+	union
+	{
+		struct
+		{
+			is_type_decl *type;
+			bool initialized;
+		} var;
+		struct
+		{
+			is_type_decl *type;
+			int nArgs;
+			is_type_decl **args;
+		} func;
+	} data;
 } SYMBOL;
 
 typedef struct _NODE
@@ -24,21 +46,29 @@ typedef struct _SCOPE
 	NODE *node;
 } SCOPE;
 
-SYMBOL* symbolNew(char* id /*, ...*/);
-void symbolDelete(SYMBOL* symbol);
-SYMBOL* symbolLookup(NODE* node, char* id);
+/*
+	SYMBOLS
+*/
+SYMBOL* symbol_new(char* id /*, ...*/);
+void symbol_delete(SYMBOL* symbol);
+SYMBOL* symbol_lookup(NODE* node, char* id);
 
-SCOPE* scopeNew(SCOPE* parent);
-void scopeDelete(SCOPE* scope);
-void scopeInsert(SCOPE* scope, SYMBOL *symbol);
-SYMBOL* scopeLookup(SCOPE* scope, char *id);
+/*
+	SCOPES
+*/
+SCOPE* scope_new(SCOPE* parent);
+void scope_delete(SCOPE* scope);
+void scope_insert(SCOPE* scope, SYMBOL* symbol);
+SYMBOL* scope_lookup(SCOPE* scope, char *id);
 
-/* AVL utils */
-NODE* nodeNew(SYMBOL *symbol);
-void nodeDelete(NODE* node);
-NODE* nodeInsert(NODE* node, SYMBOL *symbol);
+/*
+	AVL
+*/
+NODE* node_new(SYMBOL *symbol);
+void node_delete(NODE* node);
+NODE* node_insert(NODE* node, SYMBOL *symbol);
+int node_height(NODE* node);
 
-int nodeHeight(NODE* node);
 NODE* RightRot(NODE* root, NODE* pivot);
 NODE* LeftRot(NODE* root, NODE* pivot);
 NODE* LL(NODE* root);

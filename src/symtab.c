@@ -10,15 +10,53 @@
 /*
 	SYMBOLS
 */
-SYMBOL* symbolNew(char* id /*, ...*/)
+SYMBOL* symbol_new_var(char* id, is_type_decl *type)
 {
 	SYMBOL* symbol = (SYMBOL*)malloc(sizeof(SYMBOL));
+
 	symbol->id = __strdup(id);
+	symbol->type = t_symbol_var;
+
+	symbol->data.var.type = type;
+	symbol->data.var.initialized = false;
 
 	return symbol;
 }
 
-void symbolDelete(SYMBOL* symbol)
+SYMBOL* symbol_new_func(char* id /*, ...*/)
+{
+	SYMBOL* symbol = (SYMBOL*)malloc(sizeof(SYMBOL));
+	symbol->id = __strdup(id);
+	symbol->type = t_symbol_func;
+
+	/* TODO */
+
+	return symbol;
+}
+
+SYMBOL* symbol_new_label(char* id /*, ...*/)
+{
+	SYMBOL* symbol = (SYMBOL*)malloc(sizeof(SYMBOL));
+	symbol->id = __strdup(id);
+	symbol->type = t_symbol_label;
+
+	/* TODO */
+
+	return symbol;
+}
+
+SYMBOL* symbol_new_class(char* id /*, ...*/)
+{
+	SYMBOL* symbol = (SYMBOL*)malloc(sizeof(SYMBOL));
+	symbol->id = __strdup(id);
+	symbol->type = t_symbol_class;
+
+	/* TODO */
+
+	return symbol;
+}
+
+void symbol_delete(SYMBOL* symbol)
 {
 	free(symbol->id);
 	/* free(...) */
@@ -26,14 +64,14 @@ void symbolDelete(SYMBOL* symbol)
 	free(symbol);
 }
 
-SYMBOL* symbolLookup(NODE* node, char* id)
+SYMBOL* symbol_lookup(NODE* node, char* id)
 {
 	int result = strcmp(id, node->symbol->id);
 
 	if (result < 0)
-		return symbolLookup(node->left,id);
+		return symbol_lookup(node->left,id);
 	else if (result > 0)
-		return symbolLookup(node->right,id);
+		return symbol_lookup(node->right,id);
 
 	return node->symbol;
 }
@@ -41,7 +79,7 @@ SYMBOL* symbolLookup(NODE* node, char* id)
 /*
 	SCOPES
 */
-SCOPE* scopeNew(SCOPE* parent)
+SCOPE* scope_new(SCOPE* parent)
 {
 	SCOPE* scope = (SCOPE*)malloc(sizeof(SCOPE));
 	scope->parent = parent;
@@ -50,26 +88,26 @@ SCOPE* scopeNew(SCOPE* parent)
 	return scope;
 }
 
-void scopeDelete(SCOPE* scope)
+void scope_delete(SCOPE* scope)
 {
-	nodeDelete(scope->node);
+	node_delete(scope->node);
 	free(scope);
 }
 
-void scopeInsert(SCOPE* scope, SYMBOL* symbol)
+void scope_insert(SCOPE* scope, SYMBOL* symbol)
 {
-	scope->node = nodeInsert(scope->node, symbol);
+	scope->node = node_insert(scope->node, symbol);
 }
 
-SYMBOL* scopeLookup(SCOPE* scope, char *id)
+SYMBOL* scope_lookup(SCOPE* scope, char *id)
 {
-	return symbolLookup(scope->node, id);
+	return symbol_lookup(scope->node, id);
 }
 
 /*
-	NODE
+	AVL
 */
-NODE* nodeNew(SYMBOL *symbol)
+NODE* node_new(SYMBOL *symbol)
 {
 	NODE* node = (NODE*)malloc(sizeof(NODE));
 	node->symbol = symbol;
@@ -82,27 +120,20 @@ NODE* nodeNew(SYMBOL *symbol)
 	return node;
 }
 
-/*
-	SCOPE DELETION
-*/
-
-void nodeDelete(NODE* node)
+void node_delete(NODE* node)
 {
-	symbolDelete(node->symbol);
+	symbol_delete(node->symbol);
 
 	if (node->left)
-		nodeDelete(node->left);
+		node_delete(node->left);
 
 	if (node->right)
-		nodeDelete(node->right);
+		node_delete(node->right);
 
 	free(node);
 }
 
-/*
-	SCOPE FUNCTIONS
-*/
-NODE* nodeInsert(NODE* node, SYMBOL *symbol)
+NODE* node_insert(NODE* node, SYMBOL *symbol)
 {
 	NODE *root;
 	int balance;
@@ -110,15 +141,15 @@ NODE* nodeInsert(NODE* node, SYMBOL *symbol)
 	root = node;
 
 	if (node == NULL)
-		return nodeNew(symbol);
+		return node_new(symbol);
 	
 	cmp = strcmp(symbol->id, node->symbol->id);
 	if (cmp < 0)
 	{	 
 		/* Left */
-		node->left = nodeInsert(node->left, symbol);
+		node->left = node_insert(node->left, symbol);
 		
-		balance = nodeHeight(node->left) - nodeHeight(node->right);
+		balance = node_height(node->left) - node_height(node->right);
 		if (balance == 2)
 		{
 			cmpchild = strcmp(symbol->id, node->left->symbol->id);
@@ -131,9 +162,9 @@ NODE* nodeInsert(NODE* node, SYMBOL *symbol)
 	} else if (cmp > 0)
 	{
 		/* Right */
-		node->right = nodeInsert(node->right, symbol);
+		node->right = node_insert(node->right, symbol);
 
-		balance = nodeHeight(node->right) - nodeHeight(node->left);		
+		balance = node_height(node->right) - node_height(node->left);		
 		if (balance == 2)
 		{
 			cmpchild = strcmp(symbol->id, node->right->symbol->id);
@@ -148,24 +179,17 @@ NODE* nodeInsert(NODE* node, SYMBOL *symbol)
 		the implementation doesn't allow duplicates, since a lookup is ALWAYS performed first
 	} */
 
-	node->height = max(nodeHeight(node->left), nodeHeight(node->right))+1;
+	node->height = max(node_height(node->left), node_height(node->right))+1;
 	return root;
 }
 
-/*
-	SCOPE HELPERS
-*/
-int nodeHeight(NODE* node)
+int node_height(NODE* node)
 {
 	if (node)
 		return node->height;
 	else
 		return -1;
 }
-
-/*
-	SCOPE ROTATIONS
-*/
 
 /* right rotation is always on the left of the root so we dont need to pass the pivot as a param */
 NODE* RightRot(NODE* root, NODE* pivot)
@@ -174,8 +198,8 @@ NODE* RightRot(NODE* root, NODE* pivot)
 	pivot->right = root;	
 
 	/* update heights */
-	root->height = max(nodeHeight(root->left), nodeHeight(root->right))+1;
-	pivot->height = max(nodeHeight(pivot->left), nodeHeight(pivot->right))+1;
+	root->height = max(node_height(root->left), node_height(root->right))+1;
+	pivot->height = max(node_height(pivot->left), node_height(pivot->right))+1;
 
 	return pivot;
 }
@@ -187,8 +211,8 @@ NODE* LeftRot(NODE* root, NODE* pivot)
 	pivot->left = root;
 
 	/* update heights */
-	root->height = max(nodeHeight(root->left), nodeHeight(root->right))+1;
-	pivot->height = max(nodeHeight(pivot->left), nodeHeight(pivot->right))+1;
+	root->height = max(node_height(root->left), node_height(root->right))+1;
+	pivot->height = max(node_height(pivot->left), node_height(pivot->right))+1;
 
 	return pivot;
 }

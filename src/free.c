@@ -614,9 +614,6 @@ void free_type_decl(is_type_decl* node)
 				free_array_decl(node->data.array);
 				break;
 		}
-
-		/* semantics */
-		free_type_decl(node->s_type);
 		
 		free(node);
 	}
@@ -757,9 +754,6 @@ void free_var_initializer_list(is_var_initializer_list* node)
 	{
 		free_var_initializer(node->node);
 		free_var_initializer_list(node->next);
-
-		/* semantics */
-		free_type_decl(node->s_type);
 
 		free(node);
 	}
