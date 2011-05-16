@@ -72,7 +72,7 @@ typedef struct _is_array_decl
 
 typedef enum
 {
-	t_assign_op_eq,
+	t_assign_op_eq = 0,
 	t_assign_op_shift_r_eq,
 	t_assign_op_shift_l_eq,
 	t_assign_op_add_eq,
@@ -99,7 +99,7 @@ typedef struct _is_assign_op
 
 typedef enum
 {
-	t_binary_op_add,
+	t_binary_op_add = 11,
 	t_binary_op_sub,
 	t_binary_op_mul,
 	t_binary_op_div,
@@ -610,7 +610,7 @@ typedef struct _is_type_decl
 
 typedef enum
 {
-	t_type_native_bool,
+	t_type_native_bool = 0,
 	t_type_native_byte,
 	t_type_native_char,
 	t_type_native_double,
@@ -638,7 +638,7 @@ typedef enum
 
 typedef enum
 {
-	t_unary_op_operator_plus,
+	t_unary_op_operator_plus = 32,
 	t_unary_op_operator_minus,
 	t_unary_op_operator_not,
 	t_unary_op_operator_bin_not

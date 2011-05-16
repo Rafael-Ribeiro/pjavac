@@ -7,6 +7,67 @@
 
 extern SCOPE* symtab;
 
+/*
+	OPERATORS TABLE
+*/
+
+type_ a[MAX_OPERATORS][MAX_OPERANDS][MAX_OPERANDS]
+/*
+	t_assign_op_eq,
+	t_assign_op_shift_r_eq,
+	t_assign_op_shift_l_eq,
+	t_assign_op_add_eq,
+	t_assign_op_sub_eq,
+	t_assign_op_mul_eq,
+	t_assign_op_div_eq,
+	t_assign_op_mod_eq,
+	t_assign_op_and_eq,
+	t_assign_op_xor_eq,
+	t_assign_op_or_eq
+
+	t_binary_op_add,
+	t_binary_op_sub,
+	t_binary_op_mul,
+	t_binary_op_div,
+	t_binary_op_mod,
+	t_binary_op_and,
+	t_binary_op_or,
+	t_binary_op_xor,
+	t_binary_op_shift_r,
+	t_binary_op_shift_l,
+	t_binary_op_logic_and,
+	t_binary_op_logic_or,
+	t_binary_op_eq,
+	t_binary_op_ne,
+	t_binary_op_l,
+	t_binary_op_g,
+	t_binary_op_le,
+	t_binary_op_ge,
+	t_binary_op_eq3,
+	t_binary_op_ne3,
+	t_binary_op_assign
+
+	t_unary_op_operator_plus,
+	t_unary_op_operator_minus,
+	t_unary_op_operator_not,
+	t_unary_op_operator_bin_not
+
+
+	t_type_native_bool,
+	t_type_native_byte,
+	t_type_native_char,
+	t_type_native_double,
+	t_type_native_float,
+	t_type_native_int,
+	t_type_native_long,
+	t_type_native_short,
+	t_type_native_string,
+	t_type_native_void
+*/
+
+
+
+
 /* LEX */
 
 int check_id(is_id* node)
