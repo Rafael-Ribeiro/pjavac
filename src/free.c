@@ -52,6 +52,8 @@ void free_assign_op (is_assign_op* node)
 		free_var(node->var);
 		free_expr(node->expr);
 
+		/* semantics */
+		free_type_decl(node->s_type);
 		free(node);
 	}
 }
@@ -71,6 +73,9 @@ void free_binary_op(is_binary_op* node)
 				free_expr(node->data.operands.right);
 				break;
 		}
+
+		/* semantics */
+		free_type_decl(node->s_type);
 
 		free(node);
 	}
@@ -208,6 +213,9 @@ void free_expr(is_expr* node)
 				free_expr_op(node->data.operation);
 				break;
 		}
+
+		/* semantics */
+		free_type_decl(node->s_type);
 		free(node);
 	}
 }
@@ -241,6 +249,9 @@ void free_expr_op (is_expr_op* node)
 				free_ternary_op(node->data.ternary);
 				break;
 		}
+
+		/* semantics */
+		free_type_decl(node->s_type);
 
 		free(node);
 	}
@@ -328,6 +339,10 @@ void free_func_call(is_func_call* node)
 	{
 		free_id(node->id);
 		free_func_call_arg_list(node->args);
+
+		/* semantics */
+		free_type_decl(node->s_type);
+
 		free(node);
 	}
 }
@@ -390,13 +405,15 @@ void free_incr_op(is_incr_op* node)
 	{
 		free_var(node->var);
 
+		/* semantics */
+		free_type_decl(node->s_type);
+
 		free(node);
 	}
 }
 
 void free_loop_stmt(is_loop_stmt* node)
 {
-	
 	if (node)
 	{
 		switch (node->type)
@@ -444,6 +461,9 @@ void free_new_op(is_new_op* node)
 	{
 		free_type_object(node->type_object);
 		free_dims(node->dims);
+
+		/* semantics */
+		free_type_decl(node->s_type);
 
 		free(node);
 	}
