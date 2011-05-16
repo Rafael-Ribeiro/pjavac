@@ -66,7 +66,12 @@ void symbol_delete(SYMBOL* symbol)
 
 SYMBOL* symbol_lookup(NODE* node, char* id)
 {
-	int result = strcmp(id, node->symbol->id);
+	int result;
+
+	if (!node)
+		return NULL;
+
+	result = strcmp(id, node->symbol->id);
 
 	if (result < 0)
 		return symbol_lookup(node->left,id);
