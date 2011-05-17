@@ -407,6 +407,9 @@ typedef struct _is_func_def_arg_list
 
 	struct _is_func_def_arg* node;
 	struct _is_func_def_arg_list* next;
+
+	/* semantics */
+	int length;
 } is_func_def_arg_list;
 
 typedef struct _is_id
