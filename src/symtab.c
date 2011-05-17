@@ -136,6 +136,9 @@ NODE* node_new(SYMBOL *symbol)
 
 void node_delete(NODE* node)
 {
+	if (!node)
+		return;
+
 	symbol_delete(node->symbol);
 
 	if (node->left)

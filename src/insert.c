@@ -523,6 +523,8 @@ is_func_def_arg_list* insert_func_def_arg_list(is_func_def_arg* arg, is_func_def
 	node->next = next;
 	node->line = yyline;
 
+	/* semantics*/
+	node->length = 0;
 	return node;
 }
 

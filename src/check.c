@@ -13,7 +13,8 @@
 extern SCOPE* symtab;
 
 /* LEX */
-
+/*
+	TODO: used?
 int check_id(is_id* node)
 {
 	SYMBOL* symbol;
@@ -27,7 +28,7 @@ int check_id(is_id* node)
 
 	return 0;
 }
-
+*/
 int check_constant(is_constant* node)
 {
 	switch (node->type)
@@ -136,8 +137,11 @@ int check_class_stmt_list(is_class_stmt_list* node)
 {
 	int errors = 0;
 	
-	errors += check_class_stmt(node->node);
-	errors += check_class_stmt_list(node->next);
+	if (node)
+	{
+		errors += check_class_stmt(node->node);
+		errors += check_class_stmt_list(node->next);
+	}
 
 	return errors;
 }
@@ -215,23 +219,23 @@ int check_do_while(is_do_while* node)
 {
 	int errors = 0;
 	
+	/* FIXME:
+		force an addition of a scope
+		this makes do int a; while(i == 0); int a; semantically valid while it should be syntactically invalid 
+	*/
+	symtab = scope_new(symtab);
+	errors += check_stmt(node->body);
+	symtab = scope_delete(symtab);
+
 	errors += check_expr(node->cond);
 	if (errors == 0)
 	{
 		if (!type_bool_like(node->cond->s_type))
 		{
 			errors++;
-			pretty_error(node->line, "invalid array condition (must be boolean)");
+			pretty_error(node->line, "invalid do..while condition (must be boolean)");
 		}
 	}
-
-	/* FIXME:
-		force an adition of a scope
-		this makes do int a; while(i=0); int a; semantically valid while it should be syntactically invalid 
-	*/
-	symtab = scope_new(symtab);
-	errors += check_stmt(node->body);
-	symtab = scope_delete(symtab);
 	
 	return errors;
 }
@@ -357,13 +361,18 @@ int check_for(is_for* node)
 
 int check_for_cond(is_for_cond* node)
 {
-	return check_expr(node);
+	if (node)
+		return check_expr(node);
+	return 0;
 }
 
 int check_for_expr(is_for_expr* node)
 {
 	int errors = 0;
 	
+	if (!node)
+		return 0;
+
 	switch (node->type)
 	{
 		case t_for_expr_incr:
@@ -385,24 +394,68 @@ int check_for_expr(is_for_expr* node)
 int check_for_expr_list(is_for_expr_list* node)
 {
 	int errors = 0;
+
+	if (node)
+	{
+		errors += check_for_expr(node->node);
+		errors += check_for_expr_list(node->next);		
+	}
+
 	return errors;
 }
  
 int check_for_inc(is_for_inc* node)
 {
-	int errors = 0;
-	return errors;
+	return check_for_expr_list(node);
 }
 
 int check_for_init(is_for_init* node)
 {
 	int errors = 0;
+
+	switch (node->type)
+	{
+		case t_for_init_var_defs:
+			errors += check_var_defs(node->data.var_defs);
+			break;
+
+		case t_for_init_for_expr_list:
+			errors += check_for_expr_list(node->data.expr_list);
+			break;
+	}
+
 	return errors;
 }
 
 int check_func_call(is_func_call* node)
 {
+	SYMBOL* symbol;
 	int errors = 0;
+	
+	symbol = scope_lookup(symtab, node->id->name);
+	if (!symbol || symbol->type != t_symbol_func)
+	{
+		pretty_error(node->line, "undefined function %s", node->id->name);
+		errors++;
+	} else
+	{
+		errors += check_func_call_arg_list(node->args);
+
+		if (errors == 0)
+		{
+			if (node->args->length != symbol->data.func_data->nArgs)
+			{
+				pretty_error(node->line, "too %s arguments for %s, got %d expected %d (declaration is here: %d)",
+					node->args->length > symbol->data.func_data->nArgs ? "many", "few",
+					node->id->name,
+					
+				errors++;
+			} else
+			{
+			}
+		}
+	}
+
 	return errors;
 }
 

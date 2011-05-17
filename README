@@ -3,5 +3,8 @@ TODOs:
 		- array initializers only in declarations
 		- break/continue inside loops
 		- System.out.println() (manually included in symtab)
-		- functions with the same name as variables need to be allowed
 		- check operators' types and returns
+		
+		---> symbols with the same name and different types
+		- functions with the same name as variables need to be allowed
+		- function overload
