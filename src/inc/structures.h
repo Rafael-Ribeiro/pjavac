@@ -768,8 +768,8 @@ typedef struct _is_var_initializer
 		struct _is_expr* expr;
 	} data;
 
-	/* semantics */
-	struct _is_type_decl* s_type;
+	/* semantics (removed, since type must be checked by superior nodes (var_defs)) */
+	/* struct _is_type_decl* s_type; */
 } is_var_initializer;
 
 typedef struct _is_var_initializer_list
