@@ -109,7 +109,13 @@ void scope_insert(SCOPE* scope, SYMBOL* symbol)
 
 SYMBOL* scope_lookup(SCOPE* scope, char *id)
 {
-	return symbol_lookup(scope->node, id);
+	SYMBOL* symbol = NULL;
+
+	symbol = symbol_lookup(scope->node, id);
+	if (!symbol && scope->parent)
+		return scope_lookup(scope->parent, id);
+
+	return symbol;
 }
 
 /*

@@ -1,11 +1,14 @@
 #include <stdio.h>
 #include <stdbool.h>
+#include <stdlib.h>
 
 #include "inc/structures.h"
 #include "inc/utils.h"
 #include "inc/symtab.h"
 #include "inc/check.h"
 #include "inc/types.h"
+#include "inc/insert.h"
+#include "inc/duplicate.h"
 
 extern SCOPE* symtab;
 
@@ -27,7 +30,30 @@ int check_id(is_id* node)
 
 int check_constant(is_constant* node)
 {
-	return 0; /* syntax-validated */
+	switch (node->type)
+	{
+		case t_constant_bool:
+			node->s_type = insert_type_decl_object(insert_type_object(t_type_native_bool));
+			break;
+
+		case t_constant_long:
+			node->s_type = insert_type_decl_object(insert_type_object(t_type_native_long));
+			break;
+
+		case t_constant_double:
+			node->s_type = insert_type_decl_object(insert_type_object(t_type_native_double));
+			break;
+
+		case t_constant_char:
+			node->s_type = insert_type_decl_object(insert_type_object(t_type_native_char));
+			break;
+
+		case t_constant_string:
+			node->s_type = insert_type_decl_object(insert_type_object(t_type_native_string));
+			break;
+	}
+
+	return 0;
 }
 
 /* YACC */
@@ -214,17 +240,17 @@ int check_expr(is_expr* node)
 {
 	char *typeA, *typeB; 
 	int errors = 0;
-
+	
 	switch (node->type)
 	{
 		case t_expr_var:
 			errors += check_var(node->data.var);
-			node->s_type = node->data.var->s_type;
+			node->s_type = duplicate_type_decl(node->data.var->s_type);
 			break;
 
 		case t_expr_new_op:
 			errors += check_new_op(node->data.new_op);
-			node->s_type = node->data.new_op->s_type;
+			node->s_type = duplicate_type_decl(node->data.new_op->s_type);
 			break;
 
 		case t_expr_type_cast:
@@ -246,9 +272,15 @@ int check_expr(is_expr* node)
 			break;
 
 		case t_expr_constant:
+			errors += check_constant(node->data.constant);
+			node->s_type = duplicate_type_decl(node->data.constant->s_type);
+
 			break;
 
 		case t_expr_func_call:
+			errors += check_func_call(node->data.func_call);
+			node->s_type = duplicate_type_decl(node->data.func_call->s_type);
+
 			break;
 
 		case t_expr_operation:

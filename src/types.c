@@ -146,3 +146,4 @@ bool type_cast_able(is_type_decl* s_type, is_type_decl* s_type2)
 
 	return true;
 }
+
