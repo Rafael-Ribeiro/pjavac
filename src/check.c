@@ -746,7 +746,10 @@ int check_var_defs(is_var_defs* node)
 	int errors = 0;
 
 	SYMBOL *symbol;
+
+	is_type_decl *tempType;
 	is_type_decl *type;
+
 	is_var_def_list *it;
 
 	errors += check_type_decl(node->type);
@@ -762,32 +765,34 @@ int check_var_defs(is_var_defs* node)
 			pretty_error(it->node->line, "symbol %s is already defined (previous declaration was here: %d)", it->node->left->id->name, symbol->line);
 		} else
 		{
-			type = duplicate_type_decl(node->type);
+			type = tempType = duplicate_type_decl(node->type);
 
 			switch (it->node->left->type)
 			{
 				case t_var_def_left_dims:
-					if (type->type == t_type_decl_array_decl)
+					if (type->type != t_type_decl_array_decl)
 					{
-						/* TODO */
-					} else
-					{
-						/* TODO */
-					}
-					/* TODO: create a new type_decl (array) with it->node->left->dims->sized->length + it->node->left->dims->empty->size dimensions */
+						/*
+						 * TODO:
+						 * create a new type_decl (array) with
+						 * it->node->left->dims->sized->length + it->node->left->dims->empty->size dimensions
+						 */
+					} else /* type is already a type_decl_array, no new type_decl needed */
+						type->data.array->dims->size += it->node->left->data.dims->sized->length + it->node->left->data.dims->empty->size;
+
 				break;
 				case t_var_def_left_empty:
-					if (it->node->left->data.empty->size != 0)
+					if (it->node->left->data.empty->size != 0 && type->type != t_type_decl_array_decl)
 					{
 						/* TODO: create a new type_decl (array) with it->node->left->data.empty->size dimensions */
-					} else
+					} /* else
 					{
-						/* TODO: use type type_decl */
-					}
+						No modifications to type are needed.
+					} */
 				break;
 			}
 
-			/* TODO: scope_insert(symtab, ...); */
+			/* TODO: scope_insert(symtab, ..., type); */
 		}
 
 		it = it->next;
