@@ -1,6 +1,7 @@
 TODOs:
 	Semantics:
-		- Array initializers only in declarations
+		- array initializers only in declarations
 		- break/continue inside loops
 		- System.out.println() (manually included in symtab)
-		- Functions with the same name as variables need to be allowed
+		- functions with the same name as variables need to be allowed
+		- check operators' types and returns

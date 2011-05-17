@@ -13,6 +13,7 @@ typedef struct _SYMBOL
 {
 	char *id;
 	type_symbol type;
+	int line;
 
 	union
 	{
@@ -20,13 +21,25 @@ typedef struct _SYMBOL
 		{
 			is_type_decl *type;
 			bool initialized;
-		} var;
+		} var_data;
 		struct
 		{
 			is_type_decl *type;
 			int nArgs;
 			is_type_decl **args;
-		} func;
+
+			is_class_stmt_privacy* privacy; /* nullable */
+			is_class_stmt_scope* scope;	/* nullable */
+		} func_data;
+/*
+		struct
+		{
+		} class_data;
+
+		struct
+		{
+		} label_data;
+*/
 	} data;
 } SYMBOL;
 
@@ -49,7 +62,10 @@ typedef struct _SCOPE
 /*
 	SYMBOLS
 */
-SYMBOL* symbol_new(char* id /*, ...*/);
+SYMBOL* symbol_new_var(char* id, is_type_decl *type);
+SYMBOL* symbol_new_func(char* id /*, ...*/);
+SYMBOL* symbol_new_label(char* id /*, ...*/);
+SYMBOL* symbol_new_class(char* id /*, ...*/);
 void symbol_delete(SYMBOL* symbol);
 SYMBOL* symbol_lookup(NODE* node, char* id);
 
@@ -57,7 +73,7 @@ SYMBOL* symbol_lookup(NODE* node, char* id);
 	SCOPES
 */
 SCOPE* scope_new(SCOPE* parent);
-void scope_delete(SCOPE* scope);
+SCOPE* scope_delete(SCOPE* scope);
 void scope_insert(SCOPE* scope, SYMBOL* symbol);
 SYMBOL* scope_lookup(SCOPE* scope, char *id);
 

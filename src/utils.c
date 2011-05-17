@@ -4,6 +4,7 @@
 #include <stdarg.h>
 #include <string.h>
 
+#include "inc/structures.h"
 #include "inc/utils.h"
 
 extern bool has_errors;
@@ -39,4 +40,3 @@ char* __strdup(const char* data)
 
 	return dest;
 }
-

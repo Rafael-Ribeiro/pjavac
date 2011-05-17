@@ -1,9 +1,78 @@
 #define TYPES_C
 
 #include <stdbool.h>
+#include <stdlib.h>
+#include <string.h>
 
 #include "inc/structures.h"
+#include "inc/utils.h"
 #include "inc/types.h"
+
+char *string_type_native(is_type_native* type)
+{
+	char strings[][8] = { "boolean", "byte", "char", "double", "float", "int", "long", "short", "string", "void"};
+	return __strdup(strings[*type]);
+}
+
+char *string_type_decl(is_type_decl* type)
+{
+	if (type->type != t_type_decl_type_object)
+		return string_type_native(&type->data.type_object->type);
+
+	return string_array_decl(type->data.array);
+}
+
+char *string_array_decl(is_array_decl* array)
+{
+	char *native, *val;
+	int size, i;
+
+	native = string_type_native(&array->type->type);
+	size = strlen(native) + 2*(array->dims->size)+1;
+
+	val = (char*)malloc(sizeof(char)*size);
+	strcpy(val, native); 
+	
+	for (i = 0; i < array->dims->size; i++)
+		strcat(val, "[]");
+
+	free(native);
+	return val;
+}
+
+bool type_long_like(is_type_decl* s_type)
+{
+	if (s_type->type != t_type_decl_type_object)
+		return false;
+
+	return operators_native[t_assign_op_eq][t_type_native_long][s_type->data.type_object->type] != ERROR;
+}
+
+bool type_bool_like(is_type_decl* s_type)
+{
+	if (s_type->type != t_type_decl_type_object)
+		return false;
+
+	return operators_native[t_assign_op_eq][t_type_native_bool][s_type->data.type_object->type] != ERROR;
+}
+
+bool type_cast_able(is_type_decl* s_type, is_type_decl* s_type2)
+{
+	/*
+		FIXME:
+		this is invalid if we allow objects:
+		e.g. 	Integer b[] = (Integer[])(new Object[1]); is valid BUT
+				int b[] = (float[])(new int[1]) is NOT
+	*/
+	if (s_type->type == t_type_decl_array_decl)
+		return false;
+
+	if ((s_type->data.type_object->type == t_type_native_bool || s_type->data.type_object->type == t_type_native_string)
+		&& s_type->data.type_object->type != s_type2->data.type_object->type)
+		return false;
+
+	return true;
+}
 
 is_type_native operators_native[MAX_OPERATORS][MAX_NATIVE_TYPES-1][MAX_NATIVE_TYPES-1] =
 {
@@ -191,6 +260,7 @@ is_type_native operators_native[MAX_OPERATORS][MAX_NATIVE_TYPES-1][MAX_NATIVE_TY
 		/*	String	-	*/	{	ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					}
 	}
 
+<<<<<<< HEAD
 	/* FIXME/TODO: t_binary_op_mul (*) */
 	{
 		/*						bool					, byte					, char					, double				, float					, int					, long					, short					, String					<- first operand */

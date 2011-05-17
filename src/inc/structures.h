@@ -210,6 +210,8 @@ typedef struct _is_constant
 		/* char char_val; it's not used since char is now a '<char>' string (including the inverted commas) */
 		char* string_val;
 	} value;
+
+	struct _is_type_decl* s_type;
 } is_constant;
 
 typedef struct _is_continue
@@ -246,8 +248,8 @@ typedef struct _is_do_while
 {
 	int line;
 
-	struct _is_stmt* body;
 	struct _is_expr* cond;
+	struct _is_stmt* body;
 } is_do_while;
 
 typedef enum
