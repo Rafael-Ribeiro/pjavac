@@ -8,12 +8,12 @@ int check_constant(is_constant* node);
 
 /* YACC */
 /* nodes */
-int check_application(is_application* node, bool first_pass);
+int check_application(is_application* node);
 int check_array_decl(is_array_decl* node);
 int check_assign_op(is_assign_op* node);
 int check_binary_op(is_binary_op* node);
 int check_break(is_break* node);
-int check_class_def(is_class_def* node, bool first_pass);
+int check_class_def(is_class_def* node);
 int check_class_stmt(is_class_stmt* node, bool first_pass); 
 int check_class_stmt_list(is_class_stmt_list* node, bool first_pass); 
 int check_class_stmt_scope(is_class_stmt_scope* node);

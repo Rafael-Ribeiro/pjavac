@@ -590,14 +590,12 @@ int main()
 	{
 		printf("Valid syntax!\n");
 
-		symtab = scope_new(NULL);
-
+		symtab = scope_new();
 		if (check_application(main_application) == 0)
 		{
 			printf("Valid semantics!\n");
 			show_application(main_application, 0);
 		}
-
 		scope_delete(symtab);
 	}
 

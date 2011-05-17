@@ -57,9 +57,9 @@ int check_constant(is_constant* node)
 
 /* YACC */
 /* nodes */
-int check_application(is_application* node, bool first_pass)
+int check_application(is_application* node)
 {
-	return check_class_def(node, first_pass);
+	return check_class_def(node);
 }
 
 int check_array_decl(is_array_decl* node)
@@ -99,27 +99,25 @@ int check_break(is_break* node)
 	return errors;
 }
 
-int check_class_def(is_class_def* node, bool first_pass)
+int check_class_def(is_class_def* node)
 {
 	int errors = 0;
 	SYMBOL* symbol;
 
-	if (first_pass)
+	symbol = scope_lookup(symtab, node->id->name);
+	if (symbol)
 	{
-		symbol = scope_lookup(symtab, node->id->name);
-		if (symbol)
-		{
-			errors++;
-			pretty_error(node->line, "symbol %s is already defined (previous declaration was here: %d)", node->id->name, symbol->line);
-		}
-
-		scope_insert(symtab, symbol_new_class(node->id->name));		
-
-		node->scope = scope_new();
+		errors++;
+		pretty_error(node->line, "symbol %s is already defined (previous declaration was here: %d)", node->id->name, symbol->line);
 	}
 
+	scope_insert(symtab, symbol_new_class(node->id->name));		
+
+	node->scope = scope_new();
+
 	scope_push(node->scope);
-		errors += check_class_stmt_list(node->body, first_pass);
+		errors += check_class_stmt_list(node->body, true); 
+		errors += check_class_stmt_list(node->body, false);
 	scope_pop();
 
 	return errors;
@@ -537,120 +535,168 @@ int check_func_def(is_func_def* node, bool first_pass)
 int check_func_def_arg(is_func_def_arg* node)
 {
 	int errors = 0;
+	/* TODO */
 	return errors;
 }
 
 int check_func_def_arg_list(is_func_def_arg_list* node)
 {
 	int errors = 0;
+	/* TODO */
+
 	return errors;
 }
 
 int check_func_def_args(is_func_def_args* node)
 {
 	int errors = 0;
+	/* TODO */
+
 	return errors;
 }
 
 int check_if(is_if* node)
 {
 	int errors = 0;
+	/* TODO */
+
 	return errors;
 }
 
 int check_incr_op(is_incr_op* node)
 {
 	int errors = 0;
+	/* TODO */
+
 	return errors;
 }
 
 int check_label(is_id* node)
 {
 	int errors = 0;
+	/* TODO */
+
 	return errors;
 }
 
 int check_loop_stmt(is_loop_stmt* node)
 {
 	int errors = 0;
+	/* TODO */
+
 	return errors;
 }
  
 int check_member_stmt(is_member_stmt* node, bool first_pass)
 {
 	int errors = 0;
+
+	switch (node->type)
+	{
+		case t_member_stmt_var:
+			errors += check_var_stmt(node->data.var, first_pass);
+		break;
+
+		case t_member_stmt_func_def:
+			errors += check_func_def(node->data.func_def, first_pass);
+		break;
+	}
+
 	return errors;
 }
 
 int check_new_op(is_new_op* node)
 {
 	int errors = 0;
+	/* TODO */
+
 	return errors;
 }
 
 int check_return(is_return* node)
 {
 	int errors = 0;
+	/* TODO */
+
 	return errors;
 }
 
 int check_stmt(is_stmt* node)
 {
 	int errors = 0;
+	/* TODO */
+
 	return errors;
 }
 
 int check_stmt_list(is_stmt_list* node)
 {
 	int errors = 0;
+	/* TODO */
+
 	return errors;
 }
  
 int check_switch(is_switch* node)
 {
 	int errors = 0;
+	/* TODO */
+
 	return errors;
 }
 
 int check_switch_stmt(is_switch_stmt* node)
 {
 	int errors = 0;
+	/* TODO */
+
 	return errors;
 }
 
 int check_switch_stmt_list(is_switch_stmt_list* node)
 {
 	int errors = 0;
+	/* TODO */
+
 	return errors;
 }
 
 int check_ternary_op(is_ternary_op* node)
 {
 	int errors = 0;
+	/* TODO */
+
 	return errors;
 }
 
 int check_type_decl(is_type_decl* node)
 {
 	int errors = 0;
+	/* TODO */
+
 	return errors;
 }
 
 int check_type_object(is_type_object* node)
 {
 	int errors = 0;
+	/* TODO */
+
 	return errors;
 }
 
 int check_unary_op(is_unary_op* node)
 {
 	int errors = 0;
+	/* TODO */
+
 	return errors;
 }
 
 int check_var(is_var* node)
 {
 	int errors = 0;
+	/* TODO */
 	/* todo propagate node->initialized */
 	return errors;
 }
