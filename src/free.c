@@ -1,7 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+
 #include "inc/structures.h"
+#include "inc/symtab.h"
 #include "inc/free.h"
 
 void free_application(is_application* node)
@@ -109,6 +111,9 @@ void free_class_def (is_class_def* node)
 		free_class_stmt_list(node->body);
 
 		free(node);
+	
+		if (node->scope)
+			scope_delete(node->scope);
 	}
 }
 
@@ -178,6 +183,7 @@ void free_do_while (is_do_while* node)
 		free_stmt(node->body);
 		free_expr(node->cond);
 
+		scope_delete(node->scope);
 		free(node);
 	}
 }
@@ -266,6 +272,7 @@ void free_for(is_for* node)
 		free_for_inc(node->inc);
 		free_stmt(node->body);
 
+		scope_delete(node->scope);
 		free(node);
 	}
 }
@@ -770,6 +777,10 @@ void free_while(is_while* node)
 	{
 		free_expr(node->cond);
 		free_stmt(node->body);
+
+		if (node->scope)
+			scope_delete(node->scope);
+
 		free(node);
 	}
 }

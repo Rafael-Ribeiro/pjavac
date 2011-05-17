@@ -10,8 +10,6 @@
 #include "inc/insert.h"
 #include "inc/duplicate.h"
 
-extern SCOPE* symtab;
-
 /* LEX */
 /*
 	TODO: used?
@@ -35,23 +33,23 @@ int check_constant(is_constant* node)
 	{
 		case t_constant_bool:
 			node->s_type = insert_type_decl_object(insert_type_object(t_type_native_bool));
-			break;
+		break;
 
 		case t_constant_long:
 			node->s_type = insert_type_decl_object(insert_type_object(t_type_native_long));
-			break;
+		break;
 
 		case t_constant_double:
 			node->s_type = insert_type_decl_object(insert_type_object(t_type_native_double));
-			break;
+		break;
 
 		case t_constant_char:
 			node->s_type = insert_type_decl_object(insert_type_object(t_type_native_char));
-			break;
+		break;
 
 		case t_constant_string:
 			node->s_type = insert_type_decl_object(insert_type_object(t_type_native_string));
-			break;
+		break;
 	}
 
 	return 0;
@@ -59,9 +57,9 @@ int check_constant(is_constant* node)
 
 /* YACC */
 /* nodes */
-int check_application(is_application* node)
+int check_application(is_application* node, bool first_pass)
 {
-	return check_class_def(node);
+	return check_class_def(node, first_pass);
 }
 
 int check_array_decl(is_array_decl* node)
@@ -101,46 +99,51 @@ int check_break(is_break* node)
 	return errors;
 }
 
-int check_class_def(is_class_def* node)
+int check_class_def(is_class_def* node, bool first_pass)
 {
 	int errors = 0;
 	SYMBOL* symbol;
-	
-	symbol = scope_lookup(symtab, node->id->name);
-	if (symbol)
+
+	if (first_pass)
 	{
-		errors++;
-		pretty_error(node->line, "symbol %s is already defined (previous declaration was here: %d)", node->id->name, symbol->line);
+		symbol = scope_lookup(symtab, node->id->name);
+		if (symbol)
+		{
+			errors++;
+			pretty_error(node->line, "symbol %s is already defined (previous declaration was here: %d)", node->id->name, symbol->line);
+		}
+
+		scope_insert(symtab, symbol_new_class(node->id->name));		
+
+		node->scope = scope_new();
 	}
 
-	scope_insert(symtab, symbol_new_class(node->id->name));
-
-	symtab = scope_new(symtab);
-	errors += check_class_stmt_list(node->body);
-	symtab = scope_delete(symtab);
+	scope_push(node->scope);
+		errors += check_class_stmt_list(node->body, first_pass);
+	scope_pop();
 
 	return errors;
 }
 
-int check_class_stmt(is_class_stmt* node)
+int check_class_stmt(is_class_stmt* node, bool first_pass)
 {
 	int errors = 0;
 
 	errors += check_class_stmt_scope(node->scope);
 	errors += check_class_stmt_privacy(node->privacy);
-	errors += check_member_stmt(node->stmt);
+	errors += check_member_stmt(node->stmt, first_pass);
 
 	return errors;
 }
  
-int check_class_stmt_list(is_class_stmt_list* node)
+int check_class_stmt_list(is_class_stmt_list* node, bool first_pass)
 {
 	int errors = 0;
 	
 	if (node)
 	{
-		errors += check_class_stmt(node->node);
-		errors += check_class_stmt_list(node->next);
+		errors += check_class_stmt(node->node, first_pass);
+		errors += check_class_stmt_list(node->next, first_pass);
 	}
 
 	return errors;
@@ -223,9 +226,10 @@ int check_do_while(is_do_while* node)
 		force an addition of a scope
 		this makes do int a; while(i == 0); int a; semantically valid while it should be syntactically invalid 
 	*/
-	symtab = scope_new(symtab);
-	errors += check_stmt(node->body);
-	symtab = scope_delete(symtab);
+	node->scope = scope_new();
+	scope_push(node->scope);
+		errors += check_stmt(node->body);
+	scope_pop();
 
 	errors += check_expr(node->cond);
 	if (errors == 0)
@@ -304,6 +308,11 @@ int check_expr_list(is_expr_list* node)
 	{
 		errors += check_expr(node->node);
 		errors += check_expr_list(node->next);
+
+		if (node->next)
+			node->length = node->next->length+1;
+		else
+			node->length = 1;
 	}
 
 	return errors;
@@ -338,23 +347,25 @@ int check_for(is_for* node)
 {
 	int errors = 0, cond_errors;
 	
-	errors += check_for_init(node->init);	
-	cond_errors = check_for_cond(node->cond);
-	if (cond_errors == 0)
-	{
-		if (!type_bool_like(node->cond->s_type))
+	node->scope = scope_new();
+	scope_push(node->scope);
+		errors += check_for_init(node->init);	
+
+		cond_errors = check_for_cond(node->cond);
+		if (cond_errors == 0)
 		{
-			cond_errors++;
-			pretty_error(node->line, "for conditional is not boolean (is of type %s)");
+			if (!type_bool_like(node->cond->s_type))
+			{
+				cond_errors++;
+				pretty_error(node->line, "for conditional is not boolean (is of type %s)");
+			}
 		}
-	}
-	errors += cond_errors;
+		errors += cond_errors;
 
-	errors += check_for_inc(node->inc);
+		errors += check_for_inc(node->inc);
 
-	symtab = scope_new(symtab);
-	errors += check_stmt(node->body);
-	symtab = scope_delete(symtab);
+		errors += check_stmt(node->body);
+	scope_pop();
 
 	return errors;
 }
@@ -398,7 +409,7 @@ int check_for_expr_list(is_for_expr_list* node)
 	if (node)
 	{
 		errors += check_for_expr(node->node);
-		errors += check_for_expr_list(node->next);		
+		errors += check_for_expr_list(node->next);
 	}
 
 	return errors;
@@ -443,15 +454,17 @@ int check_func_call(is_func_call* node)
 
 		if (errors == 0)
 		{
-			if (node->args->length != symbol->data.func_data->nArgs)
+			if (node->args->length != symbol->data.func_data.nArgs)
 			{
 				pretty_error(node->line, "too %s arguments for %s, got %d expected %d (declaration is here: %d)",
-					node->args->length > symbol->data.func_data->nArgs ? "many", "few",
+					node->args->length > symbol->data.func_data.nArgs ? "many" : "few",
 					node->id->name,
-					
+					symbol->line);
+
 				errors++;
 			} else
 			{
+				/* TODO: check if arguments match */
 			}
 		}
 	}
@@ -461,11 +474,10 @@ int check_func_call(is_func_call* node)
 
 int check_func_call_arg_list(is_func_call_arg_list* node)
 {
-	int errors = 0;
-	return errors;
+	return check_expr_list(node);
 }
 
-int check_func_def(is_func_def* node)
+int check_func_def(is_func_def* node, bool first_pass)
 {
 	int errors = 0;
 	return errors;
@@ -513,7 +525,7 @@ int check_loop_stmt(is_loop_stmt* node)
 	return errors;
 }
  
-int check_member_stmt(is_member_stmt* node)
+int check_member_stmt(is_member_stmt* node, bool first_pass)
 {
 	int errors = 0;
 	return errors;
@@ -684,9 +696,10 @@ int check_while(is_while* node)
 		}
 	}
 
-	symtab = scope_new(symtab);
-	errors += check_stmt(node->body);
-	symtab = scope_delete(symtab);
+	node->scope = scope_new();
+	scope_push(node->scope);
+		errors += check_stmt(node->body);
+	scope_pop();
 	
 	return errors;
 }

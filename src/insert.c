@@ -157,6 +157,9 @@ is_class_def* insert_class_def (is_id* id, is_class_stmt_list* body)
 	node->body = body;
 	node->line = yyline;
 
+	/* semantics */
+	node->scope = NULL;
+
 	return node;
 }
 
@@ -255,6 +258,8 @@ is_do_while *insert_do_while(is_stmt* body, is_expr* cond)
 	node->cond = cond;
 	node->line = yyline;
 
+	/* semantics */
+	node->scope = NULL;
 	return node;
 }
 
@@ -406,6 +411,9 @@ is_for* insert_for(is_for_init *init, is_for_cond *cond, is_for_inc *inc, is_stm
 	node->inc = inc;
 	node->body = body;
 	node->line = yyline;
+
+	/* semantics */
+	node->scope = NULL;
 
 	return node;
 }
@@ -1048,5 +1056,7 @@ is_while* insert_while(is_expr* cond, is_stmt* body)
 	node->body = body;
 	node->line = yyline;
 
+	/* semantics */
+	node->scope = NULL;
 	return node;
 }
