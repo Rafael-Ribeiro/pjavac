@@ -576,7 +576,7 @@ int check_while(is_while* node)
 		if (!type_bool_like(node->cond->s_type))
 		{
 			errors++;
-			pretty_error(node->line, "invalid while condition: expected boolean, got %s", string = );
+			pretty_error(node->line, "invalid while condition: expected boolean, got %s", string = string_type_decl(node->cond->s_type));
 			free(string);
 		}
 	}
