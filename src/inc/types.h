@@ -3,7 +3,7 @@
 
 #include "structures.h"
 
-#define MAX_OPERATORS		36
+#define MAX_OPERATORS		35
 #define MAX_NATIVE_TYPES	10
 
 #define ERROR t_type_native_void

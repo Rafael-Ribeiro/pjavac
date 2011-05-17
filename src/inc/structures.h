@@ -640,7 +640,7 @@ typedef enum
 
 typedef enum
 {
-	t_unary_op_operator_plus = 32,
+	t_unary_op_operator_plus = 31,
 	t_unary_op_operator_minus,
 	t_unary_op_operator_not,
 	t_unary_op_operator_bin_not
