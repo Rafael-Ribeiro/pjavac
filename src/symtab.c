@@ -30,6 +30,7 @@ SYMBOL* symbol_new_var(char* id, int line, is_type_decl *type)
 SYMBOL* symbol_new_func(char* id, int line, is_type_decl *retval, is_func_def_args* args)
 {
 	int i;
+	int length;
 	SYMBOL* symbol;
 	is_func_def_arg_list* arg;
 
@@ -40,10 +41,13 @@ SYMBOL* symbol_new_func(char* id, int line, is_type_decl *retval, is_func_def_ar
 	symbol->line = line;
 
 	symbol->data.func_data.type = duplicate_type_decl(retval);
-	symbol->data.func_data.nArgs = args->length;
+	if (args)
+		length = symbol->data.func_data.nArgs = args->length;
+	else
+		length = symbol->data.func_data.nArgs = 0;
 
-	symbol->data.func_data.args = (is_func_def_arg**)malloc(sizeof(is_func_def_arg*)*args->length);
-	for (i = 0, arg = args; i < args->length; i++, arg = arg->next)
+	symbol->data.func_data.args = (is_func_def_arg**)malloc(sizeof(is_func_def_arg*)*length);
+	for (i = 0, arg = args; i < length; i++, arg = arg->next)
 		symbol->data.func_data.args[0] = duplicate_func_def_arg(arg->node);
 
 	return symbol;
