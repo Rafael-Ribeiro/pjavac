@@ -75,8 +75,54 @@ int check_array_decl(is_array_decl* node)
 int check_assign_op(is_assign_op* node)
 {
 	int errors = 0;
-	/* TODO check operators */
-	/* TODO: set type*/
+	char* typeA, *typeB;
+	is_type_native type;
+
+	check_var(node->var);
+	check_expr(node->expr);
+
+	if (errors == 0)
+	{
+		switch (node->type)
+		{
+			case t_assign_op_eq:
+				if (!type_type_assign_able(node->var->s_type, node->expr->s_type))
+				{
+					errors++;
+					pretty_error(node->line, "invalid assignment between %s and %s",
+						typeA = string_type_decl(node->var->s_type),
+						typeB = string_type_decl(node->expr->s_type)
+					);
+					free(typeA);
+					free(typeB);
+				}
+			break;
+
+			default:
+				if (node->var->s_type->type == t_type_decl_array_decl || node->expr->s_type->type == t_type_decl_array_decl)
+				{
+					errors++;
+					pretty_error(node->line, "operation invalid between array types");
+				} else
+				{
+					type = operators_native[node->type][node->var->s_type->data.type_object->type][node->expr->s_type->data.type_object->type];
+					if (type == ERROR)
+					{
+						errors++;
+						pretty_error(node->line, "operation invalid between %s and %s",
+							typeA = string_type_decl(node->var->s_type),
+							typeB = string_type_decl(node->expr->s_type)
+						);
+						free(typeA);
+						free(typeB);
+					}
+				}
+			break;
+		}
+	}
+
+	if (errors == 0)
+		node->s_type = duplicate_type_decl(node->s_type);
 
 	return errors;
 }
