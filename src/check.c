@@ -194,10 +194,10 @@ int check_dims_sized(is_dims_sized* node)
 	errors += check_expr(node);
 	if (errors == 0)
 	{
-		if (!type_long_like(node->s_type))
+		if (!type_native_assign_able(t_type_native_int, node->s_type))
 		{
 			errors++;
-			pretty_error(node->line, "invalid array size (must be long like)");
+			pretty_error(node->line, "invalid array size (must be convertible to int)");
 		}
 	}
 
@@ -239,7 +239,7 @@ int check_do_while(is_do_while* node)
 	errors += check_expr(node->cond);
 	if (errors == 0)
 	{
-		if (!type_bool_like(node->cond->s_type))
+		if (!type_native_assign_able(t_type_native_bool, node->cond->s_type))
 		{
 			errors++;
 			pretty_error(node->line, "invalid do..while condition (must be boolean)");
@@ -272,7 +272,7 @@ int check_expr(is_expr* node)
 
 			if (errors == 0)
 			{
-				if (!type_cast_able(node->data.type_cast.type, node->data.type_cast.expr->s_type))
+				if (!type_type_cast_able(node->data.type_cast.type, node->data.type_cast.expr->s_type))
 				{
 					errors++;
 					typeA = string_type_decl(node->data.type_cast.type);
@@ -359,7 +359,7 @@ int check_for(is_for* node)
 		cond_errors = check_for_cond(node->cond);
 		if (cond_errors == 0)
 		{
-			if (!type_bool_like(node->cond->s_type))
+			if (!type_native_assign_able(t_type_native_bool, node->cond->s_type))
 			{
 				cond_errors++;
 				pretty_error(node->line, "for conditional is not boolean (is of type %s)");
@@ -446,8 +446,11 @@ int check_for_init(is_for_init* node)
 int check_func_call(is_func_call* node)
 {
 	SYMBOL* symbol;
+	is_expr_list* arg;
 	int errors = 0;
-	
+	int i;
+	char *typeA, *typeB;
+
 	symbol = scope_lookup(symtab, node->id->name);
 	if (!symbol || symbol->type != t_symbol_func)
 	{
@@ -469,7 +472,22 @@ int check_func_call(is_func_call* node)
 				errors++;
 			} else
 			{
-				/* TODO: check if arguments match */
+				for (i = 0, arg = node->args; i < node->args->length; i++, arg = arg->next)
+				{
+					if (!type_type_assign_able(symbol->data.func_data.args[i], arg->node->s_type))
+					{
+						errors++;
+						pretty_error(node->line, "invalid parameter %d of function %s (got %s expected %s)",
+							i,
+							node->id->name,
+							typeA = string_type_decl(arg->node->s_type),
+							typeB = string_type_decl(symbol->data.func_data.args[i])
+						);
+
+						free(typeA);
+						free(typeB);
+					}
+				}
 			}
 		}
 	}
@@ -737,7 +755,7 @@ int check_while(is_while* node)
 	errors += check_expr(node->cond);
 	if (errors == 0)
 	{
-		if (!type_bool_like(node->cond->s_type))
+		if (!type_native_assign_able(t_type_native_bool, node->cond->s_type))
 		{
 			errors++;
 			pretty_error(node->line, "invalid while condition: expected boolean, got %s", string = string_type_decl(node->cond->s_type));
