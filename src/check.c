@@ -114,6 +114,11 @@ int check_class_def(is_class_def* node)
 
 	node->scope = scope_new();
 
+	/*
+		FIXME:
+		this should be in application and not in class def,
+		because theoretically class should be able to access other classes
+	*/
 	scope_push(node->scope);
 		errors += check_class_stmt_list(node->body, true); 
 		errors += check_class_stmt_list(node->body, false);
@@ -791,9 +796,12 @@ int check_var_defs(is_var_defs* node)
 	return errors;
 }
 
-int check_var_stmt(is_var_stmt* node)
+int check_var_stmt(is_var_stmt* node, bool first_pass)
 {
-	return check_var_defs(node);
+	if (first_pass)
+		return check_var_defs(node);
+
+	return 0;
 }
 
 int check_var_initializer(is_var_initializer* node)

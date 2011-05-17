@@ -60,7 +60,7 @@ int check_var_def(is_var_def* node);
 int check_var_def_list(is_var_def_list* node);
 int check_var_def_left(is_var_def_left* node);
 int check_var_defs(is_var_defs* node);
-int check_var_stmt(is_var_stmt* node);
+int check_var_stmt(is_var_stmt* node, bool first_pass);
 int check_var_initializer(is_var_initializer* node);
 int check_var_initializer_list(is_var_initializer_list* node);
 int check_while(is_while* node);
