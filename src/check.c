@@ -212,6 +212,7 @@ int check_do_while(is_do_while* node)
  
 int check_expr(is_expr* node)
 {
+	char *typeA, *typeB; 
 	int errors = 0;
 
 	switch (node->type)
@@ -227,6 +228,21 @@ int check_expr(is_expr* node)
 			break;
 
 		case t_expr_type_cast:
+			errors += check_expr(node->data.type_cast.expr);
+			errors += check_type_decl(node->data.type_cast.type);
+
+			if (errors == 0)
+			{
+				if (!type_cast_able(node->data.type_cast.type, node->data.type_cast.expr->s_type))
+				{
+					errors++;
+					typeA = string_type_decl(node->data.type_cast.type);
+					typeB = string_type_decl(node->data.type_cast.expr->s_type);
+
+					pretty_error(node->line, "invalid typecast from %s to %s", typeA, typeB);
+					free(typeA); free(typeB);
+				}
+			}
 			break;
 
 		case t_expr_constant:
