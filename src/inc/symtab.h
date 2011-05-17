@@ -65,10 +65,10 @@ typedef struct _SCOPE
 /*
 	SYMBOLS
 */
-SYMBOL* symbol_new_var(char* id, is_type_decl *type);
-SYMBOL* symbol_new_func(char* id, is_type_decl *retval, is_func_def_args* args);
-SYMBOL* symbol_new_label(char* id /*, ...*/);
-SYMBOL* symbol_new_class(char* id /*, ...*/);
+SYMBOL* symbol_new_var(char* id, int line, is_type_decl *type);
+SYMBOL* symbol_new_func(char* id, int line, is_type_decl *retval, is_func_def_args* args);
+SYMBOL* symbol_new_label(char* id, int line /*, ...*/);
+SYMBOL* symbol_new_class(char* id, int line /*, ...*/);
 void symbol_delete(SYMBOL* symbol);
 SYMBOL* symbol_lookup(NODE* node, char* id);
 

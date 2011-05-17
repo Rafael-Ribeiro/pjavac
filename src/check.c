@@ -156,7 +156,7 @@ int check_class_def(is_class_def* node)
 		errors++;
 		pretty_error(node->line, "symbol %s is already defined (previous declaration was here: %d)", node->id->name, symbol->line);
 	} else
-		scope_insert(symtab, symbol_new_class(node->id->name));
+		scope_insert(symtab, symbol_new_class(node->id->name, node->line));
 
 	node->scope = scope_new();
 
@@ -574,7 +574,7 @@ int check_func_def(is_func_def* node, bool first_pass)
 			pretty_error(node->line, "symbol %s is already defined (previous declaration was here: %d)", node->id->name, symbol->line);
 			errors++;
 		} else
-			scope_insert(symtab, symbol_new_func(node->id->name, node->type, node->args));
+			scope_insert(symtab, symbol_new_func(node->id->name, node->line, node->type, node->args));
 
 		errors += check_func_def_args(node->args);
 	} else

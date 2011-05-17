@@ -13,12 +13,13 @@
 /*
 	SYMBOLS
 */
-SYMBOL* symbol_new_var(char* id, is_type_decl *type)
+SYMBOL* symbol_new_var(char* id, int line, is_type_decl *type)
 {
 	SYMBOL* symbol = (SYMBOL*)malloc(sizeof(SYMBOL));
 
 	symbol->id = __strdup(id);
 	symbol->type = t_symbol_var;
+	symbol->line = line;
 
 	symbol->data.var_data.type = type;
 	symbol->data.var_data.initialized = false;
@@ -26,7 +27,7 @@ SYMBOL* symbol_new_var(char* id, is_type_decl *type)
 	return symbol;
 }
 
-SYMBOL* symbol_new_func(char* id, is_type_decl *retval, is_func_def_args* args)
+SYMBOL* symbol_new_func(char* id, int line, is_type_decl *retval, is_func_def_args* args)
 {
 	int i;
 	SYMBOL* symbol;
@@ -36,6 +37,7 @@ SYMBOL* symbol_new_func(char* id, is_type_decl *retval, is_func_def_args* args)
 
 	symbol->id = __strdup(id);
 	symbol->type = t_symbol_func;
+	symbol->line = line;
 
 	symbol->data.func_data.type = duplicate_type_decl(retval);
 	symbol->data.func_data.nArgs = args->length;
@@ -47,22 +49,24 @@ SYMBOL* symbol_new_func(char* id, is_type_decl *retval, is_func_def_args* args)
 	return symbol;
 }
 
-SYMBOL* symbol_new_label(char* id /*, ...*/)
+SYMBOL* symbol_new_label(char* id, int line /*, ...*/)
 {
 	SYMBOL* symbol = (SYMBOL*)malloc(sizeof(SYMBOL));
 	symbol->id = __strdup(id);
 	symbol->type = t_symbol_label;
+	symbol->line = line;
 
 	/* TODO */
 
 	return symbol;
 }
 
-SYMBOL* symbol_new_class(char* id)
+SYMBOL* symbol_new_class(char* id, int line)
 {
 	SYMBOL* symbol = (SYMBOL*)malloc(sizeof(SYMBOL));
 	symbol->id = __strdup(id);
 	symbol->type = t_symbol_class;
+	symbol->line = line;
 
 	return symbol;
 }
