@@ -62,6 +62,9 @@ typedef struct _is_func_def_arg_list is_func_def_args;
 
 /***********************************************************************/
 
+/* semantics */
+struct _SCOPE;
+
 typedef struct _is_array_decl
 {
 	int line;
@@ -155,6 +158,9 @@ typedef struct _is_class_def
 
 	struct _is_id* id;
 	struct _is_class_stmt_list* body;
+
+	/* semantics */
+	struct _SCOPE* scope;
 } is_class_def;
 
 typedef enum
@@ -250,6 +256,9 @@ typedef struct _is_do_while
 
 	struct _is_expr* cond;
 	struct _is_stmt* body;
+
+	/* semantics */
+	struct _SCOPE* scope;
 } is_do_while;
 
 typedef enum
@@ -291,6 +300,9 @@ typedef struct _is_expr_list
 
 	struct _is_expr* node;
 	struct _is_expr_list* next;
+
+	/* semantics */
+	int length; 
 } is_expr_list;
 
 typedef enum
@@ -324,6 +336,9 @@ typedef struct _is_for
 	is_for_cond* cond; 		/* nullable */
 	is_for_inc* inc; 	/* nullable */
 	struct _is_stmt* body;
+
+	/* semantics */
+	struct _SCOPE* scope;
 } is_for;
 
 typedef enum
@@ -771,6 +786,9 @@ typedef struct _is_while
 
 	struct _is_expr* cond;
 	struct _is_stmt* body;
+
+	/* semantics */
+	struct _SCOPE* scope;
 } is_while;
 
 #endif

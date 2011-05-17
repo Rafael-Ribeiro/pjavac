@@ -3,6 +3,8 @@
 #include <string.h>
 #include <stdbool.h>
 
+#define SYMTAB_C
+
 #include "inc/structures.h"
 #include "inc/utils.h"
 #include "inc/symtab.h"
@@ -82,24 +84,30 @@ SYMBOL* symbol_lookup(NODE* node, char* id)
 /*
 	SCOPES
 */
-SCOPE* scope_new(SCOPE* parent)
+SCOPE* scope_new()
 {
 	SCOPE* scope = (SCOPE*)malloc(sizeof(SCOPE));
-	scope->parent = parent;
+	scope->parent = NULL;
 	scope->node = NULL;
 
 	return scope;
 }
 
-SCOPE* scope_delete(SCOPE* scope)
+void scope_push(SCOPE* scope)
 {
-	SCOPE* parent;
-	parent = scope->parent;
+	scope->parent = symtab;
+	symtab = scope;
+}
 
+void scope_pop()
+{
+	symtab = symtab->parent;
+}
+
+void scope_delete(SCOPE* scope)
+{
 	node_delete(scope->node);
 	free(scope);
-
-	return parent;
 }
 
 void scope_insert(SCOPE* scope, SYMBOL* symbol)

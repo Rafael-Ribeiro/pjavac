@@ -13,7 +13,6 @@
 is_application* main_application;
 bool has_errors;
 int yyline;
-SCOPE* symtab;
 %}
 
 /* TOKENS */

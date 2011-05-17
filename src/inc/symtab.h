@@ -59,6 +59,12 @@ typedef struct _SCOPE
 	NODE *node;
 } SCOPE;
 
+#ifdef SYMTAB_C
+	SCOPE* symtab;	
+#else
+	extern SCOPE* symtab;
+#endif
+
 /*
 	SYMBOLS
 */
@@ -72,8 +78,11 @@ SYMBOL* symbol_lookup(NODE* node, char* id);
 /*
 	SCOPES
 */
-SCOPE* scope_new(SCOPE* parent);
-SCOPE* scope_delete(SCOPE* scope);
+SCOPE* scope_new();
+void scope_push(SCOPE* scope);
+void scope_pop();
+void scope_delete(SCOPE* scope);
+
 void scope_insert(SCOPE* scope, SYMBOL* symbol);
 SYMBOL* scope_lookup(SCOPE* scope, char *id);
 
