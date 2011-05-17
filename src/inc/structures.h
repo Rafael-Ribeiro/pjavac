@@ -646,7 +646,6 @@ typedef enum
 	t_unary_op_operator_bin_not = 34
 } type_unary_op_operator;
 
-/* FIXME: refactor disto para como esta agora; ou é uma incr op, ou é uma operaçao, que recebe o operador OK? */
 typedef struct _is_unary_op
 {
 	int line;
