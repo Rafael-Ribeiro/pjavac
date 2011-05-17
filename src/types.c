@@ -536,23 +536,21 @@ char *string_array_decl(is_array_decl* array)
 	return val;
 }
 
-bool type_long_like(is_type_decl* s_type)
+bool type_native_assign_able(is_type_native native, is_type_decl* s_type)
 {
 	if (s_type->type != t_type_decl_type_object)
 		return false;
 
-	return operators_native[t_assign_op_eq][t_type_native_long][s_type->data.type_object->type] != ERROR;
+	return operators_native[t_assign_op_eq][native][s_type->data.type_object->type] != ERROR;
 }
 
-bool type_bool_like(is_type_decl* s_type)
+bool type_type_assign_able(is_type_decl* s_type, is_type_decl* s_type2)
 {
-	if (s_type->type != t_type_decl_type_object)
-		return false;
-
-	return operators_native[t_assign_op_eq][t_type_native_bool][s_type->data.type_object->type] != ERROR;
+	/* TODO */
+	return false;
 }
 
-bool type_cast_able(is_type_decl* s_type, is_type_decl* s_type2)
+bool type_type_cast_able(is_type_decl* s_type, is_type_decl* s_type2)
 {
 	/*
 		FIXME:

@@ -195,10 +195,10 @@ int check_dims_sized(is_dims_sized* node)
 	errors += check_expr(node);
 	if (errors == 0)
 	{
-		if (!type_long_like(node->s_type))
+		if (!type_native_assign_able(t_type_native_int, node->s_type))
 		{
 			errors++;
-			pretty_error(node->line, "invalid array size (must be long like)");
+			pretty_error(node->line, "invalid array size (must be convertible to int)");
 		}
 	}
 
@@ -234,7 +234,7 @@ int check_do_while(is_do_while* node)
 	errors += check_expr(node->cond);
 	if (errors == 0)
 	{
-		if (!type_bool_like(node->cond->s_type))
+		if (!type_native_assign_able(t_type_native_bool, node->cond->s_type))
 		{
 			errors++;
 			pretty_error(node->line, "invalid do..while condition (must be boolean)");
@@ -441,8 +441,10 @@ int check_for_init(is_for_init* node)
 int check_func_call(is_func_call* node)
 {
 	SYMBOL* symbol;
+	is_expr_list* arg;
 	int errors = 0;
-	
+	int i;
+
 	symbol = scope_lookup(symtab, node->id->name);
 	if (!symbol || symbol->type != t_symbol_func)
 	{
@@ -464,7 +466,10 @@ int check_func_call(is_func_call* node)
 				errors++;
 			} else
 			{
-				/* TODO: check if arguments match */
+				for (i = 0, arg = node->args; i < node->args->length; i++, node = node->next)
+				{
+					if (type_type_assign_able(symbol->data.func_data.)
+				}
 			}
 		}
 	}
