@@ -568,6 +568,23 @@ int check_var_initializer_list(is_var_initializer_list* node)
 int check_while(is_while* node)
 {
 	int errors = 0;
+	char *string;
+	
+	errors += check_expr(node->cond);
+	if (errors == 0)
+	{
+		if (!type_bool_like(node->cond->s_type))
+		{
+			errors++;
+			pretty_error(node->line, "invalid while condition: expected boolean, got %s", string = );
+			free(string);
+		}
+	}
+
+	symtab = scope_new(symtab);
+	errors += check_stmt(node->body);
+	symtab = scope_delete(symtab);
+	
 	return errors;
 }
 
