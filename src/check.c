@@ -102,14 +102,14 @@ int check_assign_op(is_assign_op* node)
 				if (node->var->s_type->type == t_type_decl_array_decl || node->expr->s_type->type == t_type_decl_array_decl)
 				{
 					errors++;
-					pretty_error(node->line, "operation invalid between array types");
+					pretty_error(node->line, "assignment operations are invalid between array types");
 				} else
 				{
 					type = operators_native[node->type][node->var->s_type->data.type_object->type][node->expr->s_type->data.type_object->type];
 					if (type == ERROR)
 					{
 						errors++;
-						pretty_error(node->line, "operation invalid between %s and %s",
+						pretty_error(node->line, "assignment operation invalid between %s and %s",
 							typeA = string_type_decl(node->var->s_type),
 							typeB = string_type_decl(node->expr->s_type)
 						);
@@ -130,8 +130,45 @@ int check_assign_op(is_assign_op* node)
 int check_binary_op(is_binary_op* node)
 {
 	int errors = 0;
-	/* TODO check operators */
-	/* TODO: set type*/
+	char *typeA, *typeB;
+	is_type_native type;
+
+	switch (node->type)
+	{
+		case t_binary_op_assign:
+			errors += check_assign_op(node->data.assign);
+			node->s_type = duplicate_type_decl(node->data.assign->s_type);
+		break;
+
+		default:
+			errors += check_expr(node->data.operands.left);
+			errors += check_expr(node->data.operands.right);
+
+			if (node->data.operands.left->s_type->type == t_type_decl_array_decl ||
+				node->data.operands.right->s_type->type == t_type_decl_array_decl)
+			{
+				errors++;
+				pretty_error(node->line, "binary operations are invalid between array types");
+			} else
+			{
+				type = operators_native[node->type][node->data.operands.left->s_type->data.type_object->type][node->data.operands.right->s_type->data.type_object->type];
+				if (type == ERROR)
+				{
+					errors++;
+					pretty_error(node->line, "binary operation invalid between %s and %s",
+						typeA = string_type_decl(node->data.operands.left->s_type),
+						typeB = string_type_decl(node->data.operands.right->s_type)
+					);
+					free(typeA);
+					free(typeB);
+				}
+			}
+
+			/* only valid for objects not arrays*/
+			if (errors == 0)
+				node->s_type->type = type;
+		break;
+	}
 	return errors;
 }
 
