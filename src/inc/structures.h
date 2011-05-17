@@ -246,6 +246,9 @@ typedef struct _is_dims_sized_list
 {
 	int line;
 
+	/* semantics */
+	int length;
+
 	is_dims_sized* node;
 	struct _is_dims_sized_list* next;
 } is_dims_sized_list;

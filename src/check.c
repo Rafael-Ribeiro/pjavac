@@ -109,9 +109,8 @@ int check_class_def(is_class_def* node)
 	{
 		errors++;
 		pretty_error(node->line, "symbol %s is already defined (previous declaration was here: %d)", node->id->name, symbol->line);
-	}
-
-	scope_insert(symtab, symbol_new_class(node->id->name));		
+	} else
+		scope_insert(symtab, symbol_new_class(node->id->name));
 
 	node->scope = scope_new();
 
@@ -211,6 +210,12 @@ int check_dims_sized_list(is_dims_sized_list* node)
 	{
 		errors += check_dims_sized(node->node);
 		errors += check_dims_sized_list(node->next);
+		
+		if (node->next)
+			node->length = node->next->length + 1;
+		else
+			node->length = 1;
+
 	}
 
 	return errors;
@@ -717,7 +722,6 @@ int check_var_def_left(is_var_def_left* node)
 {
 	int errors = 0;
 
-	/* TODO lookup var */
 	switch(node->type)
 	{
 		case t_var_def_left_dims:
@@ -736,8 +740,53 @@ int check_var_defs(is_var_defs* node)
 {
 	int errors = 0;
 
+	SYMBOL *symbol;
+	is_type_decl *type;
+	is_var_def_list *it;
+
 	errors += check_type_decl(node->type);
 	errors += check_var_def_list(node->list);
+
+	it = node->list;
+	while (it)
+	{
+		symbol = scope_lookup(symtab, it->node->left->id->name);
+		if (symbol)
+		{
+			errors++;
+			pretty_error(it->node->line, "symbol %s is already defined (previous declaration was here: %d)", it->node->left->id->name, symbol->line);
+		} else
+		{
+			type = duplicate_type_decl(node->type);
+
+			switch (it->node->left->type)
+			{
+				case t_var_def_left_dims:
+					if (type->type == t_type_decl_array_decl)
+					{
+						/* TODO */
+					} else
+					{
+						/* TODO */
+					}
+					/* TODO: create a new type_decl (array) with it->node->left->dims->sized->length + it->node->left->dims->empty->size dimensions */
+				break;
+				case t_var_def_left_empty:
+					if (it->node->left->data.empty->size != 0)
+					{
+						/* TODO: create a new type_decl (array) with it->node->left->data.empty->size dimensions */
+					} else
+					{
+						/* TODO: use type type_decl */
+					}
+				break;
+			}
+
+			/* TODO: scope_insert(symtab, ...); */
+		}
+
+		it = it->next;
+	}
 
 	return errors;
 }
