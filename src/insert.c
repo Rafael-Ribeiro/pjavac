@@ -1006,9 +1006,6 @@ is_var_initializer* insert_var_initializer_array(is_var_initializer_list* list)
 	node->data.array = list;
 	node->line = yyline;
 
-	/* semantics */
-	node->s_type = NULL;
-
 	return node;
 }
 
@@ -1019,9 +1016,6 @@ is_var_initializer* insert_var_initializer_expr(is_expr* expr)
 	node->type = t_var_initializer_expr;
 	node->data.expr = expr;
 	node->line = yyline;
-
-	/* semantics */
-	node->s_type = NULL;
 
 	return node;
 }

@@ -606,30 +606,65 @@ int check_var_def_list(is_var_def_list* node)
 int check_var_def_left(is_var_def_left* node)
 {
 	int errors = 0;
+
+	/* TODO lookup var */
+	switch(node->type)
+	{
+		case t_var_def_left_dims:
+			errors +=check_dims(node->data.dims);
+		break;
+
+		case t_var_def_left_empty:
+			errors += check_dims_empty_list(node->data.empty);
+		break;
+	}
+
 	return errors;
 }
 
 int check_var_defs(is_var_defs* node)
 {
 	int errors = 0;
+
+	errors += check_type_decl(node->type);
+	errors += check_var_def_list(node->list);
+
 	return errors;
 }
 
 int check_var_stmt(is_var_stmt* node)
 {
-	int errors = 0;
-	return errors;
+	return check_var_defs(node);
 }
 
 int check_var_initializer(is_var_initializer* node)
 {
 	int errors = 0;
+
+	switch(node->type)
+	{
+		case t_var_initializer_val_arr:
+			errors += check_var_initializer_list(node->data.array);
+		break;
+
+		case t_var_initializer_expr:
+			errors += check_expr(node->data.expr);
+		break;
+	}
+
 	return errors;
 }
 
 int check_var_initializer_list(is_var_initializer_list* node)
 {
 	int errors = 0;
+
+	if (node == NULL)
+		return 0;
+
+	errors += check_var_initializer(node->node);
+	errors += check_var_initializer_list(node->next);
+
 	return errors;
 }
 
