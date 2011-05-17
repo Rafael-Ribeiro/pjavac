@@ -17,7 +17,7 @@ void show_type_native(is_type_native val);
 void show_application(is_application* node, int tablevel);
 void show_array_decl(is_array_decl* node);
 void show_assign_op(is_assign_op* node);
-void show_binary_op_operation(is_binary_op* node);
+void show_binary_op(is_binary_op* node);
 void show_break(is_break* node);
 void show_class_def(is_class_def* node, int tablevel);
 void show_class_stmt(is_class_stmt* node, int tablevel); 

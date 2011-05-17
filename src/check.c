@@ -82,7 +82,7 @@ int check_assign_op(is_assign_op* node)
 	return errors;
 }
 
-int check_binary_op_operation(is_binary_op* node)
+int check_binary_op(is_binary_op* node)
 {
 	int errors = 0;
 	/* TODO check operators */
@@ -284,6 +284,8 @@ int check_expr(is_expr* node)
 			break;
 
 		case t_expr_operation:
+			errors += check_expr_op(node->data.operation);
+			node->s_type = duplicate_type_decl(node->data.operation->s_type);
 			break;
 	}
 
@@ -293,18 +295,63 @@ int check_expr(is_expr* node)
 int check_expr_list(is_expr_list* node)
 {
 	int errors = 0;
+
+	if (node);
+	{
+		errors += check_expr(node->node);
+		errors += check_expr_list(node->next);
+	}
+
 	return errors;
 }
 
 int check_expr_op(is_expr_op* node)
 {
 	int errors = 0;
+
+	switch (node->type)
+	{
+		case t_expr_op_unary:
+			errors += check_unary_op(node->data.unary);
+			node->s_type = duplicate_type_decl(node->data.unary->s_type);
+			break;
+
+		case t_expr_op_binary:
+			errors += check_binary_op(node->data.binary);
+			node->s_type = duplicate_type_decl(node->data.binary->s_type);
+			break;
+
+		case t_expr_op_ternary:
+			errors += check_ternary_op(node->data.ternary);
+			node->s_type = duplicate_type_decl(node->data.ternary->s_type);
+			break;
+	}
+
 	return errors;
 }
 
 int check_for(is_for* node)
 {
-	int errors = 0;
+	int errors = 0, cond_errors;
+	
+	errors += check_for_init(node->init);	
+	cond_errors = check_for_cond(node->cond);
+	if (cond_errors == 0)
+	{
+		if (!type_bool_like(node->cond->s_type))
+		{
+			cond_errors++;
+			pretty_error(node->line, "for conditional is not boolean (is of type %s)");
+		}
+	}
+	errors += cond_errors;
+
+	errors += check_for_inc(node->inc);
+
+	symtab = scope_new(symtab);
+	errors += check_stmt(node->body);
+	symtab = scope_delete(symtab);
+
 	return errors;
 }
 
