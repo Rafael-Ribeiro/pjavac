@@ -3,6 +3,7 @@
 
 #include "inc/structures.h"
 #include "inc/duplicate.h"
+#include "inc/utils.h"
 
 is_type_decl* duplicate_type_decl(is_type_decl* type)
 {
@@ -58,4 +59,27 @@ is_dims_empty_list* duplicate_dims_empty_list(is_dims_empty_list* list)
 	newlist->size = list->size;
 
 	return newlist;
+}
+
+is_func_def_arg* duplicate_func_def_arg(is_func_def_arg* arg)
+{
+	is_func_def_arg* newarg;
+
+	newarg = (is_func_def_arg*)malloc(sizeof(is_func_def_arg));
+	newarg->line = arg->line;
+	newarg->type = duplicate_type_decl(arg->type);
+	newarg->id = duplicate_id(arg->id);
+	
+	return newarg;
+}
+
+is_id* duplicate_id(is_id *id)
+{
+	is_id* newid;
+	
+	newid = (is_id*)malloc(sizeof(is_id));
+	newid->line = id->line;
+	newid->name = __strdup(id->name);
+
+	return newid;
 }

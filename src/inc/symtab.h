@@ -26,10 +26,7 @@ typedef struct _SYMBOL
 		{
 			is_type_decl *type;
 			int nArgs;
-			is_type_decl **args;
-
-			is_class_stmt_privacy* privacy; /* nullable */
-			is_class_stmt_scope* scope;	/* nullable */
+			is_func_def_arg **args;
 		} func_data;
 /*
 		struct
@@ -69,7 +66,7 @@ typedef struct _SCOPE
 	SYMBOLS
 */
 SYMBOL* symbol_new_var(char* id, is_type_decl *type);
-SYMBOL* symbol_new_func(char* id /*, ...*/);
+SYMBOL* symbol_new_func(char* id, is_type_decl *retval, is_func_def_args* args);
 SYMBOL* symbol_new_label(char* id /*, ...*/);
 SYMBOL* symbol_new_class(char* id /*, ...*/);
 void symbol_delete(SYMBOL* symbol);

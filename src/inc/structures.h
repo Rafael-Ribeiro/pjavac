@@ -406,6 +406,9 @@ typedef struct _is_func_def
 	struct _is_id* id;
 	is_func_def_args* args;
 	struct _is_stmt_list* body;
+
+	/* semantics */
+	struct _SCOPE* scope;
 } is_func_def;
 
 typedef struct _is_func_def_arg
@@ -714,6 +717,7 @@ typedef struct _is_var
 
 	/* semantics */
 	struct _is_type_decl* s_type;
+	bool initialized;
 } is_var;
 
 typedef struct _is_var_def

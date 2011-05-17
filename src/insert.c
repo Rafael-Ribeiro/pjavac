@@ -213,6 +213,17 @@ is_dims* insert_dims(is_dims_sized_list* sized, is_dims_empty_list* empty)
 	return node;
 }
 
+is_dims_empty_list* new_dims_empty_list()
+{
+	is_dims_empty_list* node;
+
+	node = (is_dims_empty_list*)malloc(sizeof(is_dims_empty_list));
+	node->size = 0;
+	node->line = yyline;
+
+	return node;
+}
+
 is_dims_empty_list* insert_dims_empty_list(is_dims_empty_list* prev)
 {
 	is_dims_empty_list* node;
@@ -901,6 +912,7 @@ is_var* insert_var_id(is_id* id)
 
 	/* semantics */
 	node->s_type = NULL;
+	node->initialized = false;
 
 	return node;
 }
@@ -915,6 +927,7 @@ is_var* insert_var_new_op(is_new_op* new_op)
 
 	/* semantics */
 	node->s_type = NULL;
+	node->initialized = false;
 
 	return node;
 }
@@ -930,6 +943,7 @@ is_var* insert_var_var_subscript(is_var* var, is_dims_sized* position)
 
 	/* semantics */
 	node->s_type = NULL;
+	node->initialized = false;
 
 	return node;
 }
@@ -945,6 +959,7 @@ is_var* insert_var_func_subscript(is_func_call* func_call, is_dims_sized* positi
 
 	/* semantics */
 	node->s_type = NULL;
+	node->initialized = false;
 
 	return node;
 }
@@ -976,7 +991,7 @@ is_var_def_left* insert_var_def_left_empty(is_id* id, is_dims_empty_list* empty)
 {
 	is_var_def_left* node = (is_var_def_left*)malloc(sizeof(is_var_def_left));
 
-	node->type = t_var_def_left_empty;	
+	node->type = t_var_def_left_empty;
 	node->id = id;
 	node->data.empty = empty;
 	node->line = yyline;

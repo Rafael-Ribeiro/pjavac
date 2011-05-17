@@ -34,6 +34,7 @@ is_continue* insert_continue(is_id* label);
 
 is_dims* insert_dims(is_dims_sized_list* sized, is_dims_empty_list* empty);
 
+is_dims_empty_list* new_dims_empty_list();
 is_dims_empty_list* insert_dims_empty_list(is_dims_empty_list* prev);
 is_dims_sized_list* insert_dims_sized_list(is_dims_sized_list* prev, is_dims_sized* dims);
 

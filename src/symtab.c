@@ -8,6 +8,7 @@
 #include "inc/structures.h"
 #include "inc/utils.h"
 #include "inc/symtab.h"
+#include "inc/duplicate.h"
 
 /*
 	SYMBOLS
@@ -25,13 +26,23 @@ SYMBOL* symbol_new_var(char* id, is_type_decl *type)
 	return symbol;
 }
 
-SYMBOL* symbol_new_func(char* id /*, ...*/)
+SYMBOL* symbol_new_func(char* id, is_type_decl *retval, is_func_def_args* args)
 {
-	SYMBOL* symbol = (SYMBOL*)malloc(sizeof(SYMBOL));
+	int i;
+	SYMBOL* symbol;
+	is_func_def_arg_list* arg;
+
+	symbol = (SYMBOL*)malloc(sizeof(SYMBOL));
+
 	symbol->id = __strdup(id);
 	symbol->type = t_symbol_func;
 
-	/* TODO */
+	symbol->data.func_data.type = duplicate_type_decl(retval);
+	symbol->data.func_data.nArgs = args->length;
+
+	symbol->data.func_data.args = (is_func_def_arg**)malloc(sizeof(is_func_def_arg*)*args->length);
+	for (i = 0, arg = args; i < args->length; i++, arg = arg->next)
+		symbol->data.func_data.args[0] = duplicate_func_def_arg(arg->node);
 
 	return symbol;
 }

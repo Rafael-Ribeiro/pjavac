@@ -254,12 +254,22 @@ int check_expr(is_expr* node)
 		case t_expr_var:
 			errors += check_var(node->data.var);
 			node->s_type = duplicate_type_decl(node->data.var->s_type);
-			break;
+
+			if (errors == 0)
+			{
+	
+				if (!node->data.var->initialized)
+				{
+					errors++;
+					pretty_error(node->line, "variable used without being initialized");
+				}
+			}
+		break;
 
 		case t_expr_new_op:
 			errors += check_new_op(node->data.new_op);
 			node->s_type = duplicate_type_decl(node->data.new_op->s_type);
-			break;
+		break;
 
 		case t_expr_type_cast:
 			errors += check_expr(node->data.type_cast.expr);
@@ -277,24 +287,24 @@ int check_expr(is_expr* node)
 					free(typeA); free(typeB);
 				}
 			}
-			break;
+		break;
 
 		case t_expr_constant:
 			errors += check_constant(node->data.constant);
 			node->s_type = duplicate_type_decl(node->data.constant->s_type);
 
-			break;
+		break;
 
 		case t_expr_func_call:
 			errors += check_func_call(node->data.func_call);
 			node->s_type = duplicate_type_decl(node->data.func_call->s_type);
 
-			break;
+		break;
 
 		case t_expr_operation:
 			errors += check_expr_op(node->data.operation);
 			node->s_type = duplicate_type_decl(node->data.operation->s_type);
-			break;
+		break;
 	}
 
 	return errors;
@@ -469,14 +479,15 @@ int check_func_call(is_func_call* node)
 			{
 				for (i = 0, arg = node->args; i < node->args->length; i++, arg = arg->next)
 				{
-					if (!type_type_assign_able(symbol->data.func_data.args[i], arg->node->s_type))
+					if (!type_type_assign_able(symbol->data.func_data.args[i]->type, arg->node->s_type))
 					{
 						errors++;
-						pretty_error(node->line, "invalid parameter %d of function %s (got %s expected %s)",
+						pretty_error(node->line, "invalid parameter %d (%s) of function %s (got %s expected %s)",
 							i,
+							symbol->data.func_data.args[i]->id->name,
 							node->id->name,
 							typeA = string_type_decl(arg->node->s_type),
-							typeB = string_type_decl(symbol->data.func_data.args[i])
+							typeB = string_type_decl(symbol->data.func_data.args[i]->type)
 						);
 
 						free(typeA);
@@ -497,7 +508,29 @@ int check_func_call_arg_list(is_func_call_arg_list* node)
 
 int check_func_def(is_func_def* node, bool first_pass)
 {
+	SYMBOL* symbol;
 	int errors = 0;
+
+	if (first_pass)
+	{
+		errors += check_type_decl(node->type);
+		symbol = scope_lookup(symtab, node->id->name);
+		if (symbol)
+		{
+			pretty_error(node->line, "symbol %s is already defined (previous declaration was here: %d)", node->id->name, symbol->line);
+			errors++;
+		} else
+			scope_insert(symtab, symbol_new_func(node->id->name, node->type, node->args));
+
+		errors += check_func_def_args(node->args);
+	} else
+	{
+		node->scope = scope_new();
+		scope_push(node->scope);
+			errors += check_stmt_list(node->body);
+		scope_pop();
+	}
+
 	return errors;
 }
 
@@ -618,6 +651,7 @@ int check_unary_op(is_unary_op* node)
 int check_var(is_var* node)
 {
 	int errors = 0;
+	/* todo propagate node->initialized */
 	return errors;
 }
 
