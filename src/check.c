@@ -357,13 +357,28 @@ int check_for(is_for* node)
 
 int check_for_cond(is_for_cond* node)
 {
-	int errors = 0;
-	return errors;
+	return check_expr(node);
 }
 
 int check_for_expr(is_for_expr* node)
 {
 	int errors = 0;
+	
+	switch (node->type)
+	{
+		case t_for_expr_incr:
+			errors += check_incr_op(node->data.incr);
+			break;
+
+		case t_for_expr_assign:
+			errors += check_assign_op(node->data.assign);
+			break;
+
+		case t_for_expr_func_call:
+			errors += check_func_call(node->data.func_call);
+			break;
+	}
+
 	return errors;
 }
  
