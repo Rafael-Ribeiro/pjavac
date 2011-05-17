@@ -73,16 +73,16 @@ typedef struct _is_array_decl
 typedef enum
 {
 	t_assign_op_eq = 0,
-	t_assign_op_shift_r_eq,
-	t_assign_op_shift_l_eq,
-	t_assign_op_add_eq,
-	t_assign_op_sub_eq,
-	t_assign_op_mul_eq,
-	t_assign_op_div_eq,
-	t_assign_op_mod_eq,
-	t_assign_op_and_eq,
-	t_assign_op_xor_eq,
-	t_assign_op_or_eq
+	t_assign_op_shift_r_eq = 1,
+	t_assign_op_shift_l_eq = 2,
+	t_assign_op_add_eq = 3,
+	t_assign_op_sub_eq = 4,
+	t_assign_op_mul_eq = 5,
+	t_assign_op_div_eq = 6,
+	t_assign_op_mod_eq = 7,
+	t_assign_op_and_eq = 8,
+	t_assign_op_xor_eq = 9,
+	t_assign_op_or_eq = 10
 } type_assign_op;
 
 typedef struct _is_assign_op
@@ -100,25 +100,25 @@ typedef struct _is_assign_op
 typedef enum
 {
 	t_binary_op_add = 11,
-	t_binary_op_sub,
-	t_binary_op_mul,
-	t_binary_op_div,
-	t_binary_op_mod,
-	t_binary_op_and,
-	t_binary_op_or,
-	t_binary_op_xor,
-	t_binary_op_shift_r,
-	t_binary_op_shift_l,
-	t_binary_op_logic_and,
-	t_binary_op_logic_or,
-	t_binary_op_eq,
-	t_binary_op_ne,
-	t_binary_op_l,
-	t_binary_op_g,
-	t_binary_op_le,
-	t_binary_op_ge,
-	t_binary_op_eq3,
-	t_binary_op_ne3,
+	t_binary_op_sub = 12,
+	t_binary_op_mul = 13,
+	t_binary_op_div = 14,
+	t_binary_op_mod = 15,
+	t_binary_op_and = 16,
+	t_binary_op_or = 17,
+	t_binary_op_xor = 18,
+	t_binary_op_shift_r = 19,
+	t_binary_op_shift_l = 20,
+	t_binary_op_logic_and = 21,
+	t_binary_op_logic_or = 22,
+	t_binary_op_eq = 23,
+	t_binary_op_ne = 24,
+	t_binary_op_l = 25,
+	t_binary_op_g = 26,
+	t_binary_op_le = 27,
+	t_binary_op_ge = 28,
+	t_binary_op_eq3 = 29,
+	t_binary_op_ne3 = 30,
 	t_binary_op_assign
 } type_binary_op;
 
@@ -613,15 +613,15 @@ typedef struct _is_type_decl
 typedef enum
 {
 	t_type_native_bool = 0,
-	t_type_native_byte,
-	t_type_native_char,
-	t_type_native_double,
-	t_type_native_float,
-	t_type_native_int,
-	t_type_native_long,
-	t_type_native_short,
-	t_type_native_string,
-	t_type_native_void
+	t_type_native_byte = 1,
+	t_type_native_char = 2,
+	t_type_native_double = 3,
+	t_type_native_float = 4,
+	t_type_native_int = 5,
+	t_type_native_long = 6,
+	t_type_native_short = 7,
+	t_type_native_string = 8,
+	t_type_native_void = 9
 } is_type_native;
 
 typedef struct _is_type_object
@@ -640,10 +640,10 @@ typedef enum
 
 typedef enum
 {
-	t_unary_op_operator_plus = 32,
-	t_unary_op_operator_minus,
-	t_unary_op_operator_not,
-	t_unary_op_operator_bin_not
+	t_unary_op_operator_plus = 31,
+	t_unary_op_operator_minus = 32,
+	t_unary_op_operator_not = 33,
+	t_unary_op_operator_bin_not = 34
 } type_unary_op_operator;
 
 /* FIXME: refactor disto para como esta agora; ou é uma incr op, ou é uma operaçao, que recebe o operador OK? */
