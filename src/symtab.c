@@ -21,7 +21,7 @@ SYMBOL* symbol_new_var(char* id, int line, is_type_decl *type)
 	symbol->type = t_symbol_var;
 	symbol->line = line;
 
-	symbol->data.var_data.type = type;
+	symbol->data.var_data.type = duplicate_type_decl(type);
 	symbol->data.var_data.initialized = false;
 
 	return symbol;
@@ -78,7 +78,7 @@ SYMBOL* symbol_new_class(char* id, int line)
 void symbol_delete(SYMBOL* symbol)
 {
 	free(symbol->id);
-	/* free(...) */
+	/* TODO!!! free(...) */
 
 	free(symbol);
 }

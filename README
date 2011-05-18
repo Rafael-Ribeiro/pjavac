@@ -8,3 +8,8 @@ TODOs:
 		---> symbols with the same name and different types
 		- functions with the same name as variables need to be allowed
 		- function overload
+
+	Semantic choices
+		dont allow -> "float[] a[]" in function parameters
+		dont allow -> redefinition of global variables (that would make them inaccessible)
+		dont allow -> function overloading
