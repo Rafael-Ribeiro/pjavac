@@ -1,12 +1,13 @@
 #ifndef NODE_H
 #define NODE_H
 
+#define MAX_SYMBOL_TYPES 4
 typedef enum
 {
-	t_symbol_var,
-	t_symbol_func,
-	t_symbol_label,
-	t_symbol_class
+	t_symbol_var = 0,
+	t_symbol_func = 1,
+	t_symbol_class = 2,
+	t_symbol_label = 3
 } type_symbol;
 
 typedef struct _SYMBOL
@@ -55,7 +56,7 @@ typedef struct _SCOPE
 	struct _SCOPE *parent;
 	bool global;
 
-	NODE *node;
+	NODE *node[MAX_SYMBOL_TYPES];
 } SCOPE;
 
 #ifdef SYMTAB_C
@@ -83,9 +84,9 @@ void scope_push(SCOPE* scope);
 void scope_pop();
 void scope_delete(SCOPE* scope);
 
-void scope_insert(SCOPE* scope, SYMBOL* symbol);
-SYMBOL* scope_lookup(SCOPE* scope, char *id);
-SYMBOL* scope_local_lookup(SCOPE* scope, char *id);
+SYMBOL* scope_insert(SCOPE* scope, SYMBOL* symbol);
+SYMBOL* scope_lookup(SCOPE* scope, char *id, type_symbol type);
+SYMBOL* scope_local_lookup(SCOPE* scope, char *id, type_symbol type);
 
 /*
 	AVL

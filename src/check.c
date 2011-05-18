@@ -187,11 +187,11 @@ int check_class_def(is_class_def* node)
 	int errors = 0;
 	SYMBOL* symbol;
 
-	symbol = scope_lookup(symtab, node->id->name);
+	symbol = scope_lookup(symtab, node->id->name, t_symbol_class);
 	if (symbol)
 	{
 		errors++;
-		pretty_error(node->line, "symbol %s is already defined (previous declaration was here: %d)", node->id->name, symbol->line);
+		pretty_error(node->line, "class %s is already defined (previous declaration was here: %d)", node->id->name, symbol->line);
 	} else
 		scope_insert(symtab, symbol_new_class(node->id->name, node->line));
 
@@ -549,8 +549,8 @@ int check_func_call(is_func_call* node)
 	int i;
 	char *typeA, *typeB;
 
-	symbol = scope_lookup(symtab, node->id->name);
-	if (!symbol || symbol->type != t_symbol_func)
+	symbol = scope_lookup(symtab, node->id->name, t_symbol_func);
+	if (!symbol)
 	{
 		pretty_error(node->line, "undefined function %s", node->id->name);
 		errors++;
@@ -613,7 +613,7 @@ int check_func_def(is_func_def* node, bool first_pass)
 			errors += check_func_def_args(node->args);
 		scope_pop();
 
-		symbol = scope_lookup(symtab, node->id->name);
+		symbol = scope_lookup(symtab, node->id->name, t_symbol_func);
 		if (symbol)
 		{
 			pretty_error(node->line, "symbol %s is already defined (previous declaration was here: %d)", node->id->name, symbol->line);
@@ -638,7 +638,7 @@ int check_func_def_arg(is_func_def_arg* node)
 	errors += check_type_decl(node->type);
 	if (errors == 0)
 	{
-		symbol = scope_local_lookup(symtab, node->id->name);
+		symbol = scope_local_lookup(symtab, node->id->name, t_symbol_var);
 		if (symbol)
 		{
 			pretty_error(node->line, "argument %s colides with already defined symbol (previous declaration was here: %d)",
@@ -887,7 +887,7 @@ int check_var_defs(is_var_defs* node)
 	it = node->list;
 	while (it)
 	{
-		symbol = scope_lookup(symtab, it->node->left->id->name);
+		symbol = scope_lookup(symtab, it->node->left->id->name, t_symbol_var);
 		if (symbol)
 		{
 			errors++;
