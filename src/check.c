@@ -854,12 +854,22 @@ int check_var(is_var* node)
 int check_var_def(is_var_def* node)
 {
 	int errors = 0;
+
+	errors += check_var_def_left(node->left);
+	if (node->var_init)
+		errors += check_var_initializer(node->var_init);
+
 	return errors;
 }
 
 int check_var_def_list(is_var_def_list* node)
 {
 	int errors = 0;
+
+	errors += check_var_def(node->node);
+	if (node->next)
+		errors += check_var_def_list(node->next);
+
 	return errors;
 }
 
@@ -912,11 +922,15 @@ int check_var_defs(is_var_defs* node)
 			} else /* no dims updates are needed; even if the type is "dimmed" this is only a copy of the type */
 				type = duplicate_type_decl(node->type);
 
-			scope_insert(symtab, symbol_new_var(it->node->left->id->name, node->line, type));
+			symbol = scope_insert(symtab, symbol_new_var(it->node->left->id->name, node->line, type));
 
 			/* TODO: check initialization */
-			if (it->var_init)
+			if (it->node->var_init)
 			{
+
+
+				/* if initialization is valid */
+				symbol->data.var_data.initialized = true;
 			}
 		}
 
