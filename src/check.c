@@ -887,7 +887,6 @@ int check_var_defs(is_var_defs* node)
 
 	SYMBOL *symbol;
 
-	is_type_decl *tempType;
 	is_type_decl *type;
 
 	is_var_def_list *it;
@@ -905,34 +904,44 @@ int check_var_defs(is_var_defs* node)
 			pretty_error(it->node->line, "symbol %s is already defined (previous declaration was here: %d)", it->node->left->id->name, symbol->line);
 		} else
 		{
-			type = tempType = duplicate_type_decl(node->type);
-
 			switch (it->node->left->type)
 			{
 				case t_var_def_left_dims:
-					if (type->type != t_type_decl_array_decl)
+					if (node->type->type != t_type_decl_array_decl)
 					{
-						/*
-						 * TODO:
-						 * create a new type_decl (array) with
-						 * it->node->left->dims->sized->length + it->node->left->dims->empty->size dimensions
-						 */
-					} else /* type is already a type_decl_array, no new type_decl needed */
+						/* create a new type_decl (array) with it->node->left->dims->sized->length + it->node->left->dims->empty->size dimensions */
+						type = insert_type_decl_array(insert_array_decl(insert_type_object(node->type->data.type_object->type), new_dims_empty_list()));
+						type->data.array->dims->size = it->node->left->data.dims->sized->length + it->node->left->data.dims->empty->size;
+					} else
+					{
+						/* type is already a type_decl_array, only update is needed */
+						type = duplicate_type_decl(node->type);
 						type->data.array->dims->size += it->node->left->data.dims->sized->length + it->node->left->data.dims->empty->size;
+					}
 
 				break;
 				case t_var_def_left_empty:
-					if (it->node->left->data.empty->size != 0 && type->type != t_type_decl_array_decl)
+					if (it->node->left->data.empty->size != 0)
 					{
-						/* TODO: create a new type_decl (array) with it->node->left->data.empty->size dimensions */
-					} /* else
-					{
-						No modifications to type are needed.
-					} */
+						if (node->type->type != t_type_decl_array_decl)
+						{
+							/* create a new type_decl (array) with it->node->left->data.empty->size dimensions */
+							type = insert_type_decl_array(insert_array_decl(insert_type_object(node->type->data.type_object->type), new_dims_empty_list()));
+							type->data.array->dims->size = it->node->left->data.empty->size;
+						} else
+						{
+							/* type is already a type_decl_array, only dims update is needed */
+							type = duplicate_type_decl(node->type);
+							type->data.array->dims->size += it->node->left->data.empty->size;
+						}
+
+					} else /* no dims updates are needed; even if the type is "dimmed" this is only a copy of the type */
+						type = duplicate_type_decl(node->type);
+
 				break;
 			}
 
-			/* TODO: scope_insert(symtab, ..., type); */
+			scope_insert(symtab, symbol_new_var(it->node->left->id->name, type));
 		}
 
 		it = it->next;
