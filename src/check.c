@@ -942,6 +942,11 @@ int check_var_defs(is_var_defs* node)
 			}
 
 			scope_insert(symtab, symbol_new_var(it->node->left->id->name, node->line, type));
+
+			/* TODO: check initialization */
+			if (it->var_init)
+			{
+			}
 		}
 
 		it = it->next;
