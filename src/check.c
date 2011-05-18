@@ -940,15 +940,11 @@ int check_var_defs(is_var_defs* node)
 
 			symbol = scope_insert(symtab, symbol_new_var(it->node->left->id->name, node->line, type));
 
-			/* TODO: check initialization */
-			if (it->node->var_init)
-			{
-				/* TODO */
-				if (type_var_init_assign_able(NULL, 0, NULL))
+			if (it->node->var_init) /* check initialization */
+				if (type_var_init_assign_able(NULL, 0, NULL)) /* TODO */
 					/* if initialization is valid */
 					symbol->data.var_data.initialized = true;
 
-			}
 		}
 	}
 
