@@ -786,7 +786,10 @@ int check_return(is_return* node)
 {
 	int errors = 0;
 
-	/* TODO */
+	/* TODO
+		scopes now may have a symbol associated, 
+		make a function that searches for the nearest symbol of type X (in this case function) 	
+	*/
 
 	return errors;
 }
