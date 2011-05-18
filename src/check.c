@@ -904,7 +904,7 @@ int check_var_defs(is_var_defs* node)
 				break;
 			}
 
-			scope_insert(symtab, symbol_new_var(it->node->left->id->name, type));
+			scope_insert(symtab, symbol_new_var(it->node->left->id->name, node->line, type));
 		}
 
 		it = it->next;
