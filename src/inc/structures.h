@@ -546,7 +546,11 @@ typedef struct _is_stmt
 	type_stmt type;
 	union
 	{
-		struct _is_stmt_list *stmt_list;
+		struct
+		{
+			struct _is_stmt_list * list;
+			struct _SCOPE* scope;
+		} stmt_list;
 		is_var_stmt *var;
 		struct _is_assign_op *assign;
 		struct _is_incr_op *incr;

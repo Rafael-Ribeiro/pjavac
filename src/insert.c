@@ -686,7 +686,7 @@ is_stmt* insert_stmt_stmt_list(is_stmt_list* stmt_list)
 	is_stmt* node = (is_stmt*)malloc(sizeof(is_stmt));
 
 	node->type = t_stmt_stmt_list;
-	node->data.stmt_list = stmt_list;
+	node->data.stmt_list.list = stmt_list;
 	node->line = stmt_list->line;
 
 	return node;

@@ -825,6 +825,47 @@ int check_return(is_return* node)
 int check_stmt(is_stmt* node)
 {
 	int errors = 0;
+
+	switch (node->type)
+	{
+		case t_stmt_stmt_list:
+			node->data.stmt_list.scope = scope_new(NULL, false);
+			scope_push(node->data.stmt_list.scope);
+				errors += check_stmt_list(node->data.stmt_list.list);
+			scope_pop();
+		break;
+
+		case t_stmt_var_stmt:
+		break;
+
+		case t_stmt_assign:
+		break;
+
+		case t_stmt_incr:
+		break;
+
+		case t_stmt_if:
+		break;
+
+		case t_stmt_loop:
+		break;
+
+		case t_stmt_func_call:
+		break;
+
+		case t_stmt_switch:
+		break;
+
+
+		case t_stmt_break:
+		break;
+
+		case t_stmt_continue:
+		break;
+		
+		case t_stmt_return:
+		break;
+	}
 	/* TODO */
 
 	return errors;
