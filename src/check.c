@@ -176,6 +176,7 @@ int check_binary_op(is_binary_op* node)
 int check_break(is_break* node)
 {
 	int errors = 0;
+	/* TODO check if inside a loop */
 
 	if (node->label)
 		errors += check_label(node->label);
@@ -251,6 +252,8 @@ int check_class_stmt_scope(is_class_stmt_scope* node)
 int check_continue(is_continue* node)
 {
 	int errors = 0;
+
+	/* TODO check if inside a loop */
 
 	if (node->label)
 		errors += check_label(node->label);
@@ -836,34 +839,43 @@ int check_stmt(is_stmt* node)
 		break;
 
 		case t_stmt_var_stmt:
+			errors += check_var_stmt(node->data.var, false);
 		break;
 
 		case t_stmt_assign:
+			errors += check_assign_op(node->data.assign);
 		break;
 
 		case t_stmt_incr:
+			errors += check_incr_op(node->data.incr);
 		break;
 
 		case t_stmt_if:
+			errors += check_if(node->data.if_stmt);
 		break;
 
 		case t_stmt_loop:
+			errors += check_loop_stmt(node->data.loop);
 		break;
 
 		case t_stmt_func_call:
+			errors += check_func_call(node->data.func_call);
 		break;
 
 		case t_stmt_switch:
+			errors += check_switch(node->data.switch_stmt);
 		break;
 
-
 		case t_stmt_break:
+			errors += check_break(node->data.break_stmt);
 		break;
 
 		case t_stmt_continue:
+			errors += check_continue(node->data.continue_stmt);
 		break;
 		
 		case t_stmt_return:
+			errors += check_return(node->data.return_stmt);
 		break;
 	}
 	/* TODO */
