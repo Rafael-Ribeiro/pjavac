@@ -1000,25 +1000,12 @@ is_var_def* insert_var_def(is_var_def_left* left, is_var_initializer* init)
 	return node;
 }
 
-is_var_def_left* insert_var_def_left_dims(is_id* id, is_dims* dims)
+is_var_def_left* insert_var_def_left(is_id* id, is_dims_empty_list* empty)
 {
 	is_var_def_left* node = (is_var_def_left*)malloc(sizeof(is_var_def_left));
 
-	node->type = t_var_def_left_dims;	
 	node->id = id;
-	node->data.dims = dims;
-	node->line = id->line;
-
-	return node;
-}
-
-is_var_def_left* insert_var_def_left_empty(is_id* id, is_dims_empty_list* empty)
-{
-	is_var_def_left* node = (is_var_def_left*)malloc(sizeof(is_var_def_left));
-
-	node->type = t_var_def_left_empty;
-	node->id = id;
-	node->data.empty = empty;
+	node->empty = empty;
 	node->line = id->line;
 
 	return node;

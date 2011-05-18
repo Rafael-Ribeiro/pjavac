@@ -160,6 +160,11 @@ void free_dims (is_dims* node)
 	}
 }
 
+void free_dims_empty_list(is_dims_empty_list* node)
+{
+	free(node);
+}
+
 void free_dims_sized (is_dims_sized* node)
 {
 	free_expr(node);
@@ -714,20 +719,13 @@ void free_var_def_left(is_var_def_left* node)
 {
 	if (node)
 	{
-		switch (node->type)
-		{
-			case t_var_def_left_dims:
-				free_dims(node->data.dims);
-				break;
-
-			default:
-				break;			
-		}
+		free_dims_empty_list(node->empty);
 
 		free_id(node->id);
 		free(node);
 	}
 }
+
 void free_var_defs(is_var_defs* node)
 {
 	if (node)

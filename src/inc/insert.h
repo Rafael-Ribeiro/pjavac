@@ -126,8 +126,7 @@ is_var_def* insert_var_def(is_var_def_left* left, is_var_initializer* init);
 
 is_var_def_list* insert_var_def_list(is_var_def* var_def, is_var_def_list* next);
 
-is_var_def_left* insert_var_def_left_dims(is_id* id, is_dims* dims);
-is_var_def_left* insert_var_def_left_empty(is_id* id, is_dims_empty_list* empty);
+is_var_def_left* insert_var_def_left(is_id* id, is_dims_empty_list* empty);
 
 is_var_defs* insert_var_defs(is_type_decl* type, is_var_def_list* list);
 

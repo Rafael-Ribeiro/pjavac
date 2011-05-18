@@ -739,18 +739,11 @@ typedef struct _is_var_def_list
 	struct _is_var_def_list* next; /* nullable */
 } is_var_def_list;
 
-typedef enum {t_var_def_left_dims, t_var_def_left_empty} type_var_def_left;
 typedef struct _is_var_def_left
 {
 	int line;
 
-	type_var_def_left type;
-
-	union
-	{
-		struct _is_dims* dims;
-		struct _is_dims_empty_list* empty;		
-	} data; 
+	struct _is_dims_empty_list* empty;		
 	struct _is_id* id;
 } is_var_def_left;
 
