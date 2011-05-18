@@ -9,6 +9,7 @@
 #include "inc/types.h"
 #include "inc/insert.h"
 #include "inc/duplicate.h"
+#include "inc/free.h"
 
 /* LEX */
 /*
@@ -793,7 +794,7 @@ int check_return(is_return* node)
 	{
 		errors += check_expr(node->value);
 		typeR = node->value->s_type;
-	}else
+	} else
 	{
 		type = new_type_decl_void(node->line);
 		typeR = type;
