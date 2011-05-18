@@ -54,6 +54,7 @@ typedef struct _NODE
 typedef struct _SCOPE
 {
 	struct _SCOPE *parent;
+	SYMBOL* symbol; /* the "name" of this scope */
 	bool global;
 
 	NODE *node[MAX_SYMBOL_TYPES];
@@ -79,7 +80,7 @@ SYMBOL* symbol_local_lookup(NODE* node, char* id);
 /*
 	SCOPES
 */
-SCOPE* scope_new(bool global);
+SCOPE* scope_new(SYMBOL* symbol, bool global);
 void scope_push(SCOPE* scope);
 void scope_pop();
 void scope_delete(SCOPE* scope);

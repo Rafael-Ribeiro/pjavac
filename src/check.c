@@ -193,9 +193,9 @@ int check_class_def(is_class_def* node)
 		errors++;
 		pretty_error(node->line, "class %s is already defined (previous declaration was here: %d)", node->id->name, symbol->line);
 	} else
-		scope_insert(symtab, symbol_new_class(node->id->name, node->line));
+		scope_insert(symtab, symbol = symbol_new_class(node->id->name, node->line));
 
-	node->scope = scope_new(true);
+	node->scope = scope_new(symbol, true);
 
 	/*
 		FIXME:
@@ -317,7 +317,7 @@ int check_do_while(is_do_while* node)
 		force an addition of a scope
 		this makes do int a; while(i == 0); int a; semantically valid while it should be syntactically invalid 
 	*/
-	node->scope = scope_new(false);
+	node->scope = scope_new(NULL, false);
 	scope_push(node->scope);
 		errors += check_stmt(node->body);
 	scope_pop();
@@ -449,7 +449,7 @@ int check_for(is_for* node)
 	int errors = 0, cond_errors;
 	char* typeA;
 
-	node->scope = scope_new(false);
+	node->scope = scope_new(NULL, false);
 	scope_push(node->scope);
 		errors += check_for_init(node->init);	
 
@@ -608,18 +608,19 @@ int check_func_def(is_func_def* node, bool first_pass)
 	{
 		errors += check_type_decl(node->type);
 
-		node->scope = scope_new(false);
-		scope_push(node->scope);
-			errors += check_func_def_args(node->args);
-		scope_pop();
-
 		symbol = scope_lookup(symtab, node->id->name, t_symbol_func);
 		if (symbol)
 		{
 			pretty_error(node->line, "symbol %s is already defined (previous declaration was here: %d)", node->id->name, symbol->line);
 			errors++;
 		} else
-			scope_insert(symtab, symbol_new_func(node->id->name, node->line, node->type, node->args));
+			scope_insert(symtab, symbol = symbol_new_func(node->id->name, node->line, node->type, node->args));
+
+		node->scope = scope_new(symbol, false);
+		scope_push(node->scope);
+			errors += check_func_def_args(node->args);
+		scope_pop();
+
 	} else
 	{
 		scope_push(node->scope);
@@ -784,6 +785,7 @@ int check_new_op(is_new_op* node)
 int check_return(is_return* node)
 {
 	int errors = 0;
+
 	/* TODO */
 
 	return errors;
@@ -802,6 +804,7 @@ int check_stmt_list(is_stmt_list* node)
 	int errors = 0;
 	/* TODO */
 
+	/* TODO: mark nodes after break, continue and return as DEAD CODE */
 	return errors;
 }
  
@@ -1012,7 +1015,7 @@ int check_while(is_while* node)
 		}
 	}
 
-	node->scope = scope_new(false);
+	node->scope = scope_new(NULL, false);
 	scope_push(node->scope);
 		errors += check_stmt(node->body);
 	scope_pop();

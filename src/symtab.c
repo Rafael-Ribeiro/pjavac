@@ -103,13 +103,14 @@ SYMBOL* symbol_lookup(NODE* node, char* id)
 /*
 	SCOPES
 */
-SCOPE* scope_new(bool global)
+SCOPE* scope_new(SYMBOL* symbol,bool global)
 {
 	int i;
 
 	SCOPE* scope = (SCOPE*)malloc(sizeof(SCOPE));
 	scope->parent = NULL;
 	scope->global = global;
+	scope->symbol = symbol;
 
 	for (i = 0; i < MAX_SYMBOL_TYPES; i++)
 		scope->node[i] = NULL;
