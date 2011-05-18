@@ -427,8 +427,15 @@ is_for* insert_for(is_for_init *init, is_for_cond *cond, is_for_inc *inc, is_stm
 	node->inc = inc;
 	node->body = body;
 
-	node->line = init->line;
-
+	if (init)
+		node->line = init->line;
+	else if (cond)
+		node->line = cond->line;
+	else if (inc)
+		node->line = inc->line;
+	else
+		node->line = body->line;
+		
 	/* semantics */
 	node->scope = NULL;
 
@@ -586,7 +593,11 @@ is_loop_stmt* insert_loop_stmt_for(is_id* loop_label, is_for* for_stmt)
 	node->type = t_loop_stmt_for;
 	node->loop_label = loop_label;
 	node->data.for_stmt = for_stmt;
-	node->line = loop_label->line;
+
+	if (loop_label)
+		node->line = loop_label->line;
+	else
+		node->line = for_stmt->line;
 
 	return node;
 }
@@ -598,7 +609,11 @@ is_loop_stmt* insert_loop_stmt_while(is_id* loop_label, is_while* while_stmt)
 	node->type = t_loop_stmt_while;
 	node->loop_label = loop_label;
 	node->data.while_stmt = while_stmt;
-	node->line = loop_label->line;
+
+	if (loop_label)
+		node->line = loop_label->line;
+	else
+		node->line = while_stmt->line;
 
 	return node;
 }
@@ -610,7 +625,11 @@ is_loop_stmt* insert_loop_stmt_do_while(is_id* loop_label, is_do_while* do_while
 	node->type = t_loop_stmt_do_while;
 	node->loop_label = loop_label;
 	node->data.do_while_stmt = do_while_stmt;
-	node->line = loop_label->line;
+
+	if (loop_label)
+		node->line = loop_label->line;
+	else
+		node->line = do_while_stmt->line;
 
 	return node;
 }
