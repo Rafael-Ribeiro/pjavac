@@ -107,8 +107,10 @@ SCOPE* scope_new(bool global)
 {
 	SCOPE* scope = (SCOPE*)malloc(sizeof(SCOPE));
 	scope->parent = NULL;
-	scope->node = NULL;
 	scope->global = global;
+
+	for (i = 0; i < MAX_SYMBOL_TYPES; i++)
+		scope->node[i] = NULL;
 
 	return scope;
 }
@@ -126,31 +128,34 @@ void scope_pop()
 
 void scope_delete(SCOPE* scope)
 {
-	node_delete(scope->node);
+	int i;
+	for (i = 0; i < MAX_SYMBOL_TYPES; i++)
+		node_delete(scope->node[i]);
 	free(scope);
 }
 
-void scope_insert(SCOPE* scope, SYMBOL* symbol)
+SYMBOL* scope_insert(SCOPE* scope, SYMBOL* symbol)
 {
-	scope->node = node_insert(scope->node, symbol);
+	scope->node[symbol->type] = node_insert(scope->node[symbol->type], symbol);
+	return symbol;
 }
 
-SYMBOL* scope_lookup(SCOPE* scope, char *id)
+SYMBOL* scope_lookup(SCOPE* scope, char *id, type_symbol type)
 {
 	SYMBOL* symbol = NULL;
 
-	symbol = symbol_lookup(scope->node, id);
+	symbol = symbol_lookup(scope->node[type], id);
 	if (!symbol && scope->parent)
 		return scope_lookup(scope->parent, id);
 
 	return symbol;
 }
 
-SYMBOL* scope_local_lookup(SCOPE* scope, char *id)
+SYMBOL* scope_local_lookup(SCOPE* scope, char *id, type_symbol type)
 {
 	SYMBOL* symbol = NULL;
 
-	symbol = symbol_lookup(scope->node, id);
+	symbol = symbol_lookup(scope->node[type], id);
 	if (!symbol && scope->parent && !scope->parent->global)
 		return scope_lookup(scope->parent, id);
 

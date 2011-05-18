@@ -6,4 +6,14 @@ class gcd_rec
 	{
 		int a[] = 1;
 	}
+
+	public int x(int a)
+	{
+		int a[] = 1;
+	}
+
+	public int w(int a)
+	{
+		int a[] = 1;
+	}
 }
