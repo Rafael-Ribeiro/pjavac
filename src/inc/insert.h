@@ -34,7 +34,7 @@ is_continue* insert_continue(is_id* label);
 
 is_dims* insert_dims(is_dims_sized_list* sized, is_dims_empty_list* empty);
 
-is_dims_empty_list* new_dims_empty_list();
+is_dims_empty_list* new_dims_empty_list(int line, int size);
 is_dims_empty_list* insert_dims_empty_list(is_dims_empty_list* prev);
 is_dims_sized_list* insert_dims_sized_list(is_dims_sized_list* prev, is_dims_sized* dims);
 
@@ -109,6 +109,7 @@ is_switch_stmt_list* insert_switch_stmt_list(is_switch_stmt* stmt, is_switch_stm
 
 is_ternary_op* insert_ternary_op(is_expr* cond, is_expr* then_expr, is_expr* else_expr);
 
+is_type_decl* new_type_decl_object_dims(int line, is_type_object* object, is_dims* dims);
 is_type_decl* insert_type_decl_object(is_type_object* object);
 is_type_decl* insert_type_decl_array(is_array_decl* array);
 

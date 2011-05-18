@@ -731,7 +731,21 @@ int check_label(is_id* node)
 int check_loop_stmt(is_loop_stmt* node)
 {
 	int errors = 0;
-	/* TODO */
+
+	switch (node->type)
+	{
+		case t_loop_stmt_for:
+			errors += check_for(node->data.for_stmt);
+		break;
+
+		case t_loop_stmt_while:
+			errors += check_while(node->data.while_stmt);
+		break;
+
+		case t_loop_stmt_do_while:
+			errors += check_do_while(node->data.do_while_stmt);
+		break;
+	}
 
 	return errors;
 }
@@ -757,8 +771,13 @@ int check_member_stmt(is_member_stmt* node, bool first_pass)
 int check_new_op(is_new_op* node)
 {
 	int errors = 0;
-	/* TODO */
 
+	errors += check_type_object(node->type_object);
+	errors += check_dims(node->dims);
+
+	if (errors == 0)
+		node->s_type = new_type_decl_object_dims(node->line, node->type_object, node->dims);
+	
 	return errors;
 }
 
@@ -909,8 +928,7 @@ int check_var_defs(is_var_defs* node)
 				if (node->type->type != t_type_decl_array_decl)
 				{
 					/* create a new type_decl (array) with it->node->left->data.empty->size dimensions */
-					type = insert_type_decl_array(insert_array_decl(insert_type_object(node->type->data.type_object->type), new_dims_empty_list()));
-					type->data.array->dims->size = it->node->left->empty->size;
+					type = insert_type_decl_array(insert_array_decl(insert_type_object(node->type->data.type_object->type), new_dims_empty_list(node->type->line, it->node->left->empty->size)));
 				} else
 				{
 					/* type is already a type_decl_array, only dims update is needed */
