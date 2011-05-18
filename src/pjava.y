@@ -542,7 +542,7 @@ var_def_list
 	;
 
 var_def_left
-	: ID															{ $$ = insert_var_def_left($1, new_dims_empty_list()); }
+	: ID															{ $$ = insert_var_def_left($1, new_dims_empty_list(yyline, 0)); }
 /*	| ID dims														{ $$ = insert_var_def_left_dims($1, $2); } */
 	| ID dims_empty_list											{ $$ = insert_var_def_left($1, $2); }
 	;

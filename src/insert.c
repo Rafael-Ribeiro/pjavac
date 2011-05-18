@@ -3,6 +3,7 @@
 #include <stdbool.h>
 
 #include "inc/structures.h"
+#include "inc/duplicate.h"
 #include "inc/utils.h"
 #include "inc/free.h"
 
@@ -214,13 +215,13 @@ is_dims* insert_dims(is_dims_sized_list* sized, is_dims_empty_list* empty)
 	return node;
 }
 
-is_dims_empty_list* new_dims_empty_list()
+is_dims_empty_list* new_dims_empty_list(int line, int size)
 {
 	is_dims_empty_list* node;
 
 	node = (is_dims_empty_list*)malloc(sizeof(is_dims_empty_list));
-	node->size = 0;
-	node->line = yyline;
+	node->size = size;
+	node->line = line;
 
 	return node;
 }
@@ -868,6 +869,21 @@ is_ternary_op* insert_ternary_op(is_expr* cond, is_expr* then_expr, is_expr* els
 
 	/* semantics */
 	node->s_type = NULL;
+
+	return node;
+}
+
+is_type_decl* new_type_decl_object_dims(int line, is_type_object* object, is_dims* dims)
+{
+	is_type_decl* node = (is_type_decl*)malloc(sizeof(is_type_decl));
+
+	node->type = t_type_decl_array_decl;
+	node->line = line;
+
+	node->data.array = insert_array_decl(
+		duplicate_type_object(object),
+		new_dims_empty_list(line, dims->sized->length + dims->empty->size)
+	);
 
 	return node;
 }
