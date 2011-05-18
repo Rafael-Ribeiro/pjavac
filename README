@@ -10,6 +10,11 @@ TODOs:
 		- function overload
 
 	Semantic choices
-		dont allow -> "float[] a[]" in function parameters
-		dont allow -> redefinition of global variables (that would make them inaccessible)
-		dont allow -> function overloading
+		don't allow:
+			"float[] a[]" in function parameters
+			redefinition of global variables (that would make them inaccessible)
+			function overloading
+
+		allow:
+			for (i= 0; i < n; i++)
+				int i;

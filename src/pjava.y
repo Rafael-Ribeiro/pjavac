@@ -588,9 +588,7 @@ int main()
 
 	if (main_application && !has_errors)
 	{
-		printf("Valid syntax!\n");
-
-		symtab = scope_new();
+		symtab = scope_new(true);
 		if (check_application(main_application) == 0)
 		{
 			printf("Valid semantics!\n");

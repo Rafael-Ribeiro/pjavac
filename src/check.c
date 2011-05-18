@@ -195,7 +195,7 @@ int check_class_def(is_class_def* node)
 	} else
 		scope_insert(symtab, symbol_new_class(node->id->name, node->line));
 
-	node->scope = scope_new();
+	node->scope = scope_new(true);
 
 	/*
 		FIXME:
@@ -317,7 +317,7 @@ int check_do_while(is_do_while* node)
 		force an addition of a scope
 		this makes do int a; while(i == 0); int a; semantically valid while it should be syntactically invalid 
 	*/
-	node->scope = scope_new();
+	node->scope = scope_new(false);
 	scope_push(node->scope);
 		errors += check_stmt(node->body);
 	scope_pop();
@@ -448,7 +448,7 @@ int check_for(is_for* node)
 {
 	int errors = 0, cond_errors;
 	
-	node->scope = scope_new();
+	node->scope = scope_new(false);
 	scope_push(node->scope);
 		errors += check_for_init(node->init);	
 
@@ -616,7 +616,7 @@ int check_func_def(is_func_def* node, bool first_pass)
 			scope_insert(symtab, symbol_new_func(node->id->name, node->line, node->type, node->args));
 	} else
 	{
-		node->scope = scope_new();
+		node->scope = scope_new(false);
 		scope_push(node->scope);
 			errors += check_func_def_args(node->args, false);
 			errors += check_stmt_list(node->body);
@@ -631,17 +631,19 @@ int check_func_def_arg(is_func_def_arg* node, bool first_pass)
 	int errors = 0;
 	SYMBOL* symbol;
 
+	if (!first_pass)
+		return 0;
+
 	errors += check_type_decl(node->type);
 	if (errors == 0)
 	{
-		/* FIXME: scope_local_lookup(), allow global definitions to be redefined inside*/
-		symbol = scope_lookup(symtab, node->id->name);
+		symbol = scope_local_lookup(symtab, node->id->name);
 		if (symbol)
 		{
 			pretty_error(node->line, "argument %s colides with already defined symbol (previous declaration was here: %d)",
 				node->id->name, symbol->line);
 			errors++;
-		} else if (!first_pass)
+		} else
 			scope_insert(symtab, symbol_new_var(node->id->name, node->line, node->type));
 	}
 
@@ -669,7 +671,7 @@ int check_func_def_args(is_func_def_args* node, bool first_pass)
 int check_if(is_if* node)
 {
 	int errors = 0;
-	/* TODO */
+	
 
 	return errors;
 }
@@ -957,7 +959,7 @@ int check_while(is_while* node)
 		}
 	}
 
-	node->scope = scope_new();
+	node->scope = scope_new(false);
 	scope_push(node->scope);
 		errors += check_stmt(node->body);
 	scope_pop();
