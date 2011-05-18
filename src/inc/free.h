@@ -15,6 +15,7 @@ void free_class_stmt_privacy(is_class_stmt_privacy *node);
 void free_class_stmt_scope(is_class_stmt_scope *node);
 void free_continue(is_continue *node);
 void free_dims(is_dims *node);
+void free_dims_empty_list(is_dims_empty_list* node);
 void free_dims_sized(is_dims_sized *node);
 void free_dims_sized_list(is_dims_sized_list *node);
 void free_do_while(is_do_while *node);
