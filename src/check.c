@@ -607,7 +607,11 @@ int check_func_def(is_func_def* node, bool first_pass)
 	if (first_pass)
 	{
 		errors += check_type_decl(node->type);
-		errors += check_func_def_args(node->args, true);
+
+		node->scope = scope_new(false);
+		scope_push(node->scope);
+			errors += check_func_def_args(node->args);
+		scope_pop();
 
 		symbol = scope_lookup(symtab, node->id->name);
 		if (symbol)
@@ -618,9 +622,7 @@ int check_func_def(is_func_def* node, bool first_pass)
 			scope_insert(symtab, symbol_new_func(node->id->name, node->line, node->type, node->args));
 	} else
 	{
-		node->scope = scope_new(false);
 		scope_push(node->scope);
-			errors += check_func_def_args(node->args, false);
 			errors += check_stmt_list(node->body);
 		scope_pop();
 	}
@@ -628,13 +630,10 @@ int check_func_def(is_func_def* node, bool first_pass)
 	return errors;
 }
 
-int check_func_def_arg(is_func_def_arg* node, bool first_pass)
+int check_func_def_arg(is_func_def_arg* node)
 {
 	int errors = 0;
 	SYMBOL* symbol;
-
-	if (!first_pass)
-		return 0;
 
 	errors += check_type_decl(node->type);
 	if (errors == 0)
@@ -645,29 +644,29 @@ int check_func_def_arg(is_func_def_arg* node, bool first_pass)
 			pretty_error(node->line, "argument %s colides with already defined symbol (previous declaration was here: %d)",
 				node->id->name, symbol->line);
 			errors++;
-		} else if (!first_pass)
+		} else
 			scope_insert(symtab, symbol_new_var(node->id->name, node->line, node->type));
 	}
 
 	return errors;
 }
 
-int check_func_def_arg_list(is_func_def_arg_list* node, bool first_pass)
+int check_func_def_arg_list(is_func_def_arg_list* node)
 {
 	int errors = 0;
 
 	if (node)
 	{
-		errors += check_func_def_arg(node->node, first_pass);
-		errors += check_func_def_arg_list(node->next, first_pass);
+		errors += check_func_def_arg(node->node);
+		errors += check_func_def_arg_list(node->next);
 	}
 
 	return errors;
 }
 
-int check_func_def_args(is_func_def_args* node, bool first_pass)
+int check_func_def_args(is_func_def_args* node)
 {
-	return check_func_def_arg_list(node, first_pass);
+	return check_func_def_arg_list(node);
 }
 
 int check_if(is_if* node)
