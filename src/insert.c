@@ -6,6 +6,7 @@
 #include "inc/duplicate.h"
 #include "inc/utils.h"
 #include "inc/free.h"
+#include "inc/insert.h"
 
 extern int yyline;
 
@@ -884,6 +885,18 @@ is_type_decl* new_type_decl_object_dims(int line, is_type_object* object, is_dim
 		duplicate_type_object(object),
 		new_dims_empty_list(line, dims->sized->length + dims->empty->size)
 	);
+
+	return node;
+}
+
+is_type_decl* new_type_decl_void(int line)
+{
+	is_type_decl* node = (is_type_decl*)malloc(sizeof(is_type_decl));
+
+	node->type = t_type_decl_type_object;
+	node->line = line;
+
+	node->data.type_object = insert_type_object(t_type_native_void);
 
 	return node;
 }

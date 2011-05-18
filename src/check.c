@@ -785,11 +785,38 @@ int check_new_op(is_new_op* node)
 int check_return(is_return* node)
 {
 	int errors = 0;
+	SYMBOL* symbol;
+	is_type_decl *type = NULL, *typeR;
+	char *typeA, *typeB;
 
-	/* TODO
-		scopes now may have a symbol associated, 
-		make a function that searches for the nearest symbol of type X (in this case function) 	
-	*/
+	if (node->value)
+	{
+		errors += check_expr(node->value);
+		typeR = node->value->s_type;
+	}else
+	{
+		type = new_type_decl_void(node->line);
+		typeR = type;
+	}
+
+	if (errors == 0)
+	{
+		symbol = scope_get_symbol(symtab, t_symbol_func);
+		if (!type_type_equal(typeR, symbol->data.func_data.type))
+		{
+			errors++;
+			pretty_error(node->line, "invalid return type %s should be of type %s",
+				typeA = string_type_decl(typeR),
+				typeB = string_type_decl(symbol->data.func_data.type)
+			);
+
+			free(typeA);
+			free(typeB);
+		}	
+	}
+
+	if (type)
+		free_type_decl(type);
 
 	return errors;
 }

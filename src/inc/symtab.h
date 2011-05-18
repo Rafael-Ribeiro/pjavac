@@ -88,6 +88,7 @@ void scope_delete(SCOPE* scope);
 SYMBOL* scope_insert(SCOPE* scope, SYMBOL* symbol);
 SYMBOL* scope_lookup(SCOPE* scope, char *id, type_symbol type);
 SYMBOL* scope_local_lookup(SCOPE* scope, char *id, type_symbol type);
+SYMBOL* scope_get_symbol(SCOPE* scope, type_symbol type);
 
 /*
 	AVL
