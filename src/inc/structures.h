@@ -570,6 +570,9 @@ typedef struct _is_stmt_list
 
 	struct _is_stmt* node;
 	struct _is_stmt_list* next;
+
+	/* semantics */
+	int length;
 } is_stmt_list;
 
 typedef struct _is_switch

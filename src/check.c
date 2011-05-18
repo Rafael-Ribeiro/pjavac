@@ -886,7 +886,25 @@ int check_stmt(is_stmt* node)
 int check_stmt_list(is_stmt_list* node)
 {
 	int errors = 0;
-	/* TODO */
+
+	if (node)
+	{
+		errors += check_stmt(node->node);
+		errors += check_stmt_list(node->next);
+
+		if (node->next)
+		{
+			node->length = node->next->length+1;
+			if (node->node->type == t_stmt_return ||
+				node->node->type == t_stmt_continue ||
+				node->node->type == t_stmt_break)
+			{
+				errors++;
+				pretty_error(node->line, "dead code after incoditional jump stmt");
+			}
+		} else
+			node->length = 1;
+	}
 
 	/* TODO: mark nodes after break, continue and return as DEAD CODE */
 	return errors;
