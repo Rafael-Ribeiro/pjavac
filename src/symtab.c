@@ -105,6 +105,8 @@ SYMBOL* symbol_lookup(NODE* node, char* id)
 */
 SCOPE* scope_new(bool global)
 {
+	int i;
+
 	SCOPE* scope = (SCOPE*)malloc(sizeof(SCOPE));
 	scope->parent = NULL;
 	scope->global = global;
@@ -146,7 +148,7 @@ SYMBOL* scope_lookup(SCOPE* scope, char *id, type_symbol type)
 
 	symbol = symbol_lookup(scope->node[type], id);
 	if (!symbol && scope->parent)
-		return scope_lookup(scope->parent, id);
+		return scope_lookup(scope->parent, id, type);
 
 	return symbol;
 }
@@ -157,7 +159,7 @@ SYMBOL* scope_local_lookup(SCOPE* scope, char *id, type_symbol type)
 
 	symbol = symbol_lookup(scope->node[type], id);
 	if (!symbol && scope->parent && !scope->parent->global)
-		return scope_lookup(scope->parent, id);
+		return scope_lookup(scope->parent, id, type);
 
 	return symbol;
 }
