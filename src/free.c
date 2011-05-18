@@ -272,7 +272,8 @@ void free_for(is_for* node)
 		free_for_inc(node->inc);
 		free_stmt(node->body);
 
-		scope_delete(node->scope);
+		if (node->scope)
+			scope_delete(node->scope);
 		free(node);
 	}
 }

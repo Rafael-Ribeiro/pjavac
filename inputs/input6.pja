@@ -1,11 +1,6 @@
 class a
 {
-	int a[10.2][2];
-
-	int main()
+	int c(int b, int b)
 	{
-		int[] a[10] = 1, c = {1,2,3};
-
-		a: for (i = 0; i < n; i++);
-	}	
+	}
 }

@@ -53,6 +53,8 @@ typedef struct _NODE
 typedef struct _SCOPE
 {
 	struct _SCOPE *parent;
+	bool global;
+
 	NODE *node;
 } SCOPE;
 
@@ -65,23 +67,25 @@ typedef struct _SCOPE
 /*
 	SYMBOLS
 */
-SYMBOL* symbol_new_var(char* id, is_type_decl *type);
-SYMBOL* symbol_new_func(char* id, is_type_decl *retval, is_func_def_args* args);
-SYMBOL* symbol_new_label(char* id /*, ...*/);
-SYMBOL* symbol_new_class(char* id /*, ...*/);
+SYMBOL* symbol_new_var(char* id, int line, is_type_decl *type);
+SYMBOL* symbol_new_func(char* id, int line, is_type_decl *retval, is_func_def_args* args);
+SYMBOL* symbol_new_label(char* id, int line /*, ...*/);
+SYMBOL* symbol_new_class(char* id, int line /*, ...*/);
 void symbol_delete(SYMBOL* symbol);
 SYMBOL* symbol_lookup(NODE* node, char* id);
+SYMBOL* symbol_local_lookup(NODE* node, char* id);
 
 /*
 	SCOPES
 */
-SCOPE* scope_new();
+SCOPE* scope_new(bool global);
 void scope_push(SCOPE* scope);
 void scope_pop();
 void scope_delete(SCOPE* scope);
 
 void scope_insert(SCOPE* scope, SYMBOL* symbol);
 SYMBOL* scope_lookup(SCOPE* scope, char *id);
+SYMBOL* scope_local_lookup(SCOPE* scope, char *id);
 
 /*
 	AVL

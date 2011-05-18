@@ -102,14 +102,14 @@ int check_assign_op(is_assign_op* node)
 				if (node->var->s_type->type == t_type_decl_array_decl || node->expr->s_type->type == t_type_decl_array_decl)
 				{
 					errors++;
-					pretty_error(node->line, "operation invalid between array types");
+					pretty_error(node->line, "assignment operations are invalid between array types");
 				} else
 				{
 					type = operators_native[node->type][node->var->s_type->data.type_object->type][node->expr->s_type->data.type_object->type];
 					if (type == ERROR)
 					{
 						errors++;
-						pretty_error(node->line, "operation invalid between %s and %s",
+						pretty_error(node->line, "assignment operation invalid between %s and %s",
 							typeA = string_type_decl(node->var->s_type),
 							typeB = string_type_decl(node->expr->s_type)
 						);
@@ -130,8 +130,45 @@ int check_assign_op(is_assign_op* node)
 int check_binary_op(is_binary_op* node)
 {
 	int errors = 0;
-	/* TODO check operators */
-	/* TODO: set type*/
+	char *typeA, *typeB;
+	is_type_native type;
+
+	switch (node->type)
+	{
+		case t_binary_op_assign:
+			errors += check_assign_op(node->data.assign);
+			node->s_type = duplicate_type_decl(node->data.assign->s_type);
+		break;
+
+		default:
+			errors += check_expr(node->data.operands.left);
+			errors += check_expr(node->data.operands.right);
+
+			if (node->data.operands.left->s_type->type == t_type_decl_array_decl ||
+				node->data.operands.right->s_type->type == t_type_decl_array_decl)
+			{
+				errors++;
+				pretty_error(node->line, "binary operations are invalid between array types");
+			} else
+			{
+				type = operators_native[node->type][node->data.operands.left->s_type->data.type_object->type][node->data.operands.right->s_type->data.type_object->type];
+				if (type == ERROR)
+				{
+					errors++;
+					pretty_error(node->line, "binary operation invalid between %s and %s",
+						typeA = string_type_decl(node->data.operands.left->s_type),
+						typeB = string_type_decl(node->data.operands.right->s_type)
+					);
+					free(typeA);
+					free(typeB);
+				}
+			}
+
+			/* only valid for objects not arrays*/
+			if (errors == 0)
+				node->s_type->type = type;
+		break;
+	}
 	return errors;
 }
 
@@ -156,9 +193,9 @@ int check_class_def(is_class_def* node)
 		errors++;
 		pretty_error(node->line, "symbol %s is already defined (previous declaration was here: %d)", node->id->name, symbol->line);
 	} else
-		scope_insert(symtab, symbol_new_class(node->id->name));
+		scope_insert(symtab, symbol_new_class(node->id->name, node->line));
 
-	node->scope = scope_new();
+	node->scope = scope_new(true);
 
 	/*
 		FIXME:
@@ -280,7 +317,7 @@ int check_do_while(is_do_while* node)
 		force an addition of a scope
 		this makes do int a; while(i == 0); int a; semantically valid while it should be syntactically invalid 
 	*/
-	node->scope = scope_new();
+	node->scope = scope_new(false);
 	scope_push(node->scope);
 		errors += check_stmt(node->body);
 	scope_pop();
@@ -411,7 +448,7 @@ int check_for(is_for* node)
 {
 	int errors = 0, cond_errors;
 	
-	node->scope = scope_new();
+	node->scope = scope_new(false);
 	scope_push(node->scope);
 		errors += check_for_init(node->init);	
 
@@ -568,19 +605,20 @@ int check_func_def(is_func_def* node, bool first_pass)
 	if (first_pass)
 	{
 		errors += check_type_decl(node->type);
+		errors += check_func_def_args(node->args, true);
+
 		symbol = scope_lookup(symtab, node->id->name);
 		if (symbol)
 		{
 			pretty_error(node->line, "symbol %s is already defined (previous declaration was here: %d)", node->id->name, symbol->line);
 			errors++;
 		} else
-			scope_insert(symtab, symbol_new_func(node->id->name, node->type, node->args));
-
-		errors += check_func_def_args(node->args);
+			scope_insert(symtab, symbol_new_func(node->id->name, node->line, node->type, node->args));
 	} else
 	{
-		node->scope = scope_new();
+		node->scope = scope_new(false);
 		scope_push(node->scope);
+			errors += check_func_def_args(node->args, false);
 			errors += check_stmt_list(node->body);
 		scope_pop();
 	}
@@ -588,33 +626,52 @@ int check_func_def(is_func_def* node, bool first_pass)
 	return errors;
 }
 
-int check_func_def_arg(is_func_def_arg* node)
+int check_func_def_arg(is_func_def_arg* node, bool first_pass)
 {
 	int errors = 0;
-	/* TODO */
+	SYMBOL* symbol;
+
+	if (!first_pass)
+		return 0;
+
+	errors += check_type_decl(node->type);
+	if (errors == 0)
+	{
+		symbol = scope_local_lookup(symtab, node->id->name);
+		if (symbol)
+		{
+			pretty_error(node->line, "argument %s colides with already defined symbol (previous declaration was here: %d)",
+				node->id->name, symbol->line);
+			errors++;
+		} else
+			scope_insert(symtab, symbol_new_var(node->id->name, node->line, node->type));
+	}
+
 	return errors;
 }
 
-int check_func_def_arg_list(is_func_def_arg_list* node)
+int check_func_def_arg_list(is_func_def_arg_list* node, bool first_pass)
 {
 	int errors = 0;
-	/* TODO */
+
+	if (node)
+	{
+		errors += check_func_def_arg(node->node, first_pass);
+		errors += check_func_def_arg_list(node->next, first_pass);
+	}
 
 	return errors;
 }
 
-int check_func_def_args(is_func_def_args* node)
+int check_func_def_args(is_func_def_args* node, bool first_pass)
 {
-	int errors = 0;
-	/* TODO */
-
-	return errors;
+	return check_func_def_arg_list(node, first_pass);
 }
 
 int check_if(is_if* node)
 {
 	int errors = 0;
-	/* TODO */
+	
 
 	return errors;
 }
@@ -911,7 +968,7 @@ int check_while(is_while* node)
 		}
 	}
 
-	node->scope = scope_new();
+	node->scope = scope_new(false);
 	scope_push(node->scope);
 		errors += check_stmt(node->body);
 	scope_pop();
