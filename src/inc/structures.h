@@ -664,10 +664,10 @@ typedef enum
 
 typedef enum
 {
-	t_unary_op_operator_plus = 31,
-	t_unary_op_operator_minus = 32,
-	t_unary_op_operator_not = 33,
-	t_unary_op_operator_bin_not = 34
+	t_unary_op_operator_plus = 0,
+	t_unary_op_operator_minus = 1,
+	t_unary_op_operator_not = 2,
+	t_unary_op_operator_bin_not = 3
 } type_unary_op_operator;
 
 typedef struct _is_unary_op

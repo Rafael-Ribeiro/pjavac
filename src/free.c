@@ -183,7 +183,8 @@ void free_do_while (is_do_while* node)
 		free_stmt(node->body);
 		free_expr(node->cond);
 
-		scope_delete(node->scope);
+		if (node->scope)
+			scope_delete(node->scope);
 		free(node);
 	}
 }

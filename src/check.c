@@ -105,7 +105,7 @@ int check_assign_op(is_assign_op* node)
 					pretty_error(node->line, "assignment operations are invalid between array types");
 				} else
 				{
-					type = operators_native[node->type][node->var->s_type->data.type_object->type][node->expr->s_type->data.type_object->type];
+					type = operators_binary[node->type][node->var->s_type->data.type_object->type][node->expr->s_type->data.type_object->type];
 					if (type == ERROR)
 					{
 						errors++;
@@ -151,7 +151,7 @@ int check_binary_op(is_binary_op* node)
 				pretty_error(node->line, "binary operations are invalid between array types");
 			} else
 			{
-				type = operators_native[node->type][node->data.operands.left->s_type->data.type_object->type][node->data.operands.right->s_type->data.type_object->type];
+				type = operators_binary[node->type][node->data.operands.left->s_type->data.type_object->type][node->data.operands.right->s_type->data.type_object->type];
 				if (type == ERROR)
 				{
 					errors++;
@@ -447,7 +447,8 @@ int check_expr_op(is_expr_op* node)
 int check_for(is_for* node)
 {
 	int errors = 0, cond_errors;
-	
+	char* typeA;
+
 	node->scope = scope_new(false);
 	scope_push(node->scope);
 		errors += check_for_init(node->init);	
@@ -458,7 +459,8 @@ int check_for(is_for* node)
 			if (!type_native_assign_able(t_type_native_bool, node->cond->s_type))
 			{
 				cond_errors++;
-				pretty_error(node->line, "for conditional is not boolean (is of type %s)");
+				pretty_error(node->line, "for conditional is not boolean (is of type %s)", typeA = string_type_decl(node->cond->s_type));
+				free(typeA);
 			}
 		}
 		errors += cond_errors;
@@ -643,7 +645,7 @@ int check_func_def_arg(is_func_def_arg* node, bool first_pass)
 			pretty_error(node->line, "argument %s colides with already defined symbol (previous declaration was here: %d)",
 				node->id->name, symbol->line);
 			errors++;
-		} else
+		} else if (!first_pass)
 			scope_insert(symtab, symbol_new_var(node->id->name, node->line, node->type));
 	}
 
@@ -671,16 +673,51 @@ int check_func_def_args(is_func_def_args* node, bool first_pass)
 int check_if(is_if* node)
 {
 	int errors = 0;
-	
+	char* typeA;
+
+	errors += check_expr(node->cond);
+	if (errors == 0 && !type_native_assign_able(t_type_native_bool, node->cond->s_type))
+	{
+		errors++;
+		pretty_error(node->line, "if conditional is not boolean (is of type %s)", typeA = string_type_decl(node->cond->s_type));
+		free(typeA);
+	}	
+
+	errors += check_stmt(node->then_body);
+	if (node->else_body)
+		errors += check_stmt(node->else_body);
 
 	return errors;
 }
 
 int check_incr_op(is_incr_op* node)
 {
+	is_type_native type;
+	char* typeA;
 	int errors = 0;
-	/* TODO */
 
+	errors += check_var(node->var);
+	if (errors == 0)
+	{
+		if (node->var->s_type->type != t_type_decl_array_decl)
+		{
+			type = operators_unary[node->type][node->var->s_type->type];
+			if (type == ERROR)
+			{
+				errors++;
+				pretty_error(node->line, "unary operation with %s type is invalid",
+					typeA = string_type_decl(node->var->s_type));
+			} else if (!node->var->initialized)
+			{
+				errors++;
+				pretty_error(node->line, "variable used in a unary op without being initialized ");
+			}
+		} else
+		{
+			errors++;
+			pretty_error(node->line, "unary operations are invalid between array types");
+		}
+	}
 	return errors;
 }
 
