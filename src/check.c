@@ -919,8 +919,7 @@ int check_var_defs(is_var_defs* node)
 	errors += check_type_decl(node->type);
 	errors += check_var_def_list(node->list);
 
-	it = node->list;
-	while (it)
+	for (it = node->list; it != NULL; it = it->next)
 	{
 		symbol = scope_lookup(symtab, it->node->left->id->name, t_symbol_var);
 		if (symbol)
@@ -947,17 +946,12 @@ int check_var_defs(is_var_defs* node)
 
 			symbol = scope_insert(symtab, symbol_new_var(it->node->left->id->name, node->line, type));
 
-			/* TODO: check initialization */
-			if (it->node->var_init)
-			{
+			if (it->node->var_init) /* check initialization */
+				if (type_var_init_assign_able(NULL, 0, it->node->var_init)) /* TODO */
+					/* if initialization is valid */
+					symbol->data.var_data.initialized = true;
 
-
-				/* if initialization is valid */
-				symbol->data.var_data.initialized = true;
-			}
 		}
-
-		it = it->next;
 	}
 
 	return errors;

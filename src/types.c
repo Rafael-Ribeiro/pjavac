@@ -570,3 +570,21 @@ bool type_type_cast_able(is_type_decl* s_type, is_type_decl* s_type2)
 
 	return true;
 }
+
+bool type_var_init_assign_able(is_type_object* type, int nDimensions, is_var_initializer* init)
+{
+	switch (init->type)
+	{
+		case t_var_initializer_val_arr:
+			if (init->data.array == NULL && nDimensions == 1) /* { } */
+				return true;
+
+			/* TODO */
+		break;
+		case t_var_initializer_expr:
+			/* TODO */
+		break;
+	}
+
+	return false;
+}
