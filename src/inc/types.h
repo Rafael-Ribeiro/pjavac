@@ -3,13 +3,15 @@
 
 #include "structures.h"
 
-#define MAX_OPERATORS		35
-#define MAX_NATIVE_TYPES	10
+#define MAX_OPERATORS_BINARY	31
+#define MAX_OPERATORS_UNARY		4
+#define MAX_NATIVE_TYPES		10
 
 #define ERROR t_type_native_void
 
 #ifndef TYPES_C
-	extern is_type_native operators_native[MAX_OPERATORS][MAX_NATIVE_TYPES-1][MAX_NATIVE_TYPES-1];
+	extern is_type_native operators_binary[MAX_OPERATORS_BINARY][MAX_NATIVE_TYPES-1][MAX_NATIVE_TYPES-1];
+	extern is_type_native operators_unary[MAX_OPERATORS_UNARY][MAX_NATIVE_TYPES-1];
 #endif
 
 char *string_type_native(is_type_native* type);

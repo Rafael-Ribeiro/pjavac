@@ -1,6 +1,10 @@
 class a
 {
-	int c(int b, int b)
+	int c(int b)
+	{
+	}
+
+	int c(int b)
 	{
 	}
 }

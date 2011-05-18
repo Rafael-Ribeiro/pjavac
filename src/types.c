@@ -8,7 +8,7 @@
 #include "inc/utils.h"
 #include "inc/types.h"
 
-is_type_native operators_native[MAX_OPERATORS][MAX_NATIVE_TYPES-1][MAX_NATIVE_TYPES-1] =
+is_type_native operators_binary[MAX_OPERATORS_BINARY][MAX_NATIVE_TYPES-1][MAX_NATIVE_TYPES-1] =
 {
 	/* t_assign_op_* */
 	/* t_assign_op_eq (=) */
@@ -445,63 +445,66 @@ is_type_native operators_native[MAX_OPERATORS][MAX_NATIVE_TYPES-1][MAX_NATIVE_TY
 		/*	long	!==	*/	{	t_type_native_bool		, t_type_native_bool	, t_type_native_bool	, t_type_native_bool	, t_type_native_bool	, t_type_native_bool	, t_type_native_bool	, t_type_native_bool	, t_type_native_bool	},
 		/*	short	!==	*/	{	t_type_native_bool		, t_type_native_bool	, t_type_native_bool	, t_type_native_bool	, t_type_native_bool	, t_type_native_bool	, t_type_native_bool	, t_type_native_bool	, t_type_native_bool	},
 		/*	String	!==	*/	{	t_type_native_bool		, t_type_native_bool	, t_type_native_bool	, t_type_native_bool	, t_type_native_bool	, t_type_native_bool	, t_type_native_bool	, t_type_native_bool	, t_type_native_bool	}
-	},
+	}
+};
 
+is_type_native operators_unary[MAX_OPERATORS_UNARY][MAX_NATIVE_TYPES-1] =
+{
 	/* FIXME/TODO: t_unary_op_operator_plus (pre ++ / pos ++) */
 	{
 		/*						bool					, byte					, char					, double				, float					, int					, long					, short					, String					<- first operand */
-		/*	++bool++	*/	{	ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					},
-		/*	++byte++	*/	{	ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					},
-		/*	++char++	*/	{	ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					},
-		/*	++double++	*/	{	ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					},
-		/*	++float++	*/	{	ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					},
-		/*	++int++		*/	{	ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					},
-		/*	++long++	*/	{	ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					},
-		/*	++short++	*/	{	ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					},
-		/*	++String++	*/	{	ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					}
+		/*	++bool++	*/	ERROR,
+		/*	++byte++	*/	ERROR,
+		/*	++char++	*/	ERROR,
+		/*	++double++	*/	ERROR,
+		/*	++float++	*/	ERROR,
+		/*	++int++		*/	ERROR,
+		/*	++long++	*/	ERROR,
+		/*	++short++	*/	ERROR,
+		/*	++String++	*/	ERROR,
 	},
 
 	/* FIXME/TODO: t_unary_op_operator_minus (pre -- / pos --) */
 	{
 		/*						bool					, byte					, char					, double				, float					, int					, long					, short					, String					<- first operand */
-		/*	--bool--	*/	{	ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					},
-		/*	--byte--	*/	{	ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					},
-		/*	--char--	*/	{	ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					},
-		/*	--double--	*/	{	ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					},
-		/*	--float--	*/	{	ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					},
-		/*	--int--		*/	{	ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					},
-		/*	--long--	*/	{	ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					},
-		/*	--short--	*/	{	ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					},
-		/*	--String--	*/	{	ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					}
+		/*	--bool--	*/	ERROR,
+		/*	--byte--	*/	ERROR,
+		/*	--char--	*/	ERROR,
+		/*	--double--	*/	ERROR,
+		/*	--float--	*/	ERROR,
+		/*	--int--		*/	ERROR,
+		/*	--long--	*/	ERROR,
+		/*	--short--	*/	ERROR,
+		/*	--String--	*/	ERROR,
 	},
 
 	/* FIXME/TODO: t_unary_op_operator_not (!) */
 	{
 		/*						bool					, byte					, char					, double				, float					, int					, long					, short					, String					<- first operand */
-		/*	!bool		*/	{	ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					},
-		/*	!byte		*/	{	ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					},
-		/*	!char		*/	{	ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					},
-		/*	!double		*/	{	ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					},
-		/*	!float		*/	{	ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					},
-		/*	!int		*/	{	ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					},
-		/*	!long		*/	{	ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					},
-		/*	!short		*/	{	ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					},
-		/*	!String		*/	{	ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					}
+		/*	!bool		*/	ERROR,
+		/*	!byte		*/	ERROR,
+		/*	!char		*/	ERROR,
+		/*	!double		*/	ERROR,
+		/*	!float		*/	ERROR,
+		/*	!int		*/	ERROR,
+		/*	!long		*/	ERROR,
+		/*	!short		*/	ERROR,
+		/*	!String		*/	ERROR,
 	},
 
 	/* FIXME/TODO: t_unary_op_operator_bin_not (~) */
 	{
 		/*						bool					, byte					, char					, double				, float					, int					, long					, short					, String					<- first operand */
-		/*	~bool		*/	{	ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					},
-		/*	~byte		*/	{	ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					},
-		/*	~char		*/	{	ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					},
-		/*	~double		*/	{	ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					},
-		/*	~float		*/	{	ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					},
-		/*	~int		*/	{	ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					},
-		/*	~long		*/	{	ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					},
-		/*	~short		*/	{	ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					},
-		/*	~String		*/	{	ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					}
-	},
+		/*	~bool		*/	ERROR,
+		/*	~byte		*/	ERROR,
+		/*	~char		*/	ERROR,
+		/*	~double		*/	ERROR,
+		/*	~float		*/	ERROR,
+		/*	~int		*/	ERROR,
+		/*	~long		*/	ERROR,
+		/*	~short		*/	ERROR,
+		/*	~String		*/	ERROR
+	}
 };
 
 char *string_type_native(is_type_native* type)
@@ -541,7 +544,7 @@ bool type_native_assign_able(is_type_native native, is_type_decl* s_type)
 	if (s_type->type != t_type_decl_type_object)
 		return false;
 
-	return operators_native[t_assign_op_eq][native][s_type->data.type_object->type] != ERROR;
+	return operators_binary[t_assign_op_eq][native][s_type->data.type_object->type] != ERROR;
 }
 
 bool type_type_assign_able(is_type_decl* s_type, is_type_decl* s_type2)
