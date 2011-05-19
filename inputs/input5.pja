@@ -3,8 +3,8 @@ class gcd_rec
 	public static void main(String[] args)
 	{
 		int a, b;
-		a = 315;
-		b = 1932;
+		a = (int)315;
+		b = (int)1932;
 		System.out.println(gcd(a,b));
 	}
 

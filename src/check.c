@@ -124,36 +124,40 @@ int check_binary_op(is_binary_op* node)
 	{
 		case t_binary_op_assign:
 			errors += check_assign_op(node->data.assign);
-			node->s_type = duplicate_type_decl(node->data.assign->s_type);
+			if (errors == 0)
+				node->s_type = duplicate_type_decl(node->data.assign->s_type);
 		break;
 
 		default:
 			errors += check_expr(node->data.operands.left);
 			errors += check_expr(node->data.operands.right);
 
-			if (node->data.operands.left->s_type->type == t_type_decl_array_decl ||
-				node->data.operands.right->s_type->type == t_type_decl_array_decl)
+			if (errors == 0)
 			{
-				errors++;
-				pretty_error(node->line, "binary operations are invalid between array types");
-			} else
-			{
-				type = operators_binary[node->type][node->data.operands.left->s_type->data.type_object->type][node->data.operands.right->s_type->data.type_object->type];
-				if (type == ERROR)
+				if (node->data.operands.left->s_type->type == t_type_decl_array_decl ||
+					node->data.operands.right->s_type->type == t_type_decl_array_decl)
 				{
 					errors++;
-					pretty_error(node->line, "binary operation invalid between %s and %s",
-						typeA = string_type_decl(node->data.operands.left->s_type),
-						typeB = string_type_decl(node->data.operands.right->s_type)
-					);
-					free(typeA);
-					free(typeB);
+					pretty_error(node->line, "binary operations are invalid between array types");
+				} else
+				{
+					type = operators_binary[node->type][node->data.operands.left->s_type->data.type_object->type][node->data.operands.right->s_type->data.type_object->type];
+					if (type == ERROR)
+					{
+						errors++;
+						pretty_error(node->line, "invalid binary operation between %s and %s",
+							typeA = string_type_decl(node->data.operands.left->s_type),
+							typeB = string_type_decl(node->data.operands.right->s_type)
+						);
+						free(typeA);
+						free(typeB);
+					}
 				}
 			}
 
 			/* only valid for objects not arrays*/
 			if (errors == 0)
-				node->s_type->type = type;
+				node->s_type = insert_type_decl_object(insert_type_object(type));
 		break;
 	}
 	return errors;
@@ -385,7 +389,8 @@ int check_expr(is_expr* node)
 
 		case t_expr_operation:
 			errors += check_expr_op(node->data.operation);
-			node->s_type = duplicate_type_decl(node->data.operation->s_type);
+			if (errors == 0)
+				node->s_type = duplicate_type_decl(node->data.operation->s_type);
 		break;
 	}
 
@@ -396,7 +401,7 @@ int check_expr_list(is_expr_list* node)
 {
 	int errors = 0;
 
-	if (node);
+	if (node)
 	{
 		errors += check_expr(node->node);
 		errors += check_expr_list(node->next);
@@ -418,17 +423,20 @@ int check_expr_op(is_expr_op* node)
 	{
 		case t_expr_op_unary:
 			errors += check_unary_op(node->data.unary);
-			node->s_type = duplicate_type_decl(node->data.unary->s_type);
+			if (errors == 0)
+				node->s_type = duplicate_type_decl(node->data.unary->s_type);
 			break;
 
 		case t_expr_op_binary:
 			errors += check_binary_op(node->data.binary);
-			node->s_type = duplicate_type_decl(node->data.binary->s_type);
+			if (errors == 0)
+				node->s_type = duplicate_type_decl(node->data.binary->s_type);
 			break;
 
 		case t_expr_op_ternary:
 			errors += check_ternary_op(node->data.ternary);
-			node->s_type = duplicate_type_decl(node->data.ternary->s_type);
+			if (errors == 0)
+				node->s_type = duplicate_type_decl(node->data.ternary->s_type);
 			break;
 	}
 
@@ -644,7 +652,10 @@ int check_func_def_arg(is_func_def_arg* node)
 				node->id->name, symbol->line);
 			errors++;
 		} else
-			scope_insert(symtab, symbol_new_var(node->id->name, node->line, node->type));
+		{
+			symbol = scope_insert(symtab, symbol_new_var(node->id->name, node->line, node->type));
+			symbol->data.var_data.initialized = true;
+		}
 	}
 
 	return errors;
@@ -998,7 +1009,7 @@ int check_var(is_var* node)
 		case t_var_new_op:
 			errors += check_new_op(node->data.new_op);
 			node->s_type = duplicate_type_decl(node->data.new_op->s_type);
-			node->initialized = false;
+			node->initialized = true;
 		break;
 
 		case t_var_array:
@@ -1020,6 +1031,7 @@ int check_var(is_var* node)
 					free(typeA);
 				}
 			}
+			node->initialized = true;
 		break;
 
 		case t_var_func_call:
@@ -1041,6 +1053,7 @@ int check_var(is_var* node)
 					free(typeA);
 				}
 			}
+			node->initialized = true;
 		break;
 	}
 
