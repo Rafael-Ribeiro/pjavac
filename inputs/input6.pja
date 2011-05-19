@@ -1,7 +1,15 @@
 class a
 {
-	void main()
+	int f()
 	{
-		int[][] b = {new int[(int)2]};
+		int a = (int)1;
+		for (;;)
+			if (true)
+				return (int)1;
+			else
+			{
+				a = (int)1;
+				return (int)0;
+			}
 	}
 }

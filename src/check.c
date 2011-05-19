@@ -195,7 +195,20 @@ int check_class_def(is_class_def* node)
 		because theoretically class should be able to access other classes
 	*/
 	scope_push(node->scope);
-		errors += check_class_stmt_list(node->body, true); 
+		errors += check_class_stmt_list(node->body, true);
+
+		if (errors == 0)
+		{
+			symbol = scope_lookup(symtab, "main", t_symbol_func);
+			if (symbol)
+			{
+				/* TODO check function prototype */
+			} else
+			{
+				errors++;
+				pretty_error(node->line, "missing main entry point");
+			}
+		}
 		errors += check_class_stmt_list(node->body, false);
 	scope_pop();
 
@@ -306,14 +319,12 @@ int check_dims_sized_list(is_dims_sized_list* node)
 int check_do_while(is_do_while* node)
 {
 	int errors = 0;
-	
-	/* FIXME:
-		force an addition of a scope
-		this makes do int a; while(i == 0); int a; semantically valid while it should be syntactically invalid 
-	*/
+
 	node->scope = scope_new(NULL, false);
 	scope_push(node->scope);
 		errors += check_stmt(node->body);
+		if (errors == 0)
+			node->terminates = node->body->terminates;
 	scope_pop();
 
 	errors += check_expr(node->cond);
@@ -450,23 +461,30 @@ int check_for(is_for* node)
 
 	node->scope = scope_new(NULL, false);
 	scope_push(node->scope);
-		errors += check_for_init(node->init);	
+		if (node->init)
+			errors += check_for_init(node->init);	
 
-		cond_errors = check_for_cond(node->cond);
-		if (cond_errors == 0)
+		if (node->cond)
 		{
-			if (!type_native_assign_able(t_type_native_bool, node->cond->s_type))
+			cond_errors = check_for_cond(node->cond);
+			if (cond_errors == 0)
 			{
-				cond_errors++;
-				pretty_error(node->line, "for conditional is not boolean (is of type %s)", typeA = string_type_decl(node->cond->s_type));
-				free(typeA);
+				if (!type_native_assign_able(t_type_native_bool, node->cond->s_type))
+				{
+					cond_errors++;
+					pretty_error(node->line, "for conditional is not boolean (is of type %s)", typeA = string_type_decl(node->cond->s_type));
+					free(typeA);
+				}
 			}
+			errors += cond_errors;
 		}
-		errors += cond_errors;
-
-		errors += check_for_inc(node->inc);
+		
+		if (node->inc)
+			errors += check_for_inc(node->inc);
 
 		errors += check_stmt(node->body);
+		if (errors == 0)
+			node->terminates = node->body->terminates;
 	scope_pop();
 
 	return errors;
@@ -693,8 +711,12 @@ int check_if(is_if* node)
 	}	
 
 	errors += check_stmt(node->then_body);
+	node->terminates = node->then_body->terminates;
 	if (node->else_body)
+	{
 		errors += check_stmt(node->else_body);
+		node->terminates &= node->else_body->terminates;
+	}
 
 	return errors;
 }
@@ -757,6 +779,10 @@ int check_loop_stmt(is_loop_stmt* node)
 		break;
 	}
 
+	/*
+		TODO:
+		propagate loop terminates, only if node condition is ALWAYS true
+	*/
 	return errors;
 }
  
@@ -927,7 +953,7 @@ int check_stmt_list(is_stmt_list* node)
 int check_switch(is_switch* node)
 {
 	int errors = 0;
-	/* TODO */
+	/* TODO: propagate terminates*/
 
 	return errors;
 }
@@ -1214,6 +1240,7 @@ int check_while(is_while* node)
 	node->scope = scope_new(NULL, false);
 	scope_push(node->scope);
 		errors += check_stmt(node->body);
+		node->terminates = node->body->terminates;
 	scope_pop();
 	
 	return errors;
