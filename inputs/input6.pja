@@ -1,4 +1,9 @@
 class a
 {
-	int[] c[1][] = "";
+	int main()
+	{
+		return (int)1;
+
+		int a;
+	}
 }

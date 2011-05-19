@@ -9,6 +9,7 @@
 #include "inc/types.h"
 #include "inc/insert.h"
 #include "inc/duplicate.h"
+#include "inc/free.h"
 
 /* LEX */
 /*
@@ -175,6 +176,7 @@ int check_binary_op(is_binary_op* node)
 int check_break(is_break* node)
 {
 	int errors = 0;
+	/* TODO check if inside a loop */
 
 	if (node->label)
 		errors += check_label(node->label);
@@ -250,6 +252,8 @@ int check_class_stmt_scope(is_class_stmt_scope* node)
 int check_continue(is_continue* node)
 {
 	int errors = 0;
+
+	/* TODO check if inside a loop */
 
 	if (node->label)
 		errors += check_label(node->label);
@@ -785,11 +789,42 @@ int check_new_op(is_new_op* node)
 int check_return(is_return* node)
 {
 	int errors = 0;
+	SYMBOL* symbol;
+	is_type_decl *type = NULL, *typeR;
+	char *typeA, *typeB;
 
-	/* TODO
-		scopes now may have a symbol associated, 
-		make a function that searches for the nearest symbol of type X (in this case function) 	
-	*/
+	if (node->value)
+	{
+		errors += check_expr(node->value);
+		typeR = node->value->s_type;
+	} else
+	{
+		type = new_type_decl_void(node->line);
+		typeR = type;
+	}
+
+	if (errors == 0)
+	{
+		symbol = scope_get_symbol(symtab, t_symbol_func);
+		if (!type_type_equal(typeR, symbol->data.func_data.type))
+		{
+			typeA = string_type_decl(typeR);
+
+			typeB = string_type_decl(symbol->data.func_data.type);
+
+			errors++;
+			pretty_error(node->line, "invalid return type %s should be of type %s",
+				typeA,
+				typeB
+			);
+
+			free(typeA);
+			free(typeB);
+		}	
+	}
+
+	if (type)
+		free_type_decl(type);
 
 	return errors;
 }
@@ -797,7 +832,56 @@ int check_return(is_return* node)
 int check_stmt(is_stmt* node)
 {
 	int errors = 0;
-	/* TODO */
+
+	switch (node->type)
+	{
+		case t_stmt_stmt_list:
+			node->data.stmt_list.scope = scope_new(NULL, false);
+			scope_push(node->data.stmt_list.scope);
+				errors += check_stmt_list(node->data.stmt_list.list);
+			scope_pop();
+		break;
+
+		case t_stmt_var_stmt:
+			errors += check_var_stmt(node->data.var, false);
+		break;
+
+		case t_stmt_assign:
+			errors += check_assign_op(node->data.assign);
+		break;
+
+		case t_stmt_incr:
+			errors += check_incr_op(node->data.incr);
+		break;
+
+		case t_stmt_if:
+			errors += check_if(node->data.if_stmt);
+		break;
+
+		case t_stmt_loop:
+			errors += check_loop_stmt(node->data.loop);
+		break;
+
+		case t_stmt_func_call:
+			errors += check_func_call(node->data.func_call);
+		break;
+
+		case t_stmt_switch:
+			errors += check_switch(node->data.switch_stmt);
+		break;
+
+		case t_stmt_break:
+			errors += check_break(node->data.break_stmt);
+		break;
+
+		case t_stmt_continue:
+			errors += check_continue(node->data.continue_stmt);
+		break;
+		
+		case t_stmt_return:
+			errors += check_return(node->data.return_stmt);
+		break;
+	}
 
 	return errors;
 }
@@ -805,7 +889,25 @@ int check_stmt(is_stmt* node)
 int check_stmt_list(is_stmt_list* node)
 {
 	int errors = 0;
-	/* TODO */
+
+	if (node)
+	{
+		errors += check_stmt(node->node);
+		errors += check_stmt_list(node->next);
+
+		if (node->next)
+		{
+			node->length = node->next->length+1;
+			if (node->node->type == t_stmt_return ||
+				node->node->type == t_stmt_continue ||
+				node->node->type == t_stmt_break)
+			{
+				errors++;
+				pretty_error(node->line, "dead code after incoditional jump stmt");
+			}
+		} else
+			node->length = 1;
+	}
 
 	/* TODO: mark nodes after break, continue and return as DEAD CODE */
 	return errors;
@@ -846,15 +948,26 @@ int check_ternary_op(is_ternary_op* node)
 int check_type_decl(is_type_decl* node)
 {
 	int errors = 0;
-	/* TODO */
 
+	switch (node->type)
+	{
+		case t_type_decl_type_object:
+			errors += check_type_object(node->data.type_object);
+		break;
+
+		case t_type_decl_array_decl:
+			errors += check_array_decl(node->data.array);
+		break;	
+	}	
 	return errors;
 }
 
 int check_type_object(is_type_object* node)
 {
 	int errors = 0;
-	/* TODO */
+
+	/* FIXME */	
+	/*errors += check_type_native(node->type); */
 
 	return errors;
 }
@@ -870,7 +983,74 @@ int check_unary_op(is_unary_op* node)
 int check_var(is_var* node)
 {
 	int errors = 0;
-	/* TODO */
+	char *typeA;
+	SYMBOL* symbol;
+
+	switch (node->type)
+	{
+		case t_var_id:
+			symbol = scope_lookup(symtab, node->data.id->name, t_symbol_var);
+			if (!symbol)
+			{
+				errors++;
+				pretty_error(node->line, "undefined variable %s", node->data.id->name);
+				node->initialized = false;
+			} else
+			{
+				node->initialized = symbol->data.var_data.initialized;
+				node->s_type = duplicate_type_decl(symbol->data.var_data.type);
+			}
+		break;
+
+		case t_var_new_op:
+			errors += check_new_op(node->data.new_op);
+			node->s_type = duplicate_type_decl(node->data.new_op->s_type);
+			node->initialized = false;
+		break;
+
+		case t_var_array:
+			errors += check_var(node->data.array.var);
+			errors += check_dims_sized(node->data.array.dims);
+
+			if (errors == 0)
+			{
+				if (node->data.array.var->s_type->type == t_type_decl_array_decl)
+				{
+					node->s_type = duplicate_type_decl(node->data.array.var->s_type);
+					node->s_type->data.array->dims->size--;
+				} else
+				{
+					errors++;
+					pretty_error(node->line, "subscript of unsuscriptable type (%s)",
+						typeA = string_type_decl(node->data.array.var->s_type)
+					);
+					free(typeA);
+				}
+			}
+		break;
+
+		case t_var_func_call:
+			errors += check_func_call(node->data.func_call.call);
+			errors += check_dims_sized(node->data.array.dims);
+
+			if (errors == 0)
+			{
+				if (node->data.func_call.call->s_type->type == t_type_decl_array_decl)
+				{
+					node->s_type = duplicate_type_decl(node->data.func_call.call->s_type);
+					node->s_type->data.array->dims->size--;
+				} else
+				{
+					errors++;
+					pretty_error(node->line, "subscript of unsuscriptable type (%s)",
+						typeA = string_type_decl(node->data.func_call.call->s_type)
+					);
+					free(typeA);
+				}
+			}
+		break;
+	}
+
 	/* todo propagate node->initialized */
 	return errors;
 }

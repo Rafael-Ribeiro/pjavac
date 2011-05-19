@@ -18,11 +18,19 @@ char *string_type_native(is_type_native* type);
 char *string_type_decl(is_type_decl* type);
 char *string_array_decl(is_array_decl* array);
 
+bool type_dims_empty_list_equal(is_dims_empty_list* dims1, is_dims_empty_list* dims2);
+bool type_array_decl_equal(is_array_decl* array1, is_array_decl* array2);
+bool type_type_object_equal(is_type_object* type1, is_type_object* type2);
+bool type_type_equal(is_type_decl* s_type, is_type_decl* s_type2);
+
 bool type_native_assign_able(is_type_native native, is_type_decl* s_type);
 bool type_type_assign_able(is_type_decl* s_type, is_type_decl* s_type2);
 bool type_type_cast_able(is_type_decl* s_type, is_type_decl* s_type2);
 bool type_var_init_assign_able(is_type_decl* type, int nDimensions, is_var_initializer* init);
 
+bool type_type_cast_able(is_type_decl* s_type, is_type_decl* s_type2);
+
 is_type_decl* duplicate_type_decl(is_type_decl* type);
+is_type_decl* new_type_decl_void();
 
 #endif

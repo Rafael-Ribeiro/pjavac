@@ -500,7 +500,9 @@ void free_stmt(is_stmt* node)
 		switch (node->type)
 		{
 			case t_stmt_stmt_list:
-				free_stmt_list(node->data.stmt_list);
+				free_stmt_list(node->data.stmt_list.list);
+				if (node->data.stmt_list.scope)
+					scope_delete(node->data.stmt_list.scope);
 				break;
 
 			case t_stmt_var_stmt:

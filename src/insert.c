@@ -6,6 +6,7 @@
 #include "inc/duplicate.h"
 #include "inc/utils.h"
 #include "inc/free.h"
+#include "inc/insert.h"
 
 extern int yyline;
 
@@ -675,7 +676,10 @@ is_return* insert_return(is_expr* value)
 {
 	is_return *node = (is_return*)malloc(sizeof(is_return));
 	node->value = value;
-	node->line = value->line;
+	if (value)
+		node->line = value->line;
+	else
+		node->line == yyline;
 
 	return node;
 }
@@ -685,7 +689,7 @@ is_stmt* insert_stmt_stmt_list(is_stmt_list* stmt_list)
 	is_stmt* node = (is_stmt*)malloc(sizeof(is_stmt));
 
 	node->type = t_stmt_stmt_list;
-	node->data.stmt_list = stmt_list;
+	node->data.stmt_list.list = stmt_list;
 	node->line = stmt_list->line;
 
 	return node;
@@ -884,6 +888,18 @@ is_type_decl* new_type_decl_object_dims(int line, is_type_object* object, is_dim
 		duplicate_type_object(object),
 		new_dims_empty_list(line, dims->sized->length + dims->empty->size)
 	);
+
+	return node;
+}
+
+is_type_decl* new_type_decl_void(int line)
+{
+	is_type_decl* node = (is_type_decl*)malloc(sizeof(is_type_decl));
+
+	node->type = t_type_decl_type_object;
+	node->line = line;
+
+	node->data.type_object = insert_type_object(t_type_native_void);
 
 	return node;
 }

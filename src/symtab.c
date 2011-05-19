@@ -165,6 +165,17 @@ SYMBOL* scope_local_lookup(SCOPE* scope, char *id, type_symbol type)
 	return symbol;
 }
 
+SYMBOL* scope_get_symbol(SCOPE* scope, type_symbol type)
+{
+	SYMBOL* symbol = NULL;
+
+	symbol = scope->symbol;
+	if ((!symbol || symbol->type != type) && scope->parent)
+		return scope_get_symbol(scope->parent, type); 
+
+	return symbol;
+}
+
 /*
 	AVL
 */

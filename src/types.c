@@ -3,6 +3,7 @@
 #include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdio.h>
 
 #include "inc/structures.h"
 #include "inc/utils.h"
@@ -511,7 +512,8 @@ is_type_native operators_unary[MAX_OPERATORS_UNARY][MAX_NATIVE_TYPES-1] =
 
 char *string_type_native(is_type_native* type)
 {
-	char strings[][8] = { "boolean", "byte", "char", "double", "float", "int", "long", "short", "string", "void"};
+	char strings[][8] = {"boolean", "byte", "char", "double", "float", "int", "long", "short", "string", "void"};
+	printf("%d\n", *type);
 	return __strdup(strings[*type]);
 }
 
@@ -528,7 +530,7 @@ char *string_array_decl(is_array_decl* array)
 	char *native, *val;
 	int size, i;
 
-	native = string_type_native(&array->type->type);
+	native = string_type_native(&(array->type->type));
 	size = strlen(native) + 2*(array->dims->size)+1;
 
 	val = (char*)malloc(sizeof(char)*size);
@@ -547,6 +549,41 @@ bool type_native_assign_able(is_type_native native, is_type_decl* s_type)
 		return false;
 
 	return operators_binary[t_assign_op_eq][native][s_type->data.type_object->type] != ERROR;
+}
+
+bool type_dims_empty_list_equal(is_dims_empty_list* dims1, is_dims_empty_list* dims2)
+{
+	return dims1->size == dims2->size;
+}
+
+bool type_array_decl_equal(is_array_decl* array1, is_array_decl* array2)
+{
+	return type_type_object_equal(array1->type, array2->type) && type_dims_empty_list_equal(array1->dims, array2->dims);
+}
+
+bool type_type_object_equal(is_type_object* type1, is_type_object* type2)
+{
+	return type1->type == type2->type;
+}
+
+bool type_type_equal(is_type_decl* s_type, is_type_decl* s_type2)
+{
+	if (s_type->type != s_type2->type)
+		return false;
+
+	switch (s_type->type)
+	{
+		case t_type_decl_type_object:
+			return type_type_object_equal(s_type->data.type_object, s_type2->data.type_object);
+		break;
+
+		case t_type_decl_array_decl:
+			return type_array_decl_equal(s_type->data.array, s_type2->data.array);
+		break;
+	}
+
+	/* switch */
+	return false;
 }
 
 bool type_type_assign_able(is_type_decl* s_type, is_type_decl* s_type2)
