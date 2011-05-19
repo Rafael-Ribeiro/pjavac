@@ -78,6 +78,7 @@ SYMBOL* symbol_new_class(char* id, int line)
 void symbol_delete(SYMBOL* symbol)
 {
 	free(symbol->id);
+
 	/* TODO!!! free(...) */
 
 	free(symbol);

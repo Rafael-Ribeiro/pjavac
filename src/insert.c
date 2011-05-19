@@ -676,6 +676,7 @@ is_return* insert_return(is_expr* value)
 {
 	is_return *node = (is_return*)malloc(sizeof(is_return));
 	node->value = value;
+
 	if (value)
 		node->line = value->line;
 	else

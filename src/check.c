@@ -12,22 +12,6 @@
 #include "inc/free.h"
 
 /* LEX */
-/*
-	TODO: used?
-int check_id(is_id* node)
-{
-	SYMBOL* symbol;
-
-	symbol = scope_lookup(symtab, node->name);
-	if (!symbol)
-	{
-		pretty_error(node->line, "undefined symbol %s", node->name);
-		return 1;
-	}
-
-	return 0;
-}
-*/
 int check_constant(is_constant* node)
 {
 	switch (node->type)
@@ -52,7 +36,7 @@ int check_constant(is_constant* node)
 			node->s_type = insert_type_decl_object(insert_type_object(t_type_native_string));
 		break;
 	}
-
+	
 	return 0;
 }
 
@@ -90,13 +74,14 @@ int check_assign_op(is_assign_op* node)
 				if (!type_type_assign_able(node->var->s_type, node->expr->s_type))
 				{
 					errors++;
-					pretty_error(node->line, "invalid assignment between %s and %s",
-						typeA = string_type_decl(node->var->s_type),
-						typeB = string_type_decl(node->expr->s_type)
+					pretty_error(node->line, "invalid assignment from %s to %s",
+						typeA = string_type_decl(node->expr->s_type),
+						typeB = string_type_decl(node->var->s_type)
 					);
 					free(typeA);
 					free(typeB);
-				}
+				} else
+					node->s_type = duplicate_type_decl(node->var->s_type);
 			break;
 
 			default:
@@ -116,7 +101,8 @@ int check_assign_op(is_assign_op* node)
 						);
 						free(typeA);
 						free(typeB);
-					}
+					} else
+						node->s_type = insert_type_decl_object(insert_type_object(type));
 				}
 			break;
 		}
@@ -352,7 +338,6 @@ int check_expr(is_expr* node)
 
 			if (errors == 0)
 			{
-	
 				if (!node->data.var->initialized)
 				{
 					errors++;
@@ -363,7 +348,8 @@ int check_expr(is_expr* node)
 
 		case t_expr_new_op:
 			errors += check_new_op(node->data.new_op);
-			node->s_type = duplicate_type_decl(node->data.new_op->s_type);
+			if (errors == 0)
+				node->s_type = duplicate_type_decl(node->data.new_op->s_type);
 		break;
 
 		case t_expr_type_cast:
@@ -380,20 +366,21 @@ int check_expr(is_expr* node)
 
 					pretty_error(node->line, "invalid typecast from %s to %s", typeA, typeB);
 					free(typeA); free(typeB);
-				}
+				} else
+					node->s_type = duplicate_type_decl(node->data.type_cast.type);
 			}
 		break;
 
 		case t_expr_constant:
 			errors += check_constant(node->data.constant);
-			node->s_type = duplicate_type_decl(node->data.constant->s_type);
-
+			if (errors == 0)
+				node->s_type = duplicate_type_decl(node->data.constant->s_type);
 		break;
 
 		case t_expr_func_call:
 			errors += check_func_call(node->data.func_call);
-			node->s_type = duplicate_type_decl(node->data.func_call->s_type);
-
+			if (errors == 0)
+				node->s_type = duplicate_type_decl(node->data.func_call->s_type);
 		break;
 
 		case t_expr_operation:
@@ -629,6 +616,13 @@ int check_func_def(is_func_def* node, bool first_pass)
 	{
 		scope_push(node->scope);
 			errors += check_stmt_list(node->body);
+			
+			if (!node->body->terminated &&
+				!(node->type->type == t_type_decl_type_object && node->type->data.type_object->type == t_type_native_void))
+			{
+				pretty_error(node->line, "reached end of non void function");
+				errors++;		
+			}
 		scope_pop();
 	}
 
@@ -820,7 +814,7 @@ int check_return(is_return* node)
 
 			free(typeA);
 			free(typeB);
-		}	
+		}
 	}
 
 	if (type)
@@ -843,7 +837,7 @@ int check_stmt(is_stmt* node)
 		break;
 
 		case t_stmt_var_stmt:
-			errors += check_var_stmt(node->data.var, false);
+			errors += check_var_stmt(node->data.var, true);
 		break;
 
 		case t_stmt_assign:
@@ -895,21 +889,20 @@ int check_stmt_list(is_stmt_list* node)
 		errors += check_stmt(node->node);
 		errors += check_stmt_list(node->next);
 
+		node->terminated = (node->node->type == t_stmt_return || node->node->type == t_stmt_continue || node->node->type == t_stmt_break);
+
 		if (node->next)
 		{
 			node->length = node->next->length+1;
-			if (node->node->type == t_stmt_return ||
-				node->node->type == t_stmt_continue ||
-				node->node->type == t_stmt_break)
-			{
-				errors++;
+			
+			if (node->terminated)
 				pretty_error(node->line, "dead code after incoditional jump stmt");
-			}
+			else
+				node->terminated = node->next->terminated;
 		} else
 			node->length = 1;
 	}
 
-	/* TODO: mark nodes after break, continue and return as DEAD CODE */
 	return errors;
 }
  

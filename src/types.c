@@ -16,13 +16,13 @@ is_type_native operators_binary[MAX_OPERATORS_BINARY][MAX_NATIVE_TYPES-1][MAX_NA
 	{
 		/*					bool						, byte					, char					, double				, float					, int					, long					, short					, String					<- second operand */
 		/*	bool	=	*/	{	t_type_native_bool		, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					},
-		/*	byte	=	*/	{	ERROR					, t_type_native_byte	, t_type_native_byte	, t_type_native_byte	, t_type_native_byte	, t_type_native_byte	, t_type_native_byte	, t_type_native_byte	, ERROR					},
-		/*	char	=	*/	{	ERROR					, t_type_native_char	, t_type_native_char	, ERROR					, ERROR					, t_type_native_char	, t_type_native_char	, t_type_native_char	, ERROR					},
-		/*	double	=	*/	{	ERROR					, ERROR					, ERROR					, t_type_native_double	, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					},
+		/*	byte	=	*/	{	ERROR					, t_type_native_byte	, t_type_native_byte	, t_type_native_byte	, t_type_native_byte	, t_type_native_byte	, ERROR					, t_type_native_byte	, ERROR					},
+		/*	char	=	*/	{	ERROR					, t_type_native_char	, t_type_native_char	, ERROR					, ERROR					, t_type_native_char	, ERROR					, t_type_native_char	, ERROR					},
+		/*	double	=	*/	{	ERROR					, ERROR					, ERROR					, t_type_native_double	, ERROR					, ERROR					, t_type_native_double	, ERROR					, ERROR					},
 		/*	float	=	*/	{	ERROR					, t_type_native_float	, t_type_native_float	, t_type_native_float	, t_type_native_float	, t_type_native_float	, t_type_native_float	, t_type_native_float	, ERROR					},
-		/*	int		=	*/	{	ERROR					, t_type_native_int		, t_type_native_int		, ERROR					, ERROR					, t_type_native_int		, t_type_native_int		, t_type_native_int		, ERROR					},
+		/*	int		=	*/	{	ERROR					, t_type_native_int		, t_type_native_int		, ERROR					, ERROR					, t_type_native_int		, ERROR					, t_type_native_int		, ERROR					},
 		/*	long	=	*/	{	ERROR					, t_type_native_long	, t_type_native_long	, ERROR					, ERROR					, t_type_native_long	, t_type_native_long	, t_type_native_long	, ERROR					},
-		/*	short	=	*/	{	ERROR					, t_type_native_short	, t_type_native_short	, ERROR					, ERROR					, t_type_native_short	, t_type_native_short	, t_type_native_short	, ERROR					},
+		/*	short	=	*/	{	ERROR					, t_type_native_short	, t_type_native_short	, ERROR					, ERROR					, t_type_native_short	, ERROR					, t_type_native_short	, ERROR					},
 		/*	String	=	*/	{	ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, t_type_native_string	}
 	},
 
@@ -511,14 +511,13 @@ is_type_native operators_unary[MAX_OPERATORS_UNARY][MAX_NATIVE_TYPES-1] =
 char *string_type_native(is_type_native* type)
 {
 	char strings[][8] = {"boolean", "byte", "char", "double", "float", "int", "long", "short", "string", "void"};
-	printf("%d\n", *type);
 	return __strdup(strings[*type]);
 }
 
 char *string_type_decl(is_type_decl* type)
 {
-	if (type->type != t_type_decl_type_object)
-		return string_type_native(&type->data.type_object->type);
+	if (type->type == t_type_decl_type_object)
+		return string_type_native(&(type->data.type_object->type));
 
 	return string_array_decl(type->data.array);
 }
@@ -586,8 +585,20 @@ bool type_type_equal(is_type_decl* s_type, is_type_decl* s_type2)
 
 bool type_type_assign_able(is_type_decl* s_type, is_type_decl* s_type2)
 {
-	/* TODO */
-	return false;
+	if (s_type->type != s_type2->type)
+		return false;
+ 
+	if (s_type->type == t_type_decl_array_decl)
+	{
+		if (s_type->data.array->dims->size != s_type2->data.array->dims->size)
+			return false;
+
+		if (operators_binary[t_assign_op_eq][s_type->data.array->type->type][s_type2->data.array->type->type] == ERROR)
+			return false;
+	} else
+		return operators_binary[t_assign_op_eq][s_type->data.type_object->type][s_type2->data.type_object->type] != ERROR;
+
+	return true;
 }
 
 bool type_type_cast_able(is_type_decl* s_type, is_type_decl* s_type2)

@@ -2,8 +2,8 @@ class a
 {
 	int main()
 	{
-		return (int)1;
+		int b;
 
-		int a;
+		b = (long)3;
 	}
 }

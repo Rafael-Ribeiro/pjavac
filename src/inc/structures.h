@@ -573,6 +573,7 @@ typedef struct _is_stmt_list
 
 	/* semantics */
 	int length;
+	bool terminated;
 } is_stmt_list;
 
 typedef struct _is_switch
