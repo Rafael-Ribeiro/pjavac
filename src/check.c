@@ -1119,11 +1119,17 @@ int check_var_defs(is_var_defs* node)
 
 			symbol = scope_insert(symtab, symbol_new_var(it->node->left->id->name, node->line, type));
 
-			if (it->node->var_init) /* check initialization */
-				if (type_var_init_assign_able(NULL, 0, it->node->var_init)) /* TODO */
+			if (it->node->var_init) /* check initialization if it exists */
+			{
+				if (type_var_init_assign_able(type, (type->type == t_type_decl_array_decl ? type->data.array->dims->size : 0), it->node->var_init)) /* FIXME/TODO */
 					/* if initialization is valid */
 					symbol->data.var_data.initialized = true;
-
+				else
+				{
+					errors++;
+					pretty_error(it->node->line, "%s initalization is invalid", it->node->left->id->name);
+				}
+			}
 		}
 	}
 
