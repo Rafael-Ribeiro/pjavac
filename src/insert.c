@@ -1072,7 +1072,10 @@ is_var_initializer* insert_var_initializer_array(is_var_initializer_list* list)
 
 	node->type = t_var_initializer_val_arr;
 	node->data.array = list;
-	node->line = list->line;
+
+	node->line = (list == NULL ? yyline : list->line);
+
+	/* semantics */
 	node->s_type = NULL;
 
 	return node;
