@@ -680,7 +680,7 @@ is_return* insert_return(is_expr* value)
 	if (value)
 		node->line = value->line;
 	else
-		node->line == yyline;
+		node->line = yyline;
 
 	return node;
 }
