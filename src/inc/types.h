@@ -21,7 +21,7 @@ char *string_array_decl(is_array_decl* array);
 bool type_native_assign_able(is_type_native native, is_type_decl* s_type);
 bool type_type_assign_able(is_type_decl* s_type, is_type_decl* s_type2);
 bool type_type_cast_able(is_type_decl* s_type, is_type_decl* s_type2);
-bool type_var_init_assign_able(is_type_object* type, int nDimensions, is_var_initializer* init);
+bool type_var_init_assign_able(is_type_decl* type, int nDimensions, is_var_initializer* init);
 
 is_type_decl* duplicate_type_decl(is_type_decl* type);
 

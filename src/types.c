@@ -7,6 +7,8 @@
 #include "inc/structures.h"
 #include "inc/utils.h"
 #include "inc/types.h"
+#include "inc/insert.h"
+#include "inc/free.h"
 
 is_type_native operators_binary[MAX_OPERATORS_BINARY][MAX_NATIVE_TYPES-1][MAX_NATIVE_TYPES-1] =
 {
@@ -571,20 +573,60 @@ bool type_type_cast_able(is_type_decl* s_type, is_type_decl* s_type2)
 	return true;
 }
 
-bool type_var_init_assign_able(is_type_object* type, int nDimensions, is_var_initializer* init)
+bool type_var_init_assign_able(is_type_decl *type, int nDimensions, is_var_initializer *init)
 {
+	is_var_initializer_list *it;
+	is_type_decl *dupType;
+
+	if (nDimensions)
+	{
+		/* line no will be ignored */
+		/* assuming type is is_array_decl, since nDimensions != 0; check if valid */
+		dupType = insert_type_decl_array(insert_array_decl (insert_type_object(type->data.array->type->type), new_dims_empty_list(0, nDimensions)));
+	} else
+	{
+		if (type->type == t_type_decl_array_decl)
+			/* type is an array but no nDimensions: convert the type_decl to t_type_decl_type_object */
+			dupType = insert_type_decl_object(insert_type_object(type->data.array->type->type));
+		else
+			dupType = insert_type_decl_object(insert_type_object(type->data.type_object->type));
+
+	}
+
 	switch (init->type)
 	{
 		case t_var_initializer_val_arr:
-			if (init->data.array == NULL && nDimensions == 1) /* { } */
-				return true;
+			if (init->data.array == NULL) /* { } */
+				return (nDimensions == 1); /* valid if nDimensions is 1 */
 
-			/* TODO */
+			for (it = init->data.array; it != NULL; it = it->next)
+			{
+				if(!type_var_init_assign_able(dupType, (nDimensions ? nDimensions - 1 : 0), it->node) /* FIXME: is type_type_assign_able() call also needed? */)
+				{
+					free_type_decl(dupType);
+					return false;
+				}
+			}
+
+			/*
+			 * init->data.array is never NULL;
+			 * duplicate type_decl of the first var_initializer and update "parent" var_initializer	
+			 */
+			init->s_type = duplicate_type_decl(init->data.array->node->s_type);
 		break;
 		case t_var_initializer_expr:
-			/* TODO */
+			if (type_type_assign_able(dupType, init->data.expr->s_type))
+				/* propagate s_type to var_initializer */
+				init->s_type = init->data.expr->s_type;
+			else
+			{
+				free_type_decl(dupType);
+				return false;
+			}
 		break;
 	}
 
-	return false;
+	free_type_decl(dupType);
+
+	return true;
 }
