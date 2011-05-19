@@ -308,7 +308,7 @@ continue
 	;
 
 dims
-	: dims_sized_list												{ $$ = insert_dims($1, 0); }
+	: dims_sized_list												{ $$ = insert_dims($1, new_dims_empty_list(yyline, 0)); }
 	| dims_sized_list dims_empty_list								{ $$ = insert_dims($1, $2); }
 	;
 
