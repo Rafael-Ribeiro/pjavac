@@ -630,7 +630,7 @@ bool type_var_init_assign_able(is_type_decl *type, int nDimensions, is_var_initi
 	{
 		/* line no will be ignored */
 		/* assuming type is is_array_decl, since nDimensions != 0; check if valid */
-		dupType = insert_type_decl_array(insert_array_decl (insert_type_object(type->data.array->type->type), new_dims_empty_list(0, nDimensions)));
+		dupType = insert_type_decl_array(insert_array_decl (insert_type_object(type->data.array->type->type), new_dims_empty_list(init->line, nDimensions)));
 	} else
 	{
 		if (type->type == t_type_decl_array_decl)
@@ -645,7 +645,10 @@ bool type_var_init_assign_able(is_type_decl *type, int nDimensions, is_var_initi
 	{
 		case t_var_initializer_val_arr:
 			if (init->data.array == NULL) /* { } */
+			{
+				init->s_type = insert_type_decl_array(insert_array_decl (insert_type_object(type->data.array->type->type), new_dims_empty_list(init->line, nDimensions-1)));
 				return (nDimensions == 1); /* valid if nDimensions is 1 */
+			}
 
 			for (it = init->data.array; it != NULL; it = it->next)
 			{
@@ -662,6 +665,7 @@ bool type_var_init_assign_able(is_type_decl *type, int nDimensions, is_var_initi
 			 */
 			init->s_type = duplicate_type_decl(init->data.array->node->s_type);
 		break;
+
 		case t_var_initializer_expr:
 			if (type_type_assign_able(dupType, init->data.expr->s_type))
 				/* propagate s_type to var_initializer */
