@@ -2,14 +2,6 @@ class a
 {
 	int f()
 	{
-		int a = (int)1;
-		for (;;)
-			if (true)
-				return (int)1;
-			else
-			{
-				a = (int)1;
-				return (int)0;
-			}
+		int a = 1.0, b= int(1);
 	}
 }
