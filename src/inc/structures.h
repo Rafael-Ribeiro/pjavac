@@ -262,6 +262,7 @@ typedef struct _is_do_while
 
 	/* semantics */
 	struct _SCOPE* scope;
+	bool terminates;
 } is_do_while;
 
 typedef enum
@@ -342,6 +343,7 @@ typedef struct _is_for
 
 	/* semantics */
 	struct _SCOPE* scope;
+	bool terminates;
 } is_for;
 
 typedef enum
@@ -447,6 +449,9 @@ typedef struct _is_if
 	struct _is_expr* cond;
 	struct _is_stmt* then_body;
 	struct _is_stmt* else_body; /* nullable */
+
+	/* semantics */
+	bool terminates;
 } is_if;
 
 typedef enum
@@ -486,6 +491,9 @@ typedef struct _is_loop_stmt
 		struct _is_while* while_stmt;
 		struct _is_do_while* do_while_stmt;
 	} data;
+
+	/* semantics */
+	bool terminates;
 } is_loop_stmt;
 
 typedef enum
@@ -562,6 +570,9 @@ typedef struct _is_stmt
 		struct _is_continue *continue_stmt;
 		struct _is_return *return_stmt;
 	} data;
+
+	/* semantics */
+	bool terminates;
 } is_stmt;
 
 typedef struct _is_stmt_list
@@ -582,6 +593,9 @@ typedef struct _is_switch
 
 	struct _is_expr *expr;
 	struct _is_switch_stmt_list *list; /* nullable */
+
+	/* semantics */
+	bool terminates;
 } is_switch;
 
 typedef enum
@@ -796,6 +810,7 @@ typedef struct _is_while
 
 	/* semantics */
 	struct _SCOPE* scope;
+	bool terminates;
 } is_while;
 
 #endif

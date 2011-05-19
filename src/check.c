@@ -845,6 +845,7 @@ int check_stmt(is_stmt* node)
 			scope_push(node->data.stmt_list.scope);
 				errors += check_stmt_list(node->data.stmt_list.list);
 			scope_pop();
+			node->terminates = node->data.stmt_list.list->terminated;
 		break;
 
 		case t_stmt_var_stmt:
@@ -861,10 +862,12 @@ int check_stmt(is_stmt* node)
 
 		case t_stmt_if:
 			errors += check_if(node->data.if_stmt);
+			node->terminates = node->data.if_stmt->terminates;
 		break;
 
 		case t_stmt_loop:
 			errors += check_loop_stmt(node->data.loop);
+			node->terminates = node->data.loop->terminates;
 		break;
 
 		case t_stmt_func_call:
@@ -873,18 +876,22 @@ int check_stmt(is_stmt* node)
 
 		case t_stmt_switch:
 			errors += check_switch(node->data.switch_stmt);
+			node->terminates = node->data.switch_stmt->terminates;
 		break;
 
 		case t_stmt_break:
 			errors += check_break(node->data.break_stmt);
+			node->terminates = true;
 		break;
 
 		case t_stmt_continue:
 			errors += check_continue(node->data.continue_stmt);
+			node->terminates = true;
 		break;
 		
 		case t_stmt_return:
 			errors += check_return(node->data.return_stmt);
+			node->terminates = true;
 		break;
 	}
 
@@ -900,7 +907,7 @@ int check_stmt_list(is_stmt_list* node)
 		errors += check_stmt(node->node);
 		errors += check_stmt_list(node->next);
 
-		node->terminated = (node->node->type == t_stmt_return || node->node->type == t_stmt_continue || node->node->type == t_stmt_break);
+		node->terminated = node->node->terminates;
 
 		if (node->next)
 		{

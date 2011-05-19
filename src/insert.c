@@ -278,6 +278,8 @@ is_do_while *insert_do_while(is_stmt* body, is_expr* cond)
 
 	/* semantics */
 	node->scope = NULL;
+	node->terminates = false;
+
 	return node;
 }
 
@@ -440,6 +442,7 @@ is_for* insert_for(is_for_init *init, is_for_cond *cond, is_for_inc *inc, is_stm
 		
 	/* semantics */
 	node->scope = NULL;
+	node->terminates = false;
 
 	return node;
 }
@@ -557,7 +560,7 @@ is_func_def_arg_list* insert_func_def_arg_list(is_func_def_arg* arg, is_func_def
 	node->next = next;
 	node->line = arg->line;
 
-	/* semantics*/
+	/* semantics */
 	node->length = 0;
 	return node;
 }
@@ -565,11 +568,14 @@ is_func_def_arg_list* insert_func_def_arg_list(is_func_def_arg* arg, is_func_def
 is_if* insert_if(is_expr* cond, is_stmt* then_body, is_stmt* else_body)
 {
 	is_if *node = (is_if*)malloc(sizeof(is_if));
+
 	node->cond = cond;
 	node->then_body = then_body;
 	node->else_body = else_body;
 	node->line = cond->line;
 
+	/* semantics */
+	node->terminates = false;
 	return node;
 }
 
@@ -601,6 +607,8 @@ is_loop_stmt* insert_loop_stmt_for(is_id* loop_label, is_for* for_stmt)
 	else
 		node->line = for_stmt->line;
 
+	/* semantics */
+	node->terminates = false;
 	return node;
 }
 
@@ -617,6 +625,8 @@ is_loop_stmt* insert_loop_stmt_while(is_id* loop_label, is_while* while_stmt)
 	else
 		node->line = while_stmt->line;
 
+	/* semantics */
+	node->terminates = false;
 	return node;
 }
 
@@ -633,6 +643,8 @@ is_loop_stmt* insert_loop_stmt_do_while(is_id* loop_label, is_do_while* do_while
 	else
 		node->line = do_while_stmt->line;
 
+	/* semantics */
+	node->terminates = false;
 	return node;
 }
 
@@ -692,7 +704,9 @@ is_stmt* insert_stmt_stmt_list(is_stmt_list* stmt_list)
 	node->type = t_stmt_stmt_list;
 	node->data.stmt_list.list = stmt_list;
 	node->line = stmt_list->line;
-
+	
+	/* semantics */
+	node->terminates = false;
 	return node;
 }
 
@@ -704,6 +718,8 @@ is_stmt* insert_stmt_var_stmt(is_var_stmt* var_stmt)
 	node->data.var = var_stmt;
 	node->line = var_stmt->line;
 
+	/* semantics */
+	node->terminates = false;
 	return node;
 }
 
@@ -715,6 +731,8 @@ is_stmt* insert_stmt_assign_op(is_assign_op* assign_op)
 	node->data.assign = assign_op;
 	node->line = assign_op->line;
 
+	/* semantics */
+	node->terminates = false;
 	return node;
 }
 
@@ -726,6 +744,8 @@ is_stmt* insert_stmt_incr_op(is_incr_op* incr_op)
 	node->data.incr = incr_op;
 	node->line = incr_op->line;
 
+	/* semantics */
+	node->terminates = false;
 	return node;
 }
 
@@ -737,6 +757,8 @@ is_stmt* insert_stmt_if(is_if* if_stmt)
 	node->data.if_stmt = if_stmt;
 	node->line = if_stmt->line;
 
+	/* semantics */
+	node->terminates = false;
 	return node;
 }
 
@@ -748,6 +770,8 @@ is_stmt* insert_stmt_loop_stmt(is_loop_stmt* loop_stmt)
 	node->data.loop = loop_stmt;
 	node->line = loop_stmt->line;
 
+	/* semantics */
+	node->terminates = false;
 	return node;
 }
 
@@ -759,6 +783,8 @@ is_stmt* insert_stmt_func_call(is_func_call* func_call)
 	node->data.func_call = func_call;
 	node->line = func_call->line;
 
+	/* semantics */
+	node->terminates = false;
 	return node;
 }
 
@@ -770,6 +796,8 @@ is_stmt* insert_stmt_switch(is_switch* switch_stmt)
 	node->data.switch_stmt = switch_stmt;
 	node->line = switch_stmt->line;
 
+	/* semantics */
+	node->terminates = false;
 	return node;
 }
 
@@ -781,6 +809,8 @@ is_stmt* insert_stmt_break(is_break* break_stmt)
 	node->data.break_stmt = break_stmt;
 	node->line = break_stmt->line;
 
+	/* semantics */
+	node->terminates = false;
 	return node;
 }
 
@@ -792,6 +822,8 @@ is_stmt* insert_stmt_continue(is_continue* continue_stmt)
 	node->data.continue_stmt = continue_stmt;
 	node->line = continue_stmt->line;
 
+	/* semantics */
+	node->terminates = false;
 	return node;
 }
 
@@ -803,6 +835,8 @@ is_stmt* insert_stmt_return(is_return* return_stmt)
 	node->data.return_stmt = return_stmt;
 	node->line = return_stmt->line;
 
+	/* semantics */
+	node->terminates = false;
 	return node;
 }
 
@@ -885,7 +919,6 @@ is_type_decl* new_type_decl_object_dims(int line, is_type_object* object, is_dim
 
 	node->type = t_type_decl_array_decl;
 	node->line = line;
-
 
 	length = dims->sized->length + dims->empty->size;
 	node->data.array = insert_array_decl(
@@ -1129,5 +1162,7 @@ is_while* insert_while(is_expr* cond, is_stmt* body)
 
 	/* semantics */
 	node->scope = NULL;
+	node->terminates = false;
+
 	return node;
 }
