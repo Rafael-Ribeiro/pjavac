@@ -1,9 +1,7 @@
 class a
 {
-	int main()
+	void main()
 	{
-		int b;
-
-		b = (long)3;
+		int[][] b = {{}};
 	}
 }
