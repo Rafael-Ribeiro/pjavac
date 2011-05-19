@@ -2,6 +2,6 @@ class a
 {
 	int f()
 	{
-		int a = 1.0, b= int(1);
+		int a = new int[1.0], b = (int)1;
 	}
 }
