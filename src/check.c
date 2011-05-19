@@ -808,10 +808,14 @@ int check_return(is_return* node)
 		symbol = scope_get_symbol(symtab, t_symbol_func);
 		if (!type_type_equal(typeR, symbol->data.func_data.type))
 		{
+			typeA = string_type_decl(typeR);
+
+			typeB = string_type_decl(symbol->data.func_data.type);
+
 			errors++;
 			pretty_error(node->line, "invalid return type %s should be of type %s",
-				typeA = string_type_decl(typeR),
-				typeB = string_type_decl(symbol->data.func_data.type)
+				typeA,
+				typeB
 			);
 
 			free(typeA);
@@ -878,7 +882,6 @@ int check_stmt(is_stmt* node)
 			errors += check_return(node->data.return_stmt);
 		break;
 	}
-	/* TODO */
 
 	return errors;
 }
@@ -945,15 +948,26 @@ int check_ternary_op(is_ternary_op* node)
 int check_type_decl(is_type_decl* node)
 {
 	int errors = 0;
-	/* TODO */
 
+	switch (node->type)
+	{
+		case t_type_decl_type_object:
+			errors += check_type_object(node->data.type_object);
+		break;
+
+		case t_type_decl_array_decl:
+			errors += check_array_decl(node->data.array);
+		break;	
+	}	
 	return errors;
 }
 
 int check_type_object(is_type_object* node)
 {
 	int errors = 0;
-	/* TODO */
+
+	/* FIXME */	
+	/*errors += check_type_native(node->type); */
 
 	return errors;
 }
@@ -969,7 +983,74 @@ int check_unary_op(is_unary_op* node)
 int check_var(is_var* node)
 {
 	int errors = 0;
-	/* TODO */
+	char *typeA;
+	SYMBOL* symbol;
+
+	switch (node->type)
+	{
+		case t_var_id:
+			symbol = scope_lookup(symtab, node->data.id->name, t_symbol_var);
+			if (!symbol)
+			{
+				errors++;
+				pretty_error(node->line, "undefined variable %s", node->data.id->name);
+				node->initialized = false;
+			} else
+			{
+				node->initialized = symbol->data.var_data.initialized;
+				node->s_type = duplicate_type_decl(symbol->data.var_data.type);
+			}
+		break;
+
+		case t_var_new_op:
+			errors += check_new_op(node->data.new_op);
+			node->s_type = duplicate_type_decl(node->data.new_op->s_type);
+			node->initialized = false;
+		break;
+
+		case t_var_array:
+			errors += check_var(node->data.array.var);
+			errors += check_dims_sized(node->data.array.dims);
+
+			if (errors == 0)
+			{
+				if (node->data.array.var->s_type->type == t_type_decl_array_decl)
+				{
+					node->s_type = duplicate_type_decl(node->data.array.var->s_type);
+					node->s_type->data.array->dims->size--;
+				} else
+				{
+					errors++;
+					pretty_error(node->line, "subscript of unsuscriptable type (%s)",
+						typeA = string_type_decl(node->data.array.var->s_type)
+					);
+					free(typeA);
+				}
+			}
+		break;
+
+		case t_var_func_call:
+			errors += check_func_call(node->data.func_call.call);
+			errors += check_dims_sized(node->data.array.dims);
+
+			if (errors == 0)
+			{
+				if (node->data.func_call.call->s_type->type == t_type_decl_array_decl)
+				{
+					node->s_type = duplicate_type_decl(node->data.func_call.call->s_type);
+					node->s_type->data.array->dims->size--;
+				} else
+				{
+					errors++;
+					pretty_error(node->line, "subscript of unsuscriptable type (%s)",
+						typeA = string_type_decl(node->data.func_call.call->s_type)
+					);
+					free(typeA);
+				}
+			}
+		break;
+	}
+
 	/* todo propagate node->initialized */
 	return errors;
 }

@@ -3,6 +3,7 @@
 #include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdio.h>
 
 #include "inc/structures.h"
 #include "inc/utils.h"
@@ -509,7 +510,8 @@ is_type_native operators_unary[MAX_OPERATORS_UNARY][MAX_NATIVE_TYPES-1] =
 
 char *string_type_native(is_type_native* type)
 {
-	char strings[][8] = { "boolean", "byte", "char", "double", "float", "int", "long", "short", "string", "void"};
+	char strings[][8] = {"boolean", "byte", "char", "double", "float", "int", "long", "short", "string", "void"};
+	printf("%d\n", *type);
 	return __strdup(strings[*type]);
 }
 
@@ -526,7 +528,7 @@ char *string_array_decl(is_array_decl* array)
 	char *native, *val;
 	int size, i;
 
-	native = string_type_native(&array->type->type);
+	native = string_type_native(&(array->type->type));
 	size = strlen(native) + 2*(array->dims->size)+1;
 
 	val = (char*)malloc(sizeof(char)*size);
