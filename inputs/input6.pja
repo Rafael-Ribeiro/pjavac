@@ -2,6 +2,6 @@ class a
 {
 	void main()
 	{
-		int[][] b = {{}};
+		int[][] b = {new int[(int)2]};
 	}
 }

@@ -881,13 +881,16 @@ is_ternary_op* insert_ternary_op(is_expr* cond, is_expr* then_expr, is_expr* els
 is_type_decl* new_type_decl_object_dims(int line, is_type_object* object, is_dims* dims)
 {
 	is_type_decl* node = (is_type_decl*)malloc(sizeof(is_type_decl));
+	int length;
 
 	node->type = t_type_decl_array_decl;
 	node->line = line;
 
+
+	length = dims->sized->length + dims->empty->size;
 	node->data.array = insert_array_decl(
 		duplicate_type_object(object),
-		new_dims_empty_list(line, dims->sized->length + dims->empty->size)
+		new_dims_empty_list(line, length)
 	);
 
 	return node;
