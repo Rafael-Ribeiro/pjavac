@@ -9,6 +9,7 @@
 #include "inc/utils.h"
 #include "inc/symtab.h"
 #include "inc/duplicate.h"
+#include "inc/free.h"
 
 /*
 	SYMBOLS
@@ -53,14 +54,14 @@ SYMBOL* symbol_new_func(char* id, int line, is_type_decl *retval, is_func_def_ar
 	return symbol;
 }
 
-SYMBOL* symbol_new_label(char* id, int line /*, ...*/)
+/* TODO: store is_loop_stmt* for code generation */ 
+SYMBOL* symbol_new_loop(int line/*, is_loop_stmt* loop*/)
 {
 	SYMBOL* symbol = (SYMBOL*)malloc(sizeof(SYMBOL));
-	symbol->id = __strdup(id);
-	symbol->type = t_symbol_label;
-	symbol->line = line;
 
-	/* TODO */
+	symbol->id = NULL;
+	symbol->type = t_symbol_loop;
+	symbol->line = line;
 
 	return symbol;
 }
@@ -77,9 +78,24 @@ SYMBOL* symbol_new_class(char* id, int line)
 
 void symbol_delete(SYMBOL* symbol)
 {
-	free(symbol->id);
+	free(symbol->id);	
 
-	/* TODO!!! free(...) */
+	switch (symbol->type)
+	{
+		case t_symbol_var:
+			free_type_decl(symbol->data.var_data.type);
+			break;
+
+		case t_symbol_class:
+			
+			break;
+
+		case t_symbol_loop:
+			break;
+
+		case t_symbol_func:
+			break;
+	}
 
 	free(symbol);
 }
@@ -104,14 +120,14 @@ SYMBOL* symbol_lookup(NODE* node, char* id)
 /*
 	SCOPES
 */
-SCOPE* scope_new(SYMBOL* symbol,bool global)
+SCOPE* scope_new(SYMBOL* name,bool global)
 {
 	int i;
 
 	SCOPE* scope = (SCOPE*)malloc(sizeof(SCOPE));
 	scope->parent = NULL;
 	scope->global = global;
-	scope->symbol = symbol;
+	scope->symbol = name;
 
 	for (i = 0; i < MAX_SYMBOL_TYPES; i++)
 		scope->node[i] = NULL;
@@ -166,15 +182,18 @@ SYMBOL* scope_local_lookup(SCOPE* scope, char *id, type_symbol type)
 	return symbol;
 }
 
-SYMBOL* scope_get_symbol(SCOPE* scope, type_symbol type)
+SCOPE* scope_get_by_name(SCOPE* scope, char *id, type_symbol type)
 {
-	SYMBOL* symbol = NULL;
+	SYMBOL* name = NULL;
 
-	symbol = scope->symbol;
-	if ((!symbol || symbol->type != type) && scope->parent)
-		return scope_get_symbol(scope->parent, type); 
+	name = scope->symbol;
+	if (name && name->type == type && ((id == NULL) || (name-> id  && strcmp(id, name->id) == 0)))
+		return scope;
 
-	return symbol;
+	else if (scope->parent)
+		return scope_get_by_name(scope, id, type);
+	
+	return NULL;
 }
 
 /*

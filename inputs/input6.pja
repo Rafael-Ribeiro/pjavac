@@ -1,7 +1,7 @@
 class a
 {
-	int f()
+	int main()
 	{
-		int a = new int[1.0], b = (int)1;
+		break;
 	}
 }

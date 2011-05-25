@@ -166,10 +166,27 @@ int check_binary_op(is_binary_op* node)
 int check_break(is_break* node)
 {
 	int errors = 0;
-	/* TODO check if inside a loop */
+	SCOPE* scope;
 
 	if (node->label)
-		errors += check_label(node->label);
+	{
+		pretty_error(node->line, "labels are not supported at this time");		
+		errors++;
+		/* TODO: 
+			errors += check_label(node->label);
+		*/
+	}
+
+	if (errors == 0)
+	{
+		scope = scope_get_by_name(symtab, NULL, t_symbol_loop);
+
+		if (!scope)
+		{
+			errors++;
+			pretty_error(node->line, "break stmt outside of loop", node->label);		
+		}
+	}
 
 	return errors;
 }
@@ -320,23 +337,22 @@ int check_do_while(is_do_while* node)
 {
 	int errors = 0;
 
-	node->scope = scope_new(NULL, false);
+	node->scope = scope_new(symbol_new_loop(node->line), false);
 	scope_push(node->scope);
 		errors += check_stmt(node->body);
 		if (errors == 0)
 			node->terminates = node->body->terminates;
-	scope_pop();
 
-	errors += check_expr(node->cond);
-	if (errors == 0)
-	{
-		if (!type_native_assign_able(t_type_native_bool, node->cond->s_type))
+		errors += check_expr(node->cond);
+		if (errors == 0)
 		{
-			errors++;
-			pretty_error(node->line, "invalid do..while condition (must be boolean)");
+			if (!type_native_assign_able(t_type_native_bool, node->cond->s_type))
+			{
+				errors++;
+				pretty_error(node->line, "invalid do..while condition (must be boolean)");
+			}
 		}
-	}
-	
+	scope_pop();
 	return errors;
 }
  
@@ -459,7 +475,7 @@ int check_for(is_for* node)
 	int errors = 0, cond_errors;
 	char* typeA;
 
-	node->scope = scope_new(NULL, false);
+	node->scope = scope_new(symbol_new_loop(node->line), false);
 	scope_push(node->scope);
 		if (node->init)
 			errors += check_for_init(node->init);	
@@ -478,7 +494,7 @@ int check_for(is_for* node)
 			}
 			errors += cond_errors;
 		}
-		
+	
 		if (node->inc)
 			errors += check_for_inc(node->inc);
 
@@ -779,10 +795,13 @@ int check_loop_stmt(is_loop_stmt* node)
 		break;
 	}
 
-	/*
-		TODO:
-		propagate loop terminates, only if node condition is ALWAYS true
-	*/
+	if (errors == 0)
+	{
+		/*
+			TODO:
+			propagate loop terminates, only if node condition is ALWAYS true
+		*/
+	}
 	return errors;
 }
  
@@ -820,7 +839,9 @@ int check_new_op(is_new_op* node)
 int check_return(is_return* node)
 {
 	int errors = 0;
+	SCOPE* scope;
 	SYMBOL* symbol;
+
 	is_type_decl *type = NULL, *typeR;
 	char *typeA, *typeB;
 
@@ -836,7 +857,7 @@ int check_return(is_return* node)
 
 	if (errors == 0)
 	{
-		symbol = scope_get_symbol(symtab, t_symbol_func);
+		scope = scope_get_by_name(symtab, NULL, t_symbol_func);
 		if (!type_type_equal(typeR, symbol->data.func_data.type))
 		{
 			typeA = string_type_decl(typeR);
@@ -1226,19 +1247,19 @@ int check_while(is_while* node)
 	int errors = 0;
 	char *string;
 	
-	errors += check_expr(node->cond);
-	if (errors == 0)
-	{
-		if (!type_native_assign_able(t_type_native_bool, node->cond->s_type))
-		{
-			errors++;
-			pretty_error(node->line, "invalid while condition: expected boolean, got %s", string = string_type_decl(node->cond->s_type));
-			free(string);
-		}
-	}
-
-	node->scope = scope_new(NULL, false);
+	node->scope = scope_new(symbol_new_loop(node->line), false);
 	scope_push(node->scope);
+		errors += check_expr(node->cond);
+		if (errors == 0)
+		{
+			if (!type_native_assign_able(t_type_native_bool, node->cond->s_type))
+			{
+				errors++;
+				pretty_error(node->line, "invalid while condition: expected boolean, got %s", string = string_type_decl(node->cond->s_type));
+				free(string);
+			}
+		}
+
 		errors += check_stmt(node->body);
 		node->terminates = node->body->terminates;
 	scope_pop();

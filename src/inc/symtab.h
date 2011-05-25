@@ -7,7 +7,7 @@ typedef enum
 	t_symbol_var = 0,
 	t_symbol_func = 1,
 	t_symbol_class = 2,
-	t_symbol_label = 3
+	t_symbol_loop = 3
 } type_symbol;
 
 typedef struct _SYMBOL
@@ -36,7 +36,7 @@ typedef struct _SYMBOL
 
 		struct
 		{
-		} label_data;
+		} loop_data;
 */
 	} data;
 } SYMBOL;
@@ -71,7 +71,7 @@ typedef struct _SCOPE
 */
 SYMBOL* symbol_new_var(char* id, int line, is_type_decl *type);
 SYMBOL* symbol_new_func(char* id, int line, is_type_decl *retval, is_func_def_args* args);
-SYMBOL* symbol_new_label(char* id, int line /*, ...*/);
+SYMBOL* symbol_new_loop(int line/* TODO */);
 SYMBOL* symbol_new_class(char* id, int line /*, ...*/);
 void symbol_delete(SYMBOL* symbol);
 SYMBOL* symbol_lookup(NODE* node, char* id);
@@ -80,7 +80,7 @@ SYMBOL* symbol_local_lookup(NODE* node, char* id);
 /*
 	SCOPES
 */
-SCOPE* scope_new(SYMBOL* symbol, bool global);
+SCOPE* scope_new(SYMBOL* name, bool global);
 void scope_push(SCOPE* scope);
 void scope_pop();
 void scope_delete(SCOPE* scope);
@@ -88,7 +88,7 @@ void scope_delete(SCOPE* scope);
 SYMBOL* scope_insert(SCOPE* scope, SYMBOL* symbol);
 SYMBOL* scope_lookup(SCOPE* scope, char *id, type_symbol type);
 SYMBOL* scope_local_lookup(SCOPE* scope, char *id, type_symbol type);
-SYMBOL* scope_get_symbol(SCOPE* scope, type_symbol type);
+SCOPE* scope_get_by_name(SCOPE* scope, char *id, type_symbol type);
 
 /*
 	AVL
