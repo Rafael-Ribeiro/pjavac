@@ -191,7 +191,7 @@ SCOPE* scope_get_by_name(SCOPE* scope, char *id, type_symbol type)
 		return scope;
 
 	else if (scope->parent)
-		return scope_get_by_name(scope, id, type);
+		return scope_get_by_name(scope->parent, id, type);
 	
 	return NULL;
 }

@@ -184,7 +184,7 @@ int check_break(is_break* node)
 		if (!scope)
 		{
 			errors++;
-			pretty_error(node->line, "break stmt outside of loop", node->label);		
+			pretty_error(node->line, "break stmt outside of loop or case", node->label);		
 		}
 	}
 
@@ -272,11 +272,27 @@ int check_class_stmt_scope(is_class_stmt_scope* node)
 int check_continue(is_continue* node)
 {
 	int errors = 0;
-
-	/* TODO check if inside a loop */
+	SCOPE* scope;
 
 	if (node->label)
-		errors += check_label(node->label);
+	{
+		pretty_error(node->line, "labels are not supported at this time");		
+		errors++;
+		/* TODO: 
+			errors += check_label(node->label);
+		*/
+	}
+
+	if (errors == 0)
+	{
+		scope = scope_get_by_name(symtab, NULL, t_symbol_loop);
+
+		if (!scope)
+		{
+			errors++;
+			pretty_error(node->line, "continue stmt outside of loop", node->label);		
+		}
+	}
 
 	return errors;
 }
@@ -365,10 +381,11 @@ int check_expr(is_expr* node)
 	{
 		case t_expr_var:
 			errors += check_var(node->data.var);
-			node->s_type = duplicate_type_decl(node->data.var->s_type);
 
 			if (errors == 0)
 			{
+				node->s_type = duplicate_type_decl(node->data.var->s_type);
+
 				if (!node->data.var->initialized)
 				{
 					errors++;
@@ -858,6 +875,7 @@ int check_return(is_return* node)
 	if (errors == 0)
 	{
 		scope = scope_get_by_name(symtab, NULL, t_symbol_func);
+		symbol = scope->symbol;
 		if (!type_type_equal(typeR, symbol->data.func_data.type))
 		{
 			typeA = string_type_decl(typeR);
@@ -884,6 +902,10 @@ int check_return(is_return* node)
 int check_stmt(is_stmt* node)
 {
 	int errors = 0;
+
+	/* ; empty statement */
+	if (!node)
+		return 0;
 
 	switch (node->type)
 	{
@@ -974,6 +996,9 @@ int check_stmt_list(is_stmt_list* node)
 int check_switch(is_switch* node)
 {
 	int errors = 0;
+	errors += 1;
+	pretty_error(node->line, "switch statement's are not supported yet");
+
 	/* TODO: propagate terminates*/
 
 	return errors;
