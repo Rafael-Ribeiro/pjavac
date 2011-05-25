@@ -1,0 +1,16 @@
+class teste
+{
+	/**
+	 * @param args
+	 */
+	public static void main(String[] args)
+	{
+		for (;;)
+		{
+			for (;;)
+				break label;
+			continue label;	
+		}
+	}
+}
+
