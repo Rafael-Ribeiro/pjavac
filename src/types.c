@@ -663,12 +663,21 @@ bool type_var_init_assign_able(is_type_decl *type, int nDimensions, is_var_initi
 			 * init->data.array is never NULL;
 			 * duplicate type_decl of the first var_initializer and update "parent" var_initializer	
 			 */
-			init->s_type = duplicate_type_decl(init->data.array->node->s_type);
+			if (init->data.array->node->s_type)
+				init->s_type = duplicate_type_decl(init->data.array->node->s_type);
+			else /* if s_type is NULL, then something went wrong */
+			{
+				free_type_decl(dupType);
+				return false;
+			}
 		break;
 
 		case t_var_initializer_expr:
-			if (type_type_assign_able(dupType, init->data.expr->s_type))
-				/* propagate s_type to var_initializer */
+			if (init->data.expr->s_type && type_type_assign_able(dupType, init->data.expr->s_type))
+				/* 
+				 * propagate s_type to var_initializer if s_type exists and types are assignable;
+				 * otherwise, something went wrong
+				 */
 				init->s_type = init->data.expr->s_type;
 			else
 			{
