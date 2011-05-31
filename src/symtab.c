@@ -14,7 +14,7 @@
 /*
 	SYMBOLS
 */
-SYMBOL* symbol_new_var(char* id, int line, is_type_decl *type)
+SYMBOL* symbol_new_var(char* id, int line, is_type_decl *type, bool global, int framepos)
 {
 	SYMBOL* symbol = (SYMBOL*)malloc(sizeof(SYMBOL));
 
@@ -24,6 +24,8 @@ SYMBOL* symbol_new_var(char* id, int line, is_type_decl *type)
 
 	symbol->data.var_data.type = duplicate_type_decl(type);
 	symbol->data.var_data.initialized = false;
+	symbol->data.var_data.global = global;
+	symbol->data.var_data.framepos = framepos;
 
 	return symbol;
 }
@@ -138,6 +140,12 @@ SCOPE* scope_new(SYMBOL* name,bool global)
 void scope_push(SCOPE* scope)
 {
 	scope->parent = symtab;
+
+	if (symtab)
+		scope->framepos = 0;
+	else
+		scope->framepos = symtab->framepos;
+
 	symtab = scope;
 }
 

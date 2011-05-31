@@ -2,6 +2,8 @@
 #include <stdbool.h>
 #include <stdlib.h>
 
+#define CHECK_C
+
 #include "inc/structures.h"
 #include "inc/utils.h"
 #include "inc/symtab.h"
@@ -20,8 +22,16 @@ int check_constant(is_constant* node)
 			node->s_type = insert_type_decl_object(insert_type_object(t_type_native_bool));
 		break;
 
+		case t_constant_int:
+			node->s_type = insert_type_decl_object(insert_type_object(t_type_native_int));
+		break;
+
 		case t_constant_long:
 			node->s_type = insert_type_decl_object(insert_type_object(t_type_native_long));
+		break;
+
+		case t_constant_float:
+			node->s_type = insert_type_decl_object(insert_type_object(t_type_native_float));
 		break;
 
 		case t_constant_double:
@@ -44,6 +54,7 @@ int check_constant(is_constant* node)
 /* nodes */
 int check_application(is_application* node)
 {
+	globalpos = 0; 
 	return check_class_def(node);
 }
 
@@ -580,7 +591,7 @@ int check_for_init(is_for_init* node)
 	switch (node->type)
 	{
 		case t_for_init_var_defs:
-			errors += check_var_defs(node->data.var_defs);
+			errors += check_var_defs(node->data.var_defs, false);
 			break;
 
 		case t_for_init_for_expr_list:
@@ -704,7 +715,7 @@ int check_func_def_arg(is_func_def_arg* node)
 			errors++;
 		} else
 		{
-			symbol = scope_insert(symtab, symbol_new_var(node->id->name, node->line, node->type));
+			symbol = scope_insert(symtab, symbol_new_var(node->id->name, node->line, node->type, false, symtab->framepos++));
 			symbol->data.var_data.initialized = true;
 		}
 	}
@@ -829,7 +840,8 @@ int check_member_stmt(is_member_stmt* node, bool first_pass)
 	switch (node->type)
 	{
 		case t_member_stmt_var:
-			errors += check_var_stmt(node->data.var, first_pass);
+			if (first_pass)
+				errors += check_var_stmt(node->data.var, true);
 		break;
 
 		case t_member_stmt_func_def:
@@ -918,7 +930,7 @@ int check_stmt(is_stmt* node)
 		break;
 
 		case t_stmt_var_stmt:
-			errors += check_var_stmt(node->data.var, true);
+			errors += check_var_stmt(node->data.var, false);
 		break;
 
 		case t_stmt_assign:
@@ -1171,7 +1183,7 @@ int check_var_def_left(is_var_def_left* node)
 	return errors;
 }
 
-int check_var_defs(is_var_defs* node)
+int check_var_defs(is_var_defs* node, bool first_pass)
 {
 	int errors = 0;
 
@@ -1209,7 +1221,10 @@ int check_var_defs(is_var_defs* node)
 			} else /* no dims updates are needed; even if the type is "dimmed" this is only a copy of the type */
 				type = duplicate_type_decl(node->type);
 
-			symbol = scope_insert(symtab, symbol_new_var(it->node->left->id->name, node->line, type));
+			if (first_pass)
+				symbol = scope_insert(symtab, symbol_new_var(it->node->left->id->name, node->line, type, true, globalpos++));
+			else
+				symbol = scope_insert(symtab, symbol_new_var(it->node->left->id->name, node->line, type, false, symtab->framepos++));
 
 			if (it->node->var_init) /* check initialization if it exists */
 			{
@@ -1230,10 +1245,7 @@ int check_var_defs(is_var_defs* node)
 
 int check_var_stmt(is_var_stmt* node, bool first_pass)
 {
-	if (first_pass)
-		return check_var_defs(node);
-
-	return 0;
+	return check_var_defs(node, first_pass);
 }
 
 int check_var_initializer(is_var_initializer* node)

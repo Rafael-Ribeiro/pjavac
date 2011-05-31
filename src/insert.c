@@ -31,6 +31,17 @@ is_constant* insert_constant_bool(bool value)
 	return node;
 }
 
+is_constant* insert_constant_int(int value)
+{
+	is_constant* node = (is_constant*)malloc(sizeof(is_constant));
+
+	node->type = t_constant_int;
+	node->value.int_val = value;
+	node->line = yyline;
+
+	return node;
+}
+
 is_constant* insert_constant_long(long long value)
 {
 	is_constant* node = (is_constant*)malloc(sizeof(is_constant));
@@ -48,6 +59,17 @@ is_constant* insert_constant_double(long double value)
 
 	node->type = t_constant_double;
 	node->value.double_val = value;
+	node->line = yyline;
+
+	return node;
+}
+
+is_constant* insert_constant_float(float value)
+{
+	is_constant* node = (is_constant*)malloc(sizeof(is_constant));
+
+	node->type = t_constant_float;
+	node->value.float_val = value;
 	node->line = yyline;
 
 	return node;

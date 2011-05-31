@@ -28,8 +28,16 @@ void show_constant(is_constant* node)
 				printf("false");
 			break;
 
+		case t_constant_int:
+			printf("%dL", node->value.int_val);
+			break;
+
 		case t_constant_long:
-			printf("%lld", node->value.long_val);
+			printf("%lldL", node->value.long_val);
+			break;
+
+		case t_constant_float:
+			printf("%.3f", node->value.float_val);
 			break;
 
 		case t_constant_double:

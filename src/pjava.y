@@ -593,6 +593,9 @@ int main()
 		{
 			printf("Valid semantics!\n");
 			show_application(main_application, 0);
+
+			printf("\n");
+			//translate_application(main_application);
 		}
 		scope_delete(symtab);
 	}

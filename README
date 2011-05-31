@@ -3,8 +3,9 @@ TODOs:
 		- array initializers only in declarations
 		- break/continue inside loops
 		- System.out.println() (manually included in symtab)
-		- check operators' types and returns
-		
+		- "terminated" bool after each block  
+		- main() prototype
+
 		---> symbols with the same name and different types
 		- functions with the same name as variables need to be allowed
 		- function overload
@@ -19,5 +20,18 @@ TODOs:
 			for (i= 0; i < n; i++)
 				int i;
 
-TODO:
-		terminated bool in all block stmts (if, for, etc) -> check input5.pja
+
+
+TODO Code Generation:
+		add frame counter to all variables (locals and globals)
+
+		local variable is accessed trough local frame
+		global variables are accessed trough global's table (--> make this a single "global" frame?) 
+
+		translate functions
+				-> caller defined?
+				-> calee defined?
+			+ headers
+			+ foooters
+				+ redirector?
+

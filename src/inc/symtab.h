@@ -21,6 +21,8 @@ typedef struct _SYMBOL
 		struct
 		{
 			is_type_decl *type;
+			int framepos;	/* position in the local/global frame */
+			bool global;
 			bool initialized;
 		} var_data;
 		struct
@@ -54,8 +56,11 @@ typedef struct _NODE
 typedef struct _SCOPE
 {
 	struct _SCOPE *parent;
-	SYMBOL* symbol; /* the "name" of this scope */
+	SYMBOL* symbol; /* the "name" of this scope, FIXME: currently unused? this was for labels */
 	bool global;
+
+	/* code generation */
+	int framepos;
 
 	NODE *node[MAX_SYMBOL_TYPES];
 } SCOPE;
@@ -69,7 +74,7 @@ typedef struct _SCOPE
 /*
 	SYMBOLS
 */
-SYMBOL* symbol_new_var(char* id, int line, is_type_decl *type);
+SYMBOL* symbol_new_var(char* id, int line, is_type_decl *type, bool global, int framepos);
 SYMBOL* symbol_new_func(char* id, int line, is_type_decl *retval, is_func_def_args* args);
 SYMBOL* symbol_new_loop(int line/* TODO */);
 SYMBOL* symbol_new_class(char* id, int line /*, ...*/);

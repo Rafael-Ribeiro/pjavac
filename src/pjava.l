@@ -31,11 +31,11 @@ JAVA_COMMENT		(\/\/[^\n]*\n)|(\/\*([^\/]|[^\*]\/)*\*\/)
 
 {JAVA_COMMENT}		{ int i=0; while (yytext[i]) if (yytext[i++] == '\n') yyline++; }
 
-{N8}+{INT_SPEC}*						{ yylval.val_constant = insert_constant_long(strtoll(yytext, NULL, 10)); return CONSTANT; } /* LITERALS */
-{N10}+{EXP}?{INT_SPEC}*					{ yylval.val_constant = insert_constant_long(strtoll(yytext, NULL, 8)); return CONSTANT; }
-0(x|X){N16}+{INT_SPEC}*					{ yylval.val_constant = insert_constant_long(strtoll(yytext, NULL, 16)); return CONSTANT; }
+{N8}+{INT_SPEC}*						{ if (yytext[strlen(yytext)-1] == 'l' || yytext[strlen(yytext)-1] == 'L') { yylval.val_constant = insert_constant_long(strtoll(yytext, NULL, 10)); } else { yylval.val_constant = insert_constant_int(strtol(yytext, NULL, 10)); } return CONSTANT; } /* LITERALS */
+{N10}+{EXP}?{INT_SPEC}*					{ if (yytext[strlen(yytext)-1] == 'l' || yytext[strlen(yytext)-1] == 'L') { yylval.val_constant = insert_constant_long(strtoll(yytext, NULL, 8)); } else { yylval.val_constant = insert_constant_int(strtol(yytext, NULL, 8)); } return CONSTANT;  }
+0(x|X){N16}+{INT_SPEC}*					{ if (yytext[strlen(yytext)-1] == 'l' || yytext[strlen(yytext)-1] == 'L') { yylval.val_constant = insert_constant_long(strtoll(yytext, NULL, 16)); } else { yylval.val_constant = insert_constant_int(strtol(yytext, NULL, 16)); } return CONSTANT;  }
 
-{N10}*"."{N10}+{EXP}?{FLOAT_SPEC}*		{ yylval.val_constant = insert_constant_double(strtold(yytext, NULL)); return CONSTANT; }
+{N10}*"."{N10}+{EXP}?{FLOAT_SPEC}*		{ if (yytext[strlen(yytext)-1] == 'f' || yytext[strlen(yytext)-1] == 'F') { yylval.val_constant = insert_constant_float(strtof(yytext, NULL)); } else { yylval.val_constant = insert_constant_double(strtold(yytext, NULL)); } return CONSTANT; }
 
 \'{CHAR}\'								{ yylval.val_constant = insert_constant_char(yytext); return CONSTANT; }
 {STRING_LITERAL}						{ yylval.val_constant = insert_constant_string(yytext); return CONSTANT; }

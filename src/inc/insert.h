@@ -8,7 +8,9 @@ char* __strcpy(const char*);
 is_id* insert_id(char* data);
 
 is_constant* insert_constant_bool(bool value);
+is_constant* insert_constant_int(int value);
 is_constant* insert_constant_long(long long value);
+is_constant* insert_constant_float(float value);
 is_constant* insert_constant_double(long double value);
 is_constant* insert_constant_char(char* value);
 is_constant* insert_constant_string(char* value);
