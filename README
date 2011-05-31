@@ -4,7 +4,8 @@ TODOs:
 		- break/continue inside loops
 		- System.out.println() (manually included in symtab)
 		- "terminated" bool after each block  
-		- main() prototype
+-->>>>	- main() prototype
+-->>>	CHECK TABLES
 
 		---> symbols with the same name and different types
 		- functions with the same name as variables need to be allowed

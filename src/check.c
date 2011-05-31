@@ -506,7 +506,7 @@ int check_for(is_for* node)
 	node->scope = scope_new(symbol_new_loop(node->line), false);
 	scope_push(node->scope);
 		if (node->init)
-			errors += check_for_init(node->init);	
+			errors += check_for_init(node->init);
 
 		if (node->cond)
 		{
@@ -626,6 +626,8 @@ int check_func_call(is_func_call* node)
 				pretty_error(node->line, "too %s arguments for %s, got %d expected %d (declaration is here: %d)",
 					node->args->length > symbol->data.func_data.nArgs ? "many" : "few",
 					node->id->name,
+					node->args->length,
+					symbol->data.func_data.nArgs,
 					symbol->line);
 
 				errors++;
@@ -648,6 +650,9 @@ int check_func_call(is_func_call* node)
 						free(typeB);
 					}
 				}
+
+				if (errors == 0)
+					node->s_type = duplicate_type_decl(symbol->data.func_data.type);
 			}
 		}
 	}
@@ -663,6 +668,8 @@ int check_func_call_arg_list(is_func_call_arg_list* node)
 int check_func_def(is_func_def* node, bool first_pass)
 {
 	SYMBOL* symbol;
+	SCOPE* tempscope;
+
 	int errors = 0;
 
 	if (first_pass)
@@ -675,16 +682,23 @@ int check_func_def(is_func_def* node, bool first_pass)
 			pretty_error(node->line, "symbol %s is already defined (previous declaration was here: %d)", node->id->name, symbol->line);
 			errors++;
 		} else
-			scope_insert(symtab, symbol = symbol_new_func(node->id->name, node->line, node->type, node->args));
+		{
+			tempscope = scope_new(NULL, false);
+			scope_push(tempscope);
+				errors += check_func_def_args(node->args);
+			scope_pop();
+			
+			symbol = symbol_new_func(node->id->name, node->line, node->type, node->args);
+			scope_delete(tempscope);
 
-		node->scope = scope_new(symbol, false);
-		scope_push(node->scope);
-			errors += check_func_def_args(node->args);
-		scope_pop();
+			scope_insert(symtab, symbol);
 
+			node->scope = scope_new(symbol, false);
+		}
 	} else
 	{
 		scope_push(node->scope);
+			errors += check_func_def_args(node->args); /* this will not give errors */
 			errors += check_stmt_list(node->body);
 			
 			if (!node->body->terminated &&
@@ -731,6 +745,11 @@ int check_func_def_arg_list(is_func_def_arg_list* node)
 	{
 		errors += check_func_def_arg(node->node);
 		errors += check_func_def_arg_list(node->next);
+
+		if (node->next)
+			node->length = node->next->length + 1;
+		else
+			node->length = 1;
 	}
 
 	return errors;

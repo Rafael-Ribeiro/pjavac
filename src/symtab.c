@@ -51,7 +51,7 @@ SYMBOL* symbol_new_func(char* id, int line, is_type_decl *retval, is_func_def_ar
 
 	symbol->data.func_data.args = (is_func_def_arg**)malloc(sizeof(is_func_def_arg*)*length);
 	for (i = 0, arg = args; i < length; i++, arg = arg->next)
-		symbol->data.func_data.args[0] = duplicate_func_def_arg(arg->node);
+		symbol->data.func_data.args[i] = duplicate_func_def_arg(arg->node);
 
 	return symbol;
 }
