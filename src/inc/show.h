@@ -22,7 +22,6 @@ void show_break(is_break* node);
 void show_class_def(is_class_def* node, int tablevel);
 void show_class_stmt(is_class_stmt* node, int tablevel); 
 void show_class_stmt_list(is_class_stmt_list* node, int tablevel); 
-void show_class_stmt_privacy(is_class_stmt_privacy val);
 void show_class_stmt_scope(is_class_stmt_scope* node); 
 void show_continue(is_continue* node);
 void show_dims(is_dims* node);

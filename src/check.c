@@ -73,6 +73,7 @@ int check_assign_op(is_assign_op* node)
 	int errors = 0;
 	char* typeA, *typeB;
 	is_type_native type;
+	SYMBOL* symbol;
 
 	check_var(node->var);
 	check_expr(node->expr);
@@ -92,7 +93,12 @@ int check_assign_op(is_assign_op* node)
 					free(typeA);
 					free(typeB);
 				} else
+				{
+					symbol = scope_lookup(symtab, node->var->data.id->name, t_symbol_var);
+					symbol->data.var_data.initialized = true;
+
 					node->s_type = duplicate_type_decl(node->var->s_type);
+				}
 			break;
 
 			default:

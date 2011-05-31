@@ -591,11 +591,11 @@ int main()
 		symtab = scope_new(NULL, true);
 		if (check_application(main_application) == 0)
 		{
-			printf("Valid semantics!\n");
-			show_application(main_application, 0);
+			//printf("Valid semantics!\n");
+			//show_application(main_application, 0);
 
-			printf("\n");
-			//translate_application(main_application);
+			//printf("\n");
+			translate_application(main_application);
 		}
 		scope_delete(symtab);
 	}
