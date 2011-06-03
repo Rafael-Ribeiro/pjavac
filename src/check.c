@@ -1266,7 +1266,6 @@ int check_var_def_left(is_var_def_left* node)
 
 int check_var_defs(is_var_defs* node, bool first_pass)
 {
-	/* FIXME: free type */
 	int errors = 0;
 
 	SYMBOL *symbol;
