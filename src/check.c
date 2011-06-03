@@ -15,8 +15,6 @@
 #include "inc/free.h"
 #include "inc/translate.h"
 
-int offset;
-
 /* LEX */
 int check_constant(is_constant* node)
 {
@@ -459,8 +457,6 @@ int check_expr(is_expr* node)
 		break;
 	}
 
-	node->offset = offset++;
-
 	return errors;
 }
 
@@ -755,7 +751,6 @@ int check_func_def(is_func_def* node, bool first_pass)
 	{
 		scope_push(node->scope);
 			errors += check_func_def_args(node->args); /* this will not give errors */
-			offset = node->scope->framepos; /* FIXME: no. of arguments should not count */
 			errors += check_stmt_list(node->body);
 			
 			if (!node->body->terminated &&
@@ -990,7 +985,6 @@ int check_return(is_return* node)
 int check_stmt(is_stmt* node)
 {
 	int errors = 0;
-	int tmp;
 
 	/* ; empty statement */
 	if (!node)
@@ -999,15 +993,11 @@ int check_stmt(is_stmt* node)
 	switch (node->type)
 	{
 		case t_stmt_stmt_list:
-			tmp = offset; /* re-use temporaries inside scope */
-
 			node->data.stmt_list.scope = scope_new(NULL, false);
 			scope_push(node->data.stmt_list.scope);
 				errors += check_stmt_list(node->data.stmt_list.list);
 			scope_pop();
 			node->terminates = node->data.stmt_list.list->terminated;
-
-			offset = tmp;
 		break;
 
 		case t_stmt_var_stmt:
@@ -1306,6 +1296,8 @@ int check_var_defs(is_var_defs* node, bool first_pass)
 				symbol = scope_insert(symtab, symbol_new_var(it->node->left->id->name, node->line, type, true, globalpos++));
 			else
 				symbol = scope_insert(symtab, symbol_new_var(it->node->left->id->name, node->line, type, false, symtab->framepos++));
+
+			it->node->left->symbol = symbol;
 
 			if (it->node->var_init) /* check initialization if it exists */
 			{

@@ -64,6 +64,7 @@ typedef struct _is_func_def_arg_list is_func_def_args;
 
 /* semantics */
 struct _SCOPE;
+struct _SYMBOL;
 
 typedef struct _is_array_decl
 {
@@ -98,6 +99,8 @@ typedef struct _is_assign_op
 
 	/* semantics */
 	struct _is_type_decl* s_type;
+
+	int temp;
 } is_assign_op;
 
 typedef enum
@@ -143,6 +146,9 @@ typedef struct _is_binary_op
 
 	/* semantics */
 	struct _is_type_decl* s_type;
+
+	/* code generation */
+	int temp;
 } is_binary_op;
 
 typedef struct _is_break
@@ -223,6 +229,9 @@ typedef struct _is_constant
 	} value;
 
 	struct _is_type_decl* s_type;
+
+	/* code generation */
+	int temp;
 } is_constant;
 
 typedef struct _is_continue
@@ -302,8 +311,8 @@ typedef struct _is_expr
 	/* semantics */
 	struct _is_type_decl* s_type;
 
-	/* code generation (offset within a frame) */
-	int offset;
+	/* code generation */
+	int temp;
 } is_expr;
 
 typedef struct _is_expr_list
@@ -338,6 +347,9 @@ typedef struct _is_expr_op
 
 	/* semantics */
 	struct _is_type_decl* s_type;
+	
+	/* code generation */
+	int temp;
 } is_expr_op;
 
 typedef struct _is_for
@@ -409,6 +421,9 @@ typedef struct _is_func_call
 
 	/* semantics */
 	struct _is_type_decl* s_type;
+
+	/* code generation */
+	int temp;
 } is_func_call;
 
 typedef struct _is_func_def
@@ -478,6 +493,9 @@ typedef struct _is_incr_op
 
 	/* semantics */
 	struct _is_type_decl* s_type;
+
+	/* code generation */
+	int temp;
 } is_incr_op;
 
 typedef enum
@@ -531,6 +549,9 @@ typedef struct _is_new_op
 
 	/* semantics */
 	struct _is_type_decl* s_type;
+
+	/* code generation */
+	int temp;
 } is_new_op;
 
 typedef struct _is_return
@@ -717,6 +738,9 @@ typedef struct _is_unary_op
 
 	/* semantics */
 	struct _is_type_decl* s_type;
+
+	/* code generation */
+	int temp;
 } is_unary_op;
 
 typedef enum
@@ -751,6 +775,9 @@ typedef struct _is_var
 	/* semantics */
 	struct _is_type_decl* s_type;
 	bool initialized;
+
+	/* code generation */
+	int temp;
 } is_var;
 
 typedef struct _is_var_def
@@ -775,6 +802,9 @@ typedef struct _is_var_def_left
 
 	struct _is_dims_empty_list* empty;		
 	struct _is_id* id;
+
+	/* semantics */
+	struct _SYMBOL* symbol;
 } is_var_def_left;
 
 typedef struct _is_var_defs
@@ -799,7 +829,9 @@ typedef struct _is_var_initializer
 	} data;
 
 	struct _is_type_decl* s_type;
-	int offset;
+
+	/* code generation */
+	int temp;
 } is_var_initializer;
 
 typedef struct _is_var_initializer_list
@@ -808,6 +840,8 @@ typedef struct _is_var_initializer_list
 
 	struct _is_var_initializer *node;
 	struct _is_var_initializer_list *next; /* nullable */
+
+	int temp;
 } is_var_initializer_list;
 
 typedef struct _is_while

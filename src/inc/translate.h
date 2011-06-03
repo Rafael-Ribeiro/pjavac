@@ -4,9 +4,11 @@
 #ifdef TRANSLATE_C
 	FILE *fout;
 	int label_counter;
+	int temp_counter;
 #else
 	extern FILE *fout;
 	extern int label_counter;
+	extern int temp_counter;
 #endif
 
 /* LEX */

@@ -1098,6 +1098,7 @@ is_var_def_left* insert_var_def_left(is_id* id, is_dims_empty_list* empty)
 	node->id = id;
 	node->empty = empty;
 	node->line = id->line;
+	node->symbol = NULL;
 
 	return node;
 }
