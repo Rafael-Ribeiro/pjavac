@@ -15,6 +15,8 @@
 #include "inc/free.h"
 #include "inc/translate.h"
 
+int offset;
+
 /* LEX */
 int check_constant(is_constant* node)
 {
@@ -395,7 +397,7 @@ int check_expr(is_expr* node)
 {
 	char *typeA, *typeB; 
 	int errors = 0;
-	
+
 	switch (node->type)
 	{
 		case t_expr_var:
@@ -456,6 +458,8 @@ int check_expr(is_expr* node)
 				node->s_type = duplicate_type_decl(node->data.operation->s_type);
 		break;
 	}
+
+	node->offset = offset++;
 
 	return errors;
 }
@@ -679,6 +683,7 @@ int check_func_def(is_func_def* node, bool first_pass)
 	SCOPE* tempscope;
 	int label;
 	int errors = 0;
+	is_type_decl *tmpType = NULL;
 
 	if (first_pass)
 	{
@@ -697,21 +702,65 @@ int check_func_def(is_func_def* node, bool first_pass)
 			scope_pop();
 			
 			if (strcmp(node->id->name, "main") == 0)
+			{
 				label = 0;
-			else
+
+				if (node->args) /* no args is valid */
+				{
+					if (!node->args->next) /* main may must not have more than two arguments */
+					{
+						tmpType = insert_type_decl_array(insert_array_decl(insert_type_object(t_type_native_string), new_dims_empty_list(0, 1))); /* must be an array of Strings */
+
+						if (!type_type_equal(tmpType,node->args->node->type))
+						{
+							errors++;
+							pretty_error(node->line, "main function arguments do not match any valid prototypes");
+						}
+
+						free_type_decl(tmpType);
+					} else
+					{
+						errors++;
+						pretty_error(node->line, "main function arguments do not match any valid prototypes");
+					}
+
+				}
+
+				tmpType = insert_type_decl_object(insert_type_object(t_type_native_int)); /* return value must be int or void */
+
+				if (!type_type_equal(tmpType,node->type))
+				{
+					free_type_decl(tmpType);
+
+					tmpType = new_type_decl_void(0); /* check for void */
+
+					if (!type_type_equal(tmpType,node->type)) /* none; errors occurred */
+					{
+						errors++;
+						pretty_error(node->line, "main function return value's type do not match any valid types (int or void)");
+					}
+
+				}
+				
+				free_type_decl(tmpType);
+			} else
 				label = ++label_counter;
 
-			symbol = symbol_new_func(node->id->name, node->line, node->type, node->args, label);
-			scope_delete(tempscope);
+			if (errors == 0)
+			{
+				symbol = symbol_new_func(node->id->name, node->line, node->type, node->args, label);
+				scope_delete(tempscope);
 
-			scope_insert(symtab, symbol);
+				scope_insert(symtab, symbol);
 
-			node->scope = scope_new(symbol, false);
+				node->scope = scope_new(symbol, false);
+			}
 		}
 	} else
 	{
 		scope_push(node->scope);
 			errors += check_func_def_args(node->args); /* this will not give errors */
+			offset = node->scope->framepos; /* FIXME: no. of arguments should not count */
 			errors += check_stmt_list(node->body);
 			
 			if (!node->body->terminated &&
@@ -946,6 +995,7 @@ int check_return(is_return* node)
 int check_stmt(is_stmt* node)
 {
 	int errors = 0;
+	int tmp;
 
 	/* ; empty statement */
 	if (!node)
@@ -954,11 +1004,15 @@ int check_stmt(is_stmt* node)
 	switch (node->type)
 	{
 		case t_stmt_stmt_list:
+			tmp = offset; /* re-use temporaries inside scope */
+
 			node->data.stmt_list.scope = scope_new(NULL, false);
 			scope_push(node->data.stmt_list.scope);
 				errors += check_stmt_list(node->data.stmt_list.list);
 			scope_pop();
 			node->terminates = node->data.stmt_list.list->terminated;
+
+			offset = tmp;
 		break;
 
 		case t_stmt_var_stmt:
@@ -1217,11 +1271,12 @@ int check_var_def_left(is_var_def_left* node)
 
 int check_var_defs(is_var_defs* node, bool first_pass)
 {
+	/* FIXME: free type */
 	int errors = 0;
 
 	SYMBOL *symbol;
 
-	is_type_decl *type;
+	is_type_decl *type = NULL;
 
 	is_var_def_list *it;
 

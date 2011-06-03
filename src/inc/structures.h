@@ -301,6 +301,9 @@ typedef struct _is_expr
 
 	/* semantics */
 	struct _is_type_decl* s_type;
+
+	/* code generation (offset within a frame) */
+	int offset;
 } is_expr;
 
 typedef struct _is_expr_list
