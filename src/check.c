@@ -707,7 +707,7 @@ int check_func_def(is_func_def* node, bool first_pass)
 
 				if (node->args) /* no args is valid */
 				{
-					if (!node->args->next) /* main may must not have more than two arguments */
+					if (node->args->length == 1) /* main may must not have more than two arguments */
 					{
 						tmpType = insert_type_decl_array(insert_array_decl(insert_type_object(t_type_native_string), new_dims_empty_list(0, 1))); /* must be an array of Strings */
 
@@ -723,7 +723,6 @@ int check_func_def(is_func_def* node, bool first_pass)
 						errors++;
 						pretty_error(node->line, "main function arguments do not match any valid prototypes");
 					}
-
 				}
 
 				tmpType = insert_type_decl_object(insert_type_object(t_type_native_int)); /* return value must be int or void */
@@ -737,24 +736,20 @@ int check_func_def(is_func_def* node, bool first_pass)
 					if (!type_type_equal(tmpType,node->type)) /* none; errors occurred */
 					{
 						errors++;
-						pretty_error(node->line, "main function return value's type do not match any valid types (int or void)");
+						pretty_error(node->line, "main function return type does not match any valid types (nor int nor void)");
 					}
-
 				}
 				
 				free_type_decl(tmpType);
 			} else
 				label = ++label_counter;
 
-			if (errors == 0)
-			{
-				symbol = symbol_new_func(node->id->name, node->line, node->type, node->args, label);
-				scope_delete(tempscope);
+			symbol = symbol_new_func(node->id->name, node->line, node->type, node->args, label);
+			scope_delete(tempscope);
 
-				scope_insert(symtab, symbol);
+			scope_insert(symtab, symbol);
 
-				node->scope = scope_new(symbol, false);
-			}
+			node->scope = scope_new(symbol, false);
 		}
 	} else
 	{
