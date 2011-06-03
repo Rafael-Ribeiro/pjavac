@@ -1,11 +1,13 @@
 #include <stdio.h>
 #include <stdbool.h>
+#include <stdlib.h>
 
 #define TRANSLATE_C
 
 #include "inc/structures.h"
 #include "inc/translate.h"
 #include "inc/symtab.h"
+#include "inc/types.h"
 
 #define OUT(...) fprintf(fout,__VA_ARGS__)
 
@@ -430,9 +432,11 @@ void translate_var_initializer(is_var_initializer* node)
 		break;
 
 		case t_var_initializer_expr:
-			OUT("\t_fp->locals[%d] = (%s*)malloc(sizeof(%d))\n",
+			typeA = string_type_decl(node->s_type);
+
+			OUT("\t_fp->locals[%d] = (%s*)malloc(sizeof(%s))\n",
 				node->offset,
-				typeA = string_type_decl(node->type),
+				typeA,
 				typeA
 			);
 			OUT("\t*((%s*)_fp->locals[%d] = %d\n",
