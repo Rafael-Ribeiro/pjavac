@@ -1142,7 +1142,6 @@ int check_type_object(is_type_object* node)
 {
 	int errors = 0;
 
-	/* FIXME */	
 	/*errors += check_type_native(node->type); */
 
 	return errors;
