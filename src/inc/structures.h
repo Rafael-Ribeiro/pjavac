@@ -799,6 +799,7 @@ typedef struct _is_var_initializer
 	} data;
 
 	struct _is_type_decl* s_type;
+	int offset;
 } is_var_initializer;
 
 typedef struct _is_var_initializer_list

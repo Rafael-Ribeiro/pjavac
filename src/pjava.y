@@ -591,7 +591,7 @@ int main()
 	{
 		symtab = scope_new(NULL, true);
 	
-		label_counter = 0;
+		label_counter = 0; /* 0 = main */
 		if (check_application(main_application) == 0)
 		{
 			//printf("Valid semantics!\n");
