@@ -1,6 +1,14 @@
 #ifndef TRANSLATE_H
 #define TRANSLATE_H
 
+#ifdef TRANSLATE_C
+	FILE *fout;
+	int label_counter;
+#else
+	extern FILE *fout;
+	extern int label_counter;
+#endif
+
 /* LEX */
 
 void translate_id(is_id* node);
@@ -31,6 +39,7 @@ void translate_do_while(is_do_while* node);
 void translate_expr(is_expr* node);
 void translate_expr_list(is_expr_list* node);
 void translate_expr_op(is_expr_op* node);
+void translate_footer();
 void translate_for(is_for* node);
 void translate_for_cond(is_for_cond* node);
 void translate_for_expr(is_for_expr* node); 
@@ -43,11 +52,13 @@ void translate_func_def(is_func_def* node);
 void translate_func_def_arg(is_func_def_arg* node);
 void translate_func_def_arg_list(is_func_def_arg_list* node);
 void translate_func_def_args(is_func_def_args* node);
+void translate_header();
 void translate_if(is_if* node);
 void translate_incr_op(is_incr_op* node);
 void translate_loop_stmt(is_loop_stmt* node); 
 void translate_member_stmt(is_member_stmt* node);
 void translate_new_op(is_new_op* node);
+void translate_redirector();
 void translate_return(is_return* node);
 void translate_stmt(is_stmt* node);
 void translate_stmt_list(is_stmt_list* node); 

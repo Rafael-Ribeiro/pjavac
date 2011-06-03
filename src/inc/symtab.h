@@ -30,6 +30,7 @@ typedef struct _SYMBOL
 			is_type_decl *type;
 			int nArgs;
 			is_func_def_arg **args;
+			int label; /* label counter */
 		} func_data;
 /*
 		struct
@@ -75,7 +76,7 @@ typedef struct _SCOPE
 	SYMBOLS
 */
 SYMBOL* symbol_new_var(char* id, int line, is_type_decl *type, bool global, int framepos);
-SYMBOL* symbol_new_func(char* id, int line, is_type_decl *retval, is_func_def_args* args);
+SYMBOL* symbol_new_func(char* id, int line, is_type_decl *retval, is_func_def_args* args, int label);
 SYMBOL* symbol_new_loop(int line/* TODO */);
 SYMBOL* symbol_new_class(char* id, int line /*, ...*/);
 void symbol_delete(SYMBOL* symbol);

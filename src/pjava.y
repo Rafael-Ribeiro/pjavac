@@ -9,6 +9,7 @@
 #include "inc/show.h"
 #include "inc/symtab.h"
 #include "inc/free.h"
+#include "inc/translate.h"
 
 is_application* main_application;
 bool has_errors;
@@ -589,12 +590,15 @@ int main()
 	if (main_application && !has_errors)
 	{
 		symtab = scope_new(NULL, true);
+	
+		label_counter = 0;
 		if (check_application(main_application) == 0)
 		{
 			//printf("Valid semantics!\n");
 			//show_application(main_application, 0);
 
 			//printf("\n");
+			fout = stdout;
 			translate_application(main_application);
 		}
 		scope_delete(symtab);

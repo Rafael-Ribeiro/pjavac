@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <stdlib.h>
+#include <string.h>
 
 #define CHECK_C
 
@@ -12,6 +13,7 @@
 #include "inc/insert.h"
 #include "inc/duplicate.h"
 #include "inc/free.h"
+#include "inc/translate.h"
 
 /* LEX */
 int check_constant(is_constant* node)
@@ -675,7 +677,7 @@ int check_func_def(is_func_def* node, bool first_pass)
 {
 	SYMBOL* symbol;
 	SCOPE* tempscope;
-
+	int label;
 	int errors = 0;
 
 	if (first_pass)
@@ -694,7 +696,12 @@ int check_func_def(is_func_def* node, bool first_pass)
 				errors += check_func_def_args(node->args);
 			scope_pop();
 			
-			symbol = symbol_new_func(node->id->name, node->line, node->type, node->args);
+			if (strcmp(node->id->name, "main") == 0)
+				label = 0;
+			else
+				label = ++label_counter;
+
+			symbol = symbol_new_func(node->id->name, node->line, node->type, node->args, label);
 			scope_delete(tempscope);
 
 			scope_insert(symtab, symbol);

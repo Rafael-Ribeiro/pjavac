@@ -30,7 +30,7 @@ SYMBOL* symbol_new_var(char* id, int line, is_type_decl *type, bool global, int 
 	return symbol;
 }
 
-SYMBOL* symbol_new_func(char* id, int line, is_type_decl *retval, is_func_def_args* args)
+SYMBOL* symbol_new_func(char* id, int line, is_type_decl *retval, is_func_def_args* args, int label)
 {
 	int i;
 	int length;
@@ -53,6 +53,7 @@ SYMBOL* symbol_new_func(char* id, int line, is_type_decl *retval, is_func_def_ar
 	for (i = 0, arg = args; i < length; i++, arg = arg->next)
 		symbol->data.func_data.args[i] = duplicate_func_def_arg(arg->node);
 
+	symbol->data.func_data.label = label;
 	return symbol;
 }
 

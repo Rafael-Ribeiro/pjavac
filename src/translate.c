@@ -1,14 +1,18 @@
 #include <stdio.h>
 #include <stdbool.h>
 
+#define TRANSLATE_C
+
 #include "inc/structures.h"
 #include "inc/translate.h"
+
+#define OUT(...) fprintf(fout,__VA_ARGS__)
 
 /* LEX */
 
 void translate_id(is_id* node)
 {
-	
+
 }
 
 void translate_constant(is_constant* node)
@@ -39,7 +43,9 @@ void translate_type_native(is_type_native val)
 /* nodes */
 void translate_application(is_application* node)
 {
+	translate_header();
 	
+	translate_footer();
 }
 
 void translate_array_decl(is_array_decl* node)
@@ -122,6 +128,19 @@ void translate_expr_op(is_expr_op* node)
 	
 }
 
+void translate_footer()
+{
+	OUT("\t_fp->retaddr = 1;\n");
+	OUT("\tgoto label_0;\n");
+	OUT("\n");
+	
+	translate_redirector();
+
+	OUT("label_1:\n");
+	OUT("\treturn 0;\n");
+	OUT("}\n");
+}
+
 void translate_for(is_for* node)
 {
 	
@@ -182,6 +201,27 @@ void translate_func_def_args(is_func_def_args* node)
 	
 }
 
+void translate_header()
+{
+	OUT("#include <stdio.h>\n");
+	OUT("#include <stdlib.h>\n");
+	OUT("#include <stdbool.h>\n");
+	OUT("#include <string.h>\n");
+	OUT("#include <strings.h>\n");
+	OUT("\n");
+	OUT("#include \"runtime/frame.h\"\n");
+	OUT("\n");
+	OUT("int main()\n");	/* TODO: main arguments */
+	OUT("{\n");
+	OUT("\tint _ra;\n");
+	OUT("\tFRAME _globals;\n");
+	OUT("\tFRAME *_fp = NULL;\n");
+	OUT("\n");
+
+	/* TODO: create main's frame */
+	OUT("\t\n");
+}
+
 void translate_if(is_if* node)
 {
 	
@@ -205,6 +245,17 @@ void translate_member_stmt(is_member_stmt* node)
 void translate_new_op(is_new_op* node)
 {
 	
+}
+
+void translate_redirector()
+{
+	int i;
+
+	for (i = 0; i < label_counter; i++)
+	{
+		OUT("\tif (_ra == %d)\n", i);
+		OUT("\t\tgoto label_%d;\n", i);
+	}
 }
 
 void translate_return(is_return* node)
