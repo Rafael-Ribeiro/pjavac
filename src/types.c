@@ -56,59 +56,59 @@ is_type_native operators_binary[MAX_OPERATORS_BINARY][MAX_NATIVE_TYPES-1][MAX_NA
 		/*	String	>>=	*/	{	ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					}
 	},
 
-	/* FIXME/TODO: t_assign_op_add_eq (+=) */
+	/* t_assign_op_add_eq (+=) */
 	{
 		/*						bool					, byte					, char					, double				, float					, int					, long					, short					, String					<- first operand */
 		/*	bool	+=	*/	{	ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					},
-		/*	byte	+=	*/	{	ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					},
-		/*	char	+=	*/	{	ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					},
-		/*	double	+=	*/	{	ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					},
-		/*	float	+=	*/	{	ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					},
-		/*	int		+=	*/	{	ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					},
-		/*	long	+=	*/	{	ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					},
-		/*	short	+=	*/	{	ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					},
-		/*	String	+=	*/	{	ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					}
+		/*	byte	+=	*/	{	ERROR					, t_type_native_byte	, t_type_native_byte	, t_type_native_byte	, t_type_native_byte	, t_type_native_byte	, t_type_native_byte	, t_type_native_byte	, ERROR					},
+		/*	char	+=	*/	{	ERROR					, t_type_native_char	, t_type_native_char	, t_type_native_char	, t_type_native_char	, t_type_native_char	, t_type_native_char	, t_type_native_char	, ERROR					},
+		/*	double	+=	*/	{	ERROR					, t_type_native_double	, t_type_native_double	, t_type_native_double	, t_type_native_double	, t_type_native_double	, t_type_native_double	, t_type_native_double	, ERROR					},
+		/*	float	+=	*/	{	ERROR					, t_type_native_float	, t_type_native_float	, t_type_native_float	, t_type_native_float	, t_type_native_float	, t_type_native_float	, t_type_native_float	, ERROR					},
+		/*	int		+=	*/	{	ERROR					, t_type_native_int		, t_type_native_int		, t_type_native_int		, t_type_native_int		, t_type_native_int		, t_type_native_int		, t_type_native_int		, ERROR					},
+		/*	long	+=	*/	{	ERROR					, t_type_native_long	, t_type_native_long	, t_type_native_long	, t_type_native_long	, t_type_native_long	, t_type_native_long	, t_type_native_long	, ERROR					},
+		/*	short	+=	*/	{	ERROR					, t_type_native_short	, t_type_native_short	, t_type_native_short	, t_type_native_short	, t_type_native_short	, t_type_native_short	, t_type_native_short	, ERROR					},
+		/*	String	+=	*/	{	t_type_native_string	, t_type_native_string	, t_type_native_string	, t_type_native_string	, t_type_native_string	, t_type_native_string	, t_type_native_string	, t_type_native_string	, t_type_native_string	}
 	},
 
-	/* FIXME/TODO: t_assign_op_sub_eq (-=) */
+	/* t_assign_op_sub_eq (-=) */
 	{
 		/*						bool					, byte					, char					, double				, float					, int					, long					, short					, String					<- first operand */
 		/*	bool	-=	*/	{	ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					},
-		/*	byte	-=	*/	{	ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					},
-		/*	char	-=	*/	{	ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					},
-		/*	double	-=	*/	{	ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					},
-		/*	float	-=	*/	{	ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					},
-		/*	int		-=	*/	{	ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					},
-		/*	long	-=	*/	{	ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					},
-		/*	short	-=	*/	{	ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					},
+		/*	byte	-=	*/	{	ERROR					, t_type_native_byte	, t_type_native_byte	, t_type_native_byte	, t_type_native_byte	, t_type_native_byte	, t_type_native_byte	, t_type_native_byte	, ERROR					},
+		/*	char	-=	*/	{	ERROR					, t_type_native_char	, t_type_native_char	, t_type_native_char	, t_type_native_char	, t_type_native_char	, t_type_native_char	, t_type_native_char	, ERROR					},
+		/*	double	-=	*/	{	ERROR					, t_type_native_double	, t_type_native_double	, t_type_native_double	, t_type_native_double	, t_type_native_double	, t_type_native_double	, t_type_native_double	, ERROR					},
+		/*	float	-=	*/	{	ERROR					, t_type_native_float	, t_type_native_float	, t_type_native_float	, t_type_native_float	, t_type_native_float	, t_type_native_float	, t_type_native_float	, ERROR					},
+		/*	int		-=	*/	{	ERROR					, t_type_native_int		, t_type_native_int		, t_type_native_int		, t_type_native_int		, t_type_native_int		, t_type_native_int		, t_type_native_int		, ERROR					},
+		/*	long	-=	*/	{	ERROR					, t_type_native_long	, t_type_native_long	, t_type_native_long	, t_type_native_long	, t_type_native_long	, t_type_native_long	, t_type_native_long	, ERROR					},
+		/*	short	-=	*/	{	ERROR					, t_type_native_short	, t_type_native_short	, t_type_native_short	, t_type_native_short	, t_type_native_short	, t_type_native_short	, t_type_native_short	, ERROR					},
 		/*	String	-=	*/	{	ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					}
 	},
 
-	/* FIXME/TODO: t_assign_op_mul_eq (*=) */
+	/* t_assign_op_mul_eq (*=) */
 	{
 		/*						bool					, byte					, char					, double				, float					, int					, long					, short					, String					<- first operand */
 		/*	bool	*=	*/	{	ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					},
-		/*	byte	*=	*/	{	ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					},
-		/*	char	*=	*/	{	ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					},
-		/*	double	*=	*/	{	ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					},
-		/*	float	*=	*/	{	ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					},
-		/*	int		*=	*/	{	ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					},
-		/*	long	*=	*/	{	ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					},
-		/*	short	*=	*/	{	ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					},
+		/*	byte	*=	*/	{	ERROR					, t_type_native_byte	, t_type_native_byte	, t_type_native_byte	, t_type_native_byte	, t_type_native_byte	, t_type_native_byte	, t_type_native_byte	, ERROR					},
+		/*	char	*=	*/	{	ERROR					, t_type_native_char	, t_type_native_char	, t_type_native_char	, t_type_native_char	, t_type_native_char	, t_type_native_char	, t_type_native_char	, ERROR					},
+		/*	double	*=	*/	{	ERROR					, t_type_native_double	, t_type_native_double	, t_type_native_double	, t_type_native_double	, t_type_native_double	, t_type_native_double	, t_type_native_double	, ERROR					},
+		/*	float	*=	*/	{	ERROR					, t_type_native_float	, t_type_native_float	, t_type_native_float	, t_type_native_float	, t_type_native_float	, t_type_native_float	, t_type_native_float	, ERROR					},
+		/*	int		*=	*/	{	ERROR					, t_type_native_int		, t_type_native_int		, t_type_native_int		, t_type_native_int		, t_type_native_int		, t_type_native_int		, t_type_native_int		, ERROR					},
+		/*	long	*=	*/	{	ERROR					, t_type_native_long	, t_type_native_long	, t_type_native_long	, t_type_native_long	, t_type_native_long	, t_type_native_long	, t_type_native_long	, ERROR					},
+		/*	short	*=	*/	{	ERROR					, t_type_native_short	, t_type_native_short	, t_type_native_short	, t_type_native_short	, t_type_native_short	, t_type_native_short	, t_type_native_short	, ERROR					},
 		/*	String	*=	*/	{	ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					}
 	},
 
-	/* FIXME/TODO: t_assign_op_div_eq (/=) */
+	/* t_assign_op_div_eq (/=) */
 	{
 		/*						bool					, byte					, char					, double				, float					, int					, long					, short					, String					<- first operand */
 		/*	bool	/=	*/	{	ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					},
-		/*	byte	/=	*/	{	ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					},
-		/*	char	/=	*/	{	ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					},
-		/*	double	/=	*/	{	ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					},
-		/*	float	/=	*/	{	ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					},
-		/*	int		/=	*/	{	ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					},
-		/*	long	/=	*/	{	ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					},
-		/*	short	/=	*/	{	ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					},
+		/*	byte	/=	*/	{	ERROR					, t_type_native_byte	, t_type_native_byte	, t_type_native_byte	, t_type_native_byte	, t_type_native_byte	, t_type_native_byte	, t_type_native_byte	, ERROR					},
+		/*	char	/=	*/	{	ERROR					, t_type_native_char	, t_type_native_char	, t_type_native_char	, t_type_native_char	, t_type_native_char	, t_type_native_char	, t_type_native_char	, ERROR					},
+		/*	double	/=	*/	{	ERROR					, t_type_native_double	, t_type_native_double	, t_type_native_double	, t_type_native_double	, t_type_native_double	, t_type_native_double	, t_type_native_double	, ERROR					},
+		/*	float	/=	*/	{	ERROR					, t_type_native_float	, t_type_native_float	, t_type_native_float	, t_type_native_float	, t_type_native_float	, t_type_native_float	, t_type_native_float	, ERROR					},
+		/*	int		/=	*/	{	ERROR					, t_type_native_int		, t_type_native_int		, t_type_native_int		, t_type_native_int		, t_type_native_int		, t_type_native_int		, t_type_native_int		, ERROR					},
+		/*	long	/=	*/	{	ERROR					, t_type_native_long	, t_type_native_long	, t_type_native_long	, t_type_native_long	, t_type_native_long	, t_type_native_long	, t_type_native_long	, ERROR					},
+		/*	short	/=	*/	{	ERROR					, t_type_native_short	, t_type_native_short	, t_type_native_short	, t_type_native_short	, t_type_native_short	, t_type_native_short	, t_type_native_short	, ERROR					},
 		/*	String	/=	*/	{	ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					}
 	},
 
