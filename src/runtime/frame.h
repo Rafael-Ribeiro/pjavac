@@ -14,7 +14,7 @@ typedef struct _FRAME
 	void *retval;
 	int retaddr; /* not really an "address", but a unique identifier (label) placed after every call to a function */
 
-	struct _FRAME *child;
+	struct _FRAME *parent;
 } FRAME;
 
 #endif

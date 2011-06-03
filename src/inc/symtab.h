@@ -39,7 +39,12 @@ typedef struct _SYMBOL
 
 		struct
 		{
-		} loop_data;
+		} loop_data;: error: expected specifier-qualifier-list before ‘is_type_decl’
+inc/symtab.h:30: error: expected specifier-qualifier-list before ‘is_type_decl’
+inc/symtab.h:78: error: expected declaration specifiers or ‘...’ before ‘is_type_decl’
+inc/symtab.h:79: error: expected declaration specifiers or ‘...’ before ‘is_type_decl’
+inc/symtab.h:79: error: expected declaration specifiers or ‘...’ before ‘is_func_def_args’
+
 */
 	} data;
 } SYMBOL;
