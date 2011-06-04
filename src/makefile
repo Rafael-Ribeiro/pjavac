@@ -40,3 +40,7 @@ soft-clean:
 
 clean: soft-clean
 	rm -f lex.yy.c y.tab.c y.tab.h y.output pjava
+
+test: 
+	gcc ../outputs/out.c -I./ -Wall -o ../outputs/out
+

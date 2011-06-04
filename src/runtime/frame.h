@@ -1,6 +1,7 @@
 #ifndef FRAME_H
 #define FRAME_H
 
+#define MAX_GLOBALS 64
 #define MAX_LOCALS 64
 #define MAX_ARGS 16
 

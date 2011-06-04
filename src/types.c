@@ -510,9 +510,22 @@ is_type_native operators_unary[MAX_OPERATORS_UNARY][MAX_NATIVE_TYPES-1] =
 	}
 };
 
+char *string_binary_operator(type_binary_op operator)
+{
+	char strings[][4] =
+	{
+		"+", "-", "*", "/", "%", "&", "|", "^",
+		">>", "<<", "&&", "||",
+		"==", "!=","<", ">", "<=", ">=",
+		"===", "!==",
+		"ERR"
+	};
+	return __strdup(strings[operator - t_binary_op_add]);
+}
+
 char *string_type_native(is_type_native* type)
 {
-	char strings[][8] = {"boolean", "byte", "char", "double", "float", "int", "long", "short", "string", "void"};
+	char strings[][8] = {"boolean", "byte", "char", "double", "float", "int", "long", "short", "char*", "void"};
 	return __strdup(strings[*type]);
 }
 
@@ -536,7 +549,7 @@ char *string_array_decl(is_array_decl* array)
 	strcpy(val, native); 
 	
 	for (i = 0; i < array->dims->size; i++)
-		strcat(val, "[]");
+		strcat(val, "*");
 
 	free(native);
 	return val;

@@ -1,12 +1,15 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <stdlib.h>
+#include <string.h>
 
 #define TRANSLATE_C
 
 #include "inc/structures.h"
 #include "inc/translate.h"
 #include "inc/symtab.h"
+#include "inc/insert.h"
+#include "inc/free.h"
 #include "inc/types.h"
 
 #define OUT(...) fprintf(fout,__VA_ARGS__)
@@ -15,43 +18,46 @@
 
 void translate_id(is_id* node)
 {
-
+	OUT("FIXME %d\n", __LINE__);
 }
 
 void translate_constant(is_constant* node)
 {
-	int temp;
-	
-	temp = temp_counter++;
+	node->temp = temp_counter++;
 
 	switch (node->type)
 	{
 		case t_constant_bool:
-			OUT("\tbool _temp_%d = %s;\n", temp, node->value.bool_val ? "true": "false");
+			OUT("\tbool _temp_%d = %s;\n", node->temp, node->value.bool_val ? "true": "false");
 		break;
 
 		case t_constant_int:
-			OUT("\tint _temp_%d = %d;\n", temp, node->value.int_val);
+			OUT("\tint _temp_%d = %d;\n", node->temp, node->value.int_val);
 		break;
 
 		case t_constant_long:
-			OUT("FIXME %d\n", __LINE__);
+			OUT("\tlong long _temp_%d = %lld;\n", node->temp, node->value.long_val);
 		break;
 
 		case t_constant_double:
-			OUT("FIXME %d\n", __LINE__);
+			OUT("\tlong double _temp_%d = %Lf;\n", node->temp, node->value.double_val);
 		break;
 
 		case t_constant_float:
-			OUT("FIXME %d\n", __LINE__);
+			OUT("\tfloat _temp_%d = %ff;\n", node->temp, node->value.float_val);
 		break;
 
 		case t_constant_char:
-			OUT("FIXME %d\n", __LINE__);
+			OUT("\tchar _temp_%d = %s;\n", node->temp, node->value.string_val);
 		break;
 
-		case t_constant_string:
-			OUT("FIXME %d\n", __LINE__);
+		case t_constant_string:	
+			OUT("\tchar* _temp_%d = (char*)malloc(%d * sizeof(char)); strcpy(_temp_%d, %s);\n",
+				node->temp,
+				strlen(node->value.string_val) - 1, /* +1 for null; -2 because string_val includes "" */
+				node->temp,
+				node->value.string_val
+			);
 		break;
 	}
 }
@@ -100,7 +106,59 @@ void translate_assign_op(is_assign_op* node)
 
 void translate_binary_op(is_binary_op* node)
 {
-	OUT("FIXME %d\n", __LINE__);
+	is_type_decl* string;
+	bool isStringLeft, isStringRight;
+	char *operator, *type;
+
+	switch (node->type)
+	{
+		case t_binary_op_assign:
+			translate_assign_op(node->data.assign);
+			node->temp = node->data.assign->temp;
+		break;
+
+		default:
+			translate_expr(node->data.operands.left);
+			translate_expr(node->data.operands.right);
+	
+			string = insert_type_decl_object(insert_type_object(t_type_native_string));
+			type = string_type_decl(node->s_type);
+	
+			node->temp = temp_counter++;
+
+			if (node->type == t_binary_op_add)
+			{
+				isStringLeft = type_type_equal(string, node->data.operands.left->s_type);
+				isStringRight = type_type_equal(string, node->data.operands.right->s_type);
+
+				if (isStringLeft || isStringRight)
+				{
+					OUT("FIXME %d string concats\n", __LINE__);
+					break;
+				}
+			}
+
+			if (node->type != t_binary_op_eq3 && node->type != t_binary_op_ne3)
+			{
+				operator = string_binary_operator(node->type);
+				OUT("\t %s _temp_%d = _temp_%d %s _temp_%d;\n",
+					type,
+					node->temp,
+					node->data.operands.left->temp,
+					operator,
+					node->data.operands.right->temp
+				);
+
+				free(operator);
+			} else
+				OUT("FIXME === or !== %d\n", __LINE__);
+
+			free(type);
+		break;
+	}
+
+	
+	free_type_decl(string);
 }
 
 void translate_break(is_break* node)
@@ -160,14 +218,22 @@ void translate_do_while(is_do_while* node)
 void translate_expr(is_expr* node)
 {
 	char *type;
-	int temp;
-
-	type = string_type_decl(node->s_type);
 
 	switch (node->type)
 	{
 		case t_expr_var:
-			OUT("FIXME %d\n", __LINE__);
+			translate_var(node->data.var);
+			
+			type = string_type_decl(node->s_type);
+
+			node->temp = temp_counter++;
+			OUT("\t%s _temp_%d = *_temp_%d;\n\n",
+				type,
+				node->temp,
+				node->data.var->temp
+			);
+
+			free(type);
 		break;
 	
 		case t_expr_new_op:
@@ -180,6 +246,7 @@ void translate_expr(is_expr* node)
 
 		case t_expr_constant:
 			translate_constant(node->data.constant);
+			node->temp = node->data.constant->temp;
 		break;
 
 		case t_expr_func_call:
@@ -187,42 +254,10 @@ void translate_expr(is_expr* node)
 		break;
 
 		case t_expr_operation:
-			OUT("FIXME %d\n", __LINE__);
+			translate_expr_op(node->data.operation);
+			node->temp = node->data.operation->temp;
 		break;
 	}
-
-	temp = temp_counter++;
-	OUT("\t%s _temp_%d;\n", type,temp);
-
-	switch (node->type)
-	{
-		case t_expr_var:
-			OUT("FIXME %d\n", __LINE__);
-		break;
-	
-		case t_expr_new_op:
-			OUT("FIXME %d\n", __LINE__);
-		break;
-
-		case t_expr_type_cast:
-			OUT("FIXME %d\n", __LINE__);
-		break;
-
-		case t_expr_constant:
-			OUT("\t_temp_%d = (%s)_temp_%d\n", temp, type, node->data.constant->temp);
-		break;
-
-		case t_expr_func_call:
-			OUT("FIXME %d\n", __LINE__);
-		break;
-
-		case t_expr_operation:
-			OUT("FIXME %d\n", __LINE__);
-		break;
-	}
-
-	OUT("\n");
-	free(type);
 }
 
 void translate_expr_list(is_expr_list* node)
@@ -232,7 +267,23 @@ void translate_expr_list(is_expr_list* node)
 
 void translate_expr_op(is_expr_op* node)
 {
-	OUT("FIXME %d\n", __LINE__);
+	switch (node->type)
+	{
+		case t_expr_op_unary:
+			translate_unary_op(node->data.unary);
+			node->temp = node->data.unary->temp;
+		break;
+
+		case t_expr_op_binary:
+			translate_binary_op(node->data.binary);
+			node->temp = node->data.binary->temp;
+		break;
+
+		case t_expr_op_ternary:
+			translate_ternary_op(node->data.ternary);
+			node->temp = node->data.ternary->temp;
+		break;
+	}
 }
 
 void translate_footer()
@@ -291,7 +342,7 @@ void translate_func_call_arg_list(is_func_call_arg_list* node)
 
 void translate_func_def(is_func_def* node)
 {
-	OUT("label_%d:\n", node->scope->symbol->data.func_data.label);
+	OUT("label_%d:\n\t;\n", node->scope->symbol->data.func_data.label);
 
 	/* TODO: copy args to locals? */
 
@@ -329,7 +380,7 @@ void translate_header()
 	OUT("int main()\n");	/* TODO: main arguments */
 	OUT("{\n");
 	OUT("\tint _ra;\n");
-	OUT("\tFRAME _globals;\n");
+	OUT("\tvoid* _globals[MAX_GLOBALS];\n");
 	OUT("\tFRAME *_fp = NULL;\n");
 	OUT("\n");
 
@@ -485,7 +536,44 @@ void translate_unary_op(is_unary_op* node)
 
 void translate_var(is_var* node)
 {
-	OUT("FIXME %d\n", __LINE__);
+	char *type;
+	
+	node->temp = temp_counter++;
+	type = string_type_decl(node->s_type);
+
+	OUT("\t%s* _temp_%d;\n", type, node->temp);
+			
+	switch (node->type)
+	{
+		case t_var_id:
+			if (node->symbol->data.var_data.global)
+				OUT("\t_temp_%d = (%s*)_globals[%d];\n",
+					node->temp,
+					type,
+					node->symbol->data.var_data.framepos
+				);
+			else
+				OUT("\t_temp_%d = (%s*)_fp->locals[%d];\n", 
+					node->temp,
+					type,
+					node->symbol->data.var_data.framepos
+				);
+		break;
+
+		case t_var_new_op:
+			OUT("FIXME %d\n", __LINE__);
+		break;
+
+		case t_var_array:
+			OUT("FIXME %d\n", __LINE__);
+		break;
+
+		case t_var_func_call:
+			OUT("FIXME %d\n", __LINE__);
+		break;
+	}
+
+	free(type);
 }
 
 void translate_var_def(is_var_def* node)
@@ -499,7 +587,7 @@ void translate_var_def(is_var_def* node)
 		translate_var_initializer(node->var_init);
 
 	typeA = string_type_decl(symbol->data.var_data.type);
-	OUT("\t_fp->locals[%d] = (%s*)malloc(sizeof(%s))\n",
+	OUT("\t_fp->locals[%d] = (%s*)malloc(sizeof(%s));\n",
 		symbol->data.var_data.framepos,
 		typeA,
 		typeA
@@ -507,13 +595,14 @@ void translate_var_def(is_var_def* node)
 
 	if (node->var_init)
 	{
-		OUT("\t*((%s*)_fp->locals[%d] = _temp_%d\n",
+		OUT("\t*((%s*)_fp->locals[%d]) = _temp_%d;\n",
 			typeA,
 			symbol->data.var_data.framepos,
 			node->var_init->temp
 		);
 	}
 
+	OUT("\n");
 	free(typeA);
 }
 
@@ -533,8 +622,6 @@ void translate_var_def_left(is_var_def_left* node)
 
 void translate_var_defs(is_var_defs* node)
 {
-	/* TODO: this probably doesnt need to do anything now that each var "knows" it's type */
-
 	translate_var_def_list(node->list);
 }
 

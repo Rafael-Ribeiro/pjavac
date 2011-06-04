@@ -665,6 +665,9 @@ typedef struct _is_ternary_op
 	 * (note that this only applies while there is a single class hierarchy)
 	 */
 	struct _is_type_decl* s_type;
+
+	/* code generation */
+	int temp;
 } is_ternary_op;
 
 typedef enum
@@ -777,7 +780,8 @@ typedef struct _is_var
 	bool initialized;
 
 	/* code generation */
-	int temp;
+	int temp; /* temp will store the address of the var in runtime */
+	struct _SYMBOL* symbol;
 } is_var;
 
 typedef struct _is_var_def

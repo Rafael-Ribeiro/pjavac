@@ -14,6 +14,7 @@
 	extern is_type_native operators_unary[MAX_OPERATORS_UNARY][MAX_NATIVE_TYPES-1];
 #endif
 
+char *string_binary_operator(type_binary_op operator);
 char *string_type_native(is_type_native* type);
 char *string_type_decl(is_type_decl* type);
 char *string_array_decl(is_array_decl* array);

@@ -1149,21 +1149,20 @@ int check_var(is_var* node)
 {
 	int errors = 0;
 	char *typeA;
-	SYMBOL* symbol;
 
 	switch (node->type)
 	{
 		case t_var_id:
-			symbol = scope_lookup(symtab, node->data.id->name, t_symbol_var);
-			if (!symbol)
+			node->symbol = scope_lookup(symtab, node->data.id->name, t_symbol_var);
+			if (!node->symbol)
 			{
 				errors++;
 				pretty_error(node->line, "undefined variable %s", node->data.id->name);
 				node->initialized = false;
 			} else
 			{
-				node->initialized = symbol->data.var_data.initialized;
-				node->s_type = duplicate_type_decl(symbol->data.var_data.type);
+				node->initialized = node->symbol->data.var_data.initialized;
+				node->s_type = duplicate_type_decl(node->symbol->data.var_data.type);
 			}
 		break;
 

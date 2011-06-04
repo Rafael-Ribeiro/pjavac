@@ -3,9 +3,10 @@ class teste
 	/**
 	 * @param args
 	 */
-	public static char main(String[] c)
+	public static void main(String[] c)
 	{
-		int a = 1;
+		char a = '1';
+		String x = "cenas";
 		int b = a + 1;
 	}
 }
