@@ -10,6 +10,7 @@
 #include "inc/symtab.h"
 #include "inc/free.h"
 #include "inc/translate.h"
+#include "inc/builtins.h"
 
 is_application* main_application;
 bool has_errors;
@@ -590,7 +591,9 @@ int main()
 	if (main_application && !has_errors)
 	{
 		symtab = scope_new(NULL, true);
-	
+
+		insert_builtins();
+
 		label_counter = 0; /* 0 = main */
 		if (check_application(main_application) == 0)
 		{

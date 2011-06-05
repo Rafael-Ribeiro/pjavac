@@ -5,9 +5,7 @@ class teste
 	 */
 	public static void main(String[] c)
 	{
-		char a = '1';
-		String x = "cenas";
-		int b = a + 1;
+
 	}
 }
 

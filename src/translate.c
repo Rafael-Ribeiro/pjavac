@@ -16,12 +16,12 @@
 
 /* LEX */
 
-void translate_id(is_id* node)
+void translate_id(is_id *node)
 {
 	OUT("FIXME %d\n", __LINE__);
 }
 
-void translate_constant(is_constant* node)
+void translate_constant(is_constant *node)
 {
 	node->temp = temp_counter++;
 
@@ -83,7 +83,7 @@ void translate_type_native(is_type_native val)
 
 
 /* nodes */
-void translate_application(is_application* node)
+void translate_application(is_application *node)
 {
 	temp_counter = 0;
 
@@ -94,17 +94,17 @@ void translate_application(is_application* node)
 	translate_footer();
 }
 
-void translate_array_decl(is_array_decl* node)
+void translate_array_decl(is_array_decl *node)
 {
 	OUT("FIXME %d\n", __LINE__);
 }
 
-void translate_assign_op(is_assign_op* node)
+void translate_assign_op(is_assign_op *node)
 {
 	OUT("FIXME %d\n", __LINE__);
 }
 
-void translate_binary_op(is_binary_op* node)
+void translate_binary_op(is_binary_op *node)
 {
 	is_type_decl* string;
 	bool isStringLeft, isStringRight;
@@ -141,7 +141,7 @@ void translate_binary_op(is_binary_op* node)
 			if (node->type != t_binary_op_eq3 && node->type != t_binary_op_ne3)
 			{
 				operator = string_binary_operator(node->type);
-				OUT("\t %s _temp_%d = _temp_%d %s _temp_%d;\n",
+				OUT("\t%s _temp_%d = _temp_%d %s _temp_%d;\n",
 					type,
 					node->temp,
 					node->data.operands.left->temp,
@@ -161,22 +161,22 @@ void translate_binary_op(is_binary_op* node)
 	free_type_decl(string);
 }
 
-void translate_break(is_break* node)
+void translate_break(is_break *node)
 {
 	OUT("FIXME %d\n", __LINE__);
 }
 
-void translate_class_def(is_class_def* node)
+void translate_class_def(is_class_def *node)
 {
 	translate_class_stmt_list(node->body);
 }
 
-void translate_class_stmt(is_class_stmt* node)
+void translate_class_stmt(is_class_stmt *node)
 {
 	translate_member_stmt(node->stmt);
 }
  
-void translate_class_stmt_list(is_class_stmt_list* node)
+void translate_class_stmt_list(is_class_stmt_list *node)
 {
 	if (node)
 	{
@@ -185,37 +185,37 @@ void translate_class_stmt_list(is_class_stmt_list* node)
 	}
 }
  
-void translate_class_stmt_scope(is_class_stmt_scope* node)
+void translate_class_stmt_scope(is_class_stmt_scope *node)
 {
 	OUT("FIXME %d\n", __LINE__);
 }
  
-void translate_continue(is_continue* node)
+void translate_continue(is_continue *node)
 {
 	OUT("FIXME %d\n", __LINE__);
 }
 
-void translate_dims(is_dims* node)
+void translate_dims(is_dims *node)
 {
 	OUT("FIXME %d\n", __LINE__);
 }
 
-void translate_dims_sized(is_dims_sized* node)
+void translate_dims_sized(is_dims_sized *node)
 {
 	OUT("FIXME %d\n", __LINE__);
 }
 
-void translate_dims_sized_list(is_dims_sized_list* node)
+void translate_dims_sized_list(is_dims_sized_list *node)
 {
 	OUT("FIXME %d\n", __LINE__);
 }
 
-void translate_do_while(is_do_while* node)
+void translate_do_while(is_do_while *node)
 {
 	OUT("FIXME %d\n", __LINE__);
 }
  
-void translate_expr(is_expr* node)
+void translate_expr(is_expr *node)
 {
 	char *type;
 
@@ -260,12 +260,12 @@ void translate_expr(is_expr* node)
 	}
 }
 
-void translate_expr_list(is_expr_list* node)
+void translate_expr_list(is_expr_list *node)
 {
 	OUT("FIXME %d\n", __LINE__);
 }
 
-void translate_expr_op(is_expr_op* node)
+void translate_expr_op(is_expr_op *node)
 {
 	switch (node->type)
 	{
@@ -288,81 +288,157 @@ void translate_expr_op(is_expr_op* node)
 
 void translate_footer()
 {
-	OUT("\t_fp->retaddr = 1;\n");
+	OUT("\t/* entry point */\n");
 	OUT("\tgoto label_0;\n");
 	OUT("\n");
 	
-	label_counter++;
 	translate_redirector();
 
-	OUT("label_%d:\n", label_counter);
+	OUT("\n");
+	OUT("label_end:\n");
 	OUT("\treturn 0;\n");
 	OUT("}\n");
 }
 
-void translate_for(is_for* node)
+void translate_for(is_for *node)
 {
 	OUT("FIXME %d\n", __LINE__);
 }
 
-void translate_for_cond(is_for_cond* node)
+void translate_for_cond(is_for_cond *node)
 {
 	OUT("FIXME %d\n", __LINE__);
 }
 
-void translate_for_expr(is_for_expr* node)
-{
-	OUT("FIXME %d\n", __LINE__);
-}
- 
-void translate_for_expr_list(is_for_expr_list* node)
+void translate_for_expr(is_for_expr *node)
 {
 	OUT("FIXME %d\n", __LINE__);
 }
  
-void translate_for_inc(is_for_inc* node)
+void translate_for_expr_list(is_for_expr_list *node)
+{
+	OUT("FIXME %d\n", __LINE__);
+}
+ 
+void translate_for_inc(is_for_inc *node)
 {
 	OUT("FIXME %d\n", __LINE__);
 }
 
-void translate_for_init(is_for_init* node)
+void translate_for_init(is_for_init *node)
 {
 	OUT("FIXME %d\n", __LINE__);
 }
 
-void translate_func_call(is_func_call* node)
+void translate_func_call(is_func_call *node)
+{
+	OUT("FIXME %d\n", __LINE__);
+/*
+	type = string_type_decl(node->scope->symbol->data.func_data.type);
+	OUT("\t_fp->parent->retval = malloc(sizeof(%s));\n", type)
+	OUT("\n");
+	free(type);
+*/
+}
+
+void translate_func_call_arg_list(is_func_call_arg_list *node)
 {
 	OUT("FIXME %d\n", __LINE__);
 }
 
-void translate_func_call_arg_list(is_func_call_arg_list* node)
+void translate_func_def(is_func_def *node)
 {
-	OUT("FIXME %d\n", __LINE__);
-}
+	int i, temp;
+	char *type;
+	is_type_decl* void_type;
 
-void translate_func_def(is_func_def* node)
-{
-	OUT("label_%d:\n\t;\n", node->scope->symbol->data.func_data.label);
+	OUT("\tgoto label_%d_postend;\n", node->scope->symbol->data.func_data.label);
+	OUT("\n");
+	OUT("label_%d:\n\t; /* %s */\n", node->scope->symbol->data.func_data.label, node->id->name);
 
-	/* TODO: copy args to locals? */
+	/* alloc new frame */
+	OUT("\t_temp_frame = (FRAME*)malloc(sizeof(FRAME));\n");
+	OUT("\t_temp_frame->parent = _fp;\n");
+	OUT("\n");
 
+	/* copy args to locals */
+	if (strcmp(node->id->name, "main") == 0)
+	{
+		if (node->scope->symbol->data.func_data.nArgs == 1)
+		{
+			temp = temp_counter++;
+
+			OUT("\t/* start of args setup */\n");
+			OUT("\t_temp_frame->locals[0] = (char**)malloc(_argc * sizeof(char*));\n");
+			OUT("\tint _temp_%d = _argc;\n", temp);
+			OUT("\n");
+			OUT("label_main_args:\n");
+			OUT("\tif (!_temp_%d)\n", temp);
+			OUT("\t\tgoto label_main_args_end;\n");
+			OUT("\t((char**)_temp_frame->locals[0])[_temp_%d-1] = strdup(_argv[_temp_%d-1]);\n", temp, temp);
+			OUT("\t_temp_%d--;\n", temp);
+			OUT("\tgoto label_main_args;\n");
+			OUT("\n");
+			OUT("label_main_args_end:\n");
+			OUT("\t; /* end of args setup */\n");
+			OUT("\n");
+		}
+	} else
+	{
+		for (i = 0; i < node->scope->symbol->data.func_data.nArgs; i++)
+		{
+			type = string_type_decl(node->scope->symbol->data.func_data.args[i]->type);
+			OUT("\t_temp_frame->locals[%d] = (%s*)malloc(sizeof(%s));\n", i, type, type);
+			OUT("\t*(%s*)(_temp_frame->locals[%d]) = *(%s*)(_fp->args[%d]);\n", type, i, type, i);
+			OUT("\n");
+			free(type);
+		}
+	}
+	OUT("\t_fp = _temp_frame;\n");
+
+	void_type = new_type_decl_void(0);
+	if (!type_type_equal(node->scope->symbol->data.func_data.type, void_type))
+		OUT("\t_temp_ret = malloc(sizeof(%s));\n", type);
+	
 	translate_stmt_list(node->body);
 
+	/* FIXME: free locals */
+	
+	OUT("\n");
+	OUT("label_%d_end:\n\t/* end of %s */\n", node->scope->symbol->data.func_data.label, node->id->name);
+
+	if (!type_type_equal(node->scope->symbol->data.func_data.type, void_type))
+	{
+		if (strcmp(node->id->name, "main") != 0)
+			OUT("\t*(%s*)_fp->parent->retval = *(%s*)_temp_ret;\n", type, type);
+
+		OUT("\tfree(_temp_ret);\n");
+	}
+
+	OUT("\t_temp_frame = _fp->parent;\n");
+	OUT("\tfree(_fp);\n");
+	OUT("\t_fp = _temp_frame;\n");
+	OUT("\n");
+
 	OUT("\tgoto redirector;\n");
-	OUT("\n");	
+	OUT("\n");
+	OUT("label_%d_postend:\n", node->scope->symbol->data.func_data.label);
+	OUT("\t; /* post end of %s */\n\n", node->id->name);	
+
+	free_type_decl(void_type);
 }
 
-void translate_func_def_arg(is_func_def_arg* node)
+void translate_func_def_arg(is_func_def_arg *node)
 {
 	OUT("FIXME %d\n", __LINE__);
 }
 
-void translate_func_def_arg_list(is_func_def_arg_list* node)
+void translate_func_def_arg_list(is_func_def_arg_list *node)
 {
 	OUT("FIXME %d\n", __LINE__);
 }
 
-void translate_func_def_args(is_func_def_args* node)
+void translate_func_def_args(is_func_def_args *node)
 {
 	OUT("FIXME %d\n", __LINE__);
 }
@@ -377,33 +453,32 @@ void translate_header()
 	OUT("\n");
 	OUT("#include \"runtime/frame.h\"\n");
 	OUT("\n");
-	OUT("int main()\n");	/* TODO: main arguments */
+	OUT("int main(int _argc, char **_argv)\n");	/* TODO: main arguments */
 	OUT("{\n");
-	OUT("\tint _ra;\n");
+	OUT("\tvoid* _temp_ret;\n");
 	OUT("\tvoid* _globals[MAX_GLOBALS];\n");
-	OUT("\tFRAME *_fp = NULL;\n");
+	OUT("\tFRAME *_fp = NULL, *_temp_frame;\n");
 	OUT("\n");
-
-	/* TODO: create main's frame */
-	OUT("\t\n");
+	
+	OUT("#include \"runtime/builtins.h\"\n");
 }
 
-void translate_if(is_if* node)
+void translate_if(is_if *node)
 {
 	OUT("FIXME %d\n", __LINE__);
 }
 
-void translate_incr_op(is_incr_op* node)
+void translate_incr_op(is_incr_op *node)
 {
 	OUT("FIXME %d\n", __LINE__);
 }
 
-void translate_loop_stmt(is_loop_stmt* node)
+void translate_loop_stmt(is_loop_stmt *node)
 {
 	OUT("FIXME %d\n", __LINE__);
 }
  
-void translate_member_stmt(is_member_stmt* node)
+void translate_member_stmt(is_member_stmt *node)
 {
 	switch (node->type)
 	{
@@ -417,7 +492,7 @@ void translate_member_stmt(is_member_stmt* node)
 	}
 }
 
-void translate_new_op(is_new_op* node)
+void translate_new_op(is_new_op *node)
 {
 	OUT("FIXME %d\n", __LINE__);
 }
@@ -428,19 +503,22 @@ void translate_redirector()
 
 	OUT("redirector:\n");
 
-	for (i = 0; i <= label_counter; i++)
+	OUT("\tif (_fp == NULL)\n");
+	OUT("\t\tgoto label_end;\n");
+
+	for (i = 0; i < label_counter; i++)
 	{
-		OUT("\tif (_ra == %d)\n", i);
+		OUT("\tif (_fp->retaddr == %d)\n", i);
 		OUT("\t\tgoto label_%d;\n", i);
 	}
 }
 
-void translate_return(is_return* node)
+void translate_return(is_return *node)
 {
 	OUT("FIXME %d\n", __LINE__);
 }
 
-void translate_stmt(is_stmt* node)
+void translate_stmt(is_stmt *node)
 {
 	switch (node->type)
 	{
@@ -490,7 +568,7 @@ void translate_stmt(is_stmt* node)
 	}
 }
 
-void translate_stmt_list(is_stmt_list* node)
+void translate_stmt_list(is_stmt_list *node)
 {
 	if (node)
 	{
@@ -499,42 +577,42 @@ void translate_stmt_list(is_stmt_list* node)
 	}
 }
  
-void translate_switch(is_switch* node)
+void translate_switch(is_switch *node)
 {
 	OUT("FIXME %d\n", __LINE__);
 }
 
-void translate_switch_stmt(is_switch_stmt* node)
+void translate_switch_stmt(is_switch_stmt *node)
 {
 	OUT("FIXME %d\n", __LINE__);
 }
 
-void translate_switch_stmt_list(is_switch_stmt_list* node)
+void translate_switch_stmt_list(is_switch_stmt_list *node)
 {
 	OUT("FIXME %d\n", __LINE__);
 }
 
-void translate_ternary_op(is_ternary_op* node)
+void translate_ternary_op(is_ternary_op *node)
 {
 	OUT("FIXME %d\n", __LINE__);
 }
 
-void translate_type_decl(is_type_decl* node)
+void translate_type_decl(is_type_decl *node)
 {
 	OUT("FIXME %d\n", __LINE__);
 }
 
-void translate_type_object(is_type_object* node)
+void translate_type_object(is_type_object *node)
 {
 	OUT("FIXME %d\n", __LINE__);
 }
 
-void translate_unary_op(is_unary_op* node)
+void translate_unary_op(is_unary_op *node)
 {
 	OUT("FIXME %d\n", __LINE__);
 }
 
-void translate_var(is_var* node)
+void translate_var(is_var *node)
 {
 	char *type;
 	
@@ -576,7 +654,7 @@ void translate_var(is_var* node)
 	free(type);
 }
 
-void translate_var_def(is_var_def* node)
+void translate_var_def(is_var_def *node)
 {
 	char *typeA;
 	SYMBOL* symbol;
@@ -606,7 +684,7 @@ void translate_var_def(is_var_def* node)
 	free(typeA);
 }
 
-void translate_var_def_list(is_var_def_list* node)
+void translate_var_def_list(is_var_def_list *node)
 {
 	if (node)
 	{
@@ -615,22 +693,22 @@ void translate_var_def_list(is_var_def_list* node)
 	}	
 }
 
-void translate_var_def_left(is_var_def_left* node)
+void translate_var_def_left(is_var_def_left *node)
 {
 	OUT("FIXME %d\n", __LINE__);
 }
 
-void translate_var_defs(is_var_defs* node)
+void translate_var_defs(is_var_defs *node)
 {
 	translate_var_def_list(node->list);
 }
 
-void translate_var_stmt(is_var_stmt* node)
+void translate_var_stmt(is_var_stmt *node)
 {
 	translate_var_defs(node);
 }
 
-void translate_var_initializer(is_var_initializer* node)
+void translate_var_initializer(is_var_initializer *node)
 {
 	switch (node->type)
 	{
@@ -645,12 +723,12 @@ void translate_var_initializer(is_var_initializer* node)
 	}
 }
 
-void translate_var_initializer_list(is_var_initializer_list* node)
+void translate_var_initializer_list(is_var_initializer_list *node)
 {
 	OUT("FIXME %d\n", __LINE__);
 }
 
-void translate_while(is_while* node)
+void translate_while(is_while *node)
 {
 	OUT("FIXME %d\n", __LINE__);
 }

@@ -8,8 +8,6 @@
 typedef struct _FRAME
 {
 	void *args[MAX_ARGS];
-	int nargs;
-
 	void *locals[MAX_LOCALS];
 	
 	void *retval;

@@ -111,6 +111,7 @@ is_switch_stmt_list* insert_switch_stmt_list(is_switch_stmt* stmt, is_switch_stm
 
 is_ternary_op* insert_ternary_op(is_expr* cond, is_expr* then_expr, is_expr* else_expr);
 
+is_type_decl* new_type_decl_void(int line);
 is_type_decl* new_type_decl_object_dims(int line, is_type_object* object, is_dims* dims);
 is_type_decl* insert_type_decl_object(is_type_object* object);
 is_type_decl* insert_type_decl_array(is_array_decl* array);

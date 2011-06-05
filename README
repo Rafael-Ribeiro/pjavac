@@ -16,6 +16,7 @@ TODOs:
 			"float[] a[]" in function parameters
 			redefinition of global variables (that would make them inaccessible)
 			function overloading
+			function var args (ellipsis)
 
 		allow:
 			for (i= 0; i < n; i++)

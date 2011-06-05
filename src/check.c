@@ -753,7 +753,7 @@ int check_func_def(is_func_def* node, bool first_pass)
 			errors += check_func_def_args(node->args); /* this will not give errors */
 			errors += check_stmt_list(node->body);
 			
-			if (!node->body->terminated &&
+			if ((!node->body || !node->body->terminated) &&
 				!(node->type->type == t_type_decl_type_object && node->type->data.type_object->type == t_type_native_void))
 			{
 				pretty_error(node->line, "reached end of non void function");
