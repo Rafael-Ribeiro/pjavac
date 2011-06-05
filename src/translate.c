@@ -113,7 +113,7 @@ void translate_assign_op(is_assign_op *node)
 	{
 		label = ++label_counter;
 
-		if (type_type_equal(type_string, node->expr->s_type))
+		if (!type_type_equal(type_string, node->expr->s_type))
 		{
 			tempConvert = temp_counter++;
 			labelConvert = ++label_counter;
@@ -126,7 +126,7 @@ void translate_assign_op(is_assign_op *node)
 			OUT("\n");
 			OUT("label_%d:\n", labelConvert);
 			OUT("\t; /* temp_%d gets the string */\n", tempConvert);
-			OUT("\tchar*_temp_%d = (char*)fp->retval;\n", tempConvert);
+			OUT("\tchar* _temp_%d = (char*)_fp->retval;\n", tempConvert);
 			OUT("\n");
 
 			free(typeExpr);
