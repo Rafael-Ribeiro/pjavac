@@ -424,6 +424,7 @@ typedef struct _is_func_call
 
 	/* code generation */
 	int temp;
+	struct _SYMBOL* symbol;
 } is_func_call;
 
 typedef struct _is_func_def
@@ -559,6 +560,9 @@ typedef struct _is_return
 	int line;
 
 	is_expr *value; /* nullable */
+
+	/* code generation */
+	struct _SYMBOL* symbol;
 } is_return;
 
 typedef enum

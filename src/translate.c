@@ -250,7 +250,8 @@ void translate_expr(is_expr *node)
 		break;
 
 		case t_expr_func_call:
-			OUT("FIXME %d\n", __LINE__);
+			translate_func_call(node->data.func_call);
+			node->temp = node->data.func_call->temp;
 		break;
 
 		case t_expr_operation:
@@ -332,25 +333,71 @@ void translate_for_init(is_for_init *node)
 
 void translate_func_call(is_func_call *node)
 {
-	OUT("FIXME %d\n", __LINE__);
-/*
-	type = string_type_decl(node->scope->symbol->data.func_data.type);
-	OUT("\t_fp->parent->retval = malloc(sizeof(%s));\n", type)
-	OUT("\n");
-	free(type);
-*/
-}
+	char *type, *type_arg;
+	is_func_call_arg_list* arg;
+	int label, i, temp;
+	is_type_decl* type_void;
 
-void translate_func_call_arg_list(is_func_call_arg_list *node)
-{
-	OUT("FIXME %d\n", __LINE__);
+	type_void = new_type_decl_void(0);
+
+	label = ++label_counter;
+
+	for (arg = node->args; arg != NULL; arg = arg->next)
+	{
+		translate_expr(arg->node);
+		OUT("\n");
+	}
+
+	OUT("\t/* function call: %s */\n", node->id->name);
+	OUT("\t_fp->retaddr = %d;\n", label);
+
+	if (!type_type_equal(type_void, node->symbol->data.func_data.type))
+	{
+		type = string_type_decl(node->symbol->data.func_data.type);
+		OUT("\t_fp->retval = malloc(sizeof(%s));\n", type);
+		OUT("\n");
+	}
+
+	for (i = 0, arg = node->args; arg != NULL; i++, arg = arg->next)
+	{
+		type_arg = string_type_decl(node->symbol->data.func_data.args[i]->type);
+
+		OUT("\t/* argument %d */\n", i);
+		OUT("\t_fp->args[%d] = (%s*)malloc(sizeof(%s));\n", i, type_arg, type_arg);
+		OUT("\t*(%s*)_fp->args[%d] = (%s)_temp_%d;\n", type_arg, i, type_arg, arg->node->temp);
+		OUT("\n");
+
+		free(type_arg);
+	}
+
+	OUT("\tgoto label_%d;\n", node->symbol->data.func_data.label);
+	OUT("\n");
+	OUT("label_%d:\n", label);
+
+	/* FIXME: what about frees of frees? */
+	for (i = 0; i < node->symbol->data.func_data.nArgs; i++)
+		OUT("\tfree(_fp->args[%d]);\n", i);
+	
+	if (!type_type_equal(type_void, node->symbol->data.func_data.type))
+	{
+		temp = temp_counter++;
+		OUT("\t%s* _temp_%d = (%s*)malloc(sizeof(%s));\n", type, temp, type, type);
+		OUT("\t*_temp_%d = *(%s*)_fp->retval;\n", temp, type);
+		OUT("\t_free(_fp->retval);\n");
+
+		node->temp = temp;
+		free(type);
+	}	
 }
 
 void translate_func_def(is_func_def *node)
 {
 	int i, temp;
-	char *type;
-	is_type_decl* void_type;
+	char *arg_type, *func_type;
+	is_type_decl *void_type;
+
+	func_type = string_type_decl(node->scope->symbol->data.func_data.type);
+
 
 	OUT("\tgoto label_%d_postend;\n", node->scope->symbol->data.func_data.label);
 	OUT("\n");
@@ -387,18 +434,22 @@ void translate_func_def(is_func_def *node)
 	{
 		for (i = 0; i < node->scope->symbol->data.func_data.nArgs; i++)
 		{
-			type = string_type_decl(node->scope->symbol->data.func_data.args[i]->type);
-			OUT("\t_temp_frame->locals[%d] = (%s*)malloc(sizeof(%s));\n", i, type, type);
-			OUT("\t*(%s*)(_temp_frame->locals[%d]) = *(%s*)(_fp->args[%d]);\n", type, i, type, i);
+			arg_type = string_type_decl(node->scope->symbol->data.func_data.args[i]->type);
+			OUT("\t_temp_frame->locals[%d] = (%s*)malloc(sizeof(%s));\n", i, arg_type, arg_type);
+			OUT("\t*(%s*)(_temp_frame->locals[%d]) = *(%s*)(_fp->args[%d]);\n", arg_type, i, arg_type, i);
 			OUT("\n");
-			free(type);
+			free(arg_type);
 		}
 	}
-	OUT("\t_fp = _temp_frame;\n");
 
+	OUT("\t_fp = _temp_frame;\n");
+	
 	void_type = new_type_decl_void(0);
 	if (!type_type_equal(node->scope->symbol->data.func_data.type, void_type))
-		OUT("\t_temp_ret = malloc(sizeof(%s));\n", type);
+		OUT("\t_temp_ret = malloc(sizeof(%s));\n", func_type);
+
+	OUT("\n");
+	OUT("\t/* %s body */\n",  node->id->name);
 	
 	translate_stmt_list(node->body);
 
@@ -410,7 +461,7 @@ void translate_func_def(is_func_def *node)
 	if (!type_type_equal(node->scope->symbol->data.func_data.type, void_type))
 	{
 		if (strcmp(node->id->name, "main") != 0)
-			OUT("\t*(%s*)_fp->parent->retval = *(%s*)_temp_ret;\n", type, type);
+			OUT("\t*(%s*)_fp->parent->retval = *(%s*)_temp_ret;\n", func_type, func_type);
 
 		OUT("\tfree(_temp_ret);\n");
 	}
@@ -426,6 +477,7 @@ void translate_func_def(is_func_def *node)
 	OUT("\t; /* post end of %s */\n\n", node->id->name);	
 
 	free_type_decl(void_type);
+	free(func_type);
 }
 
 void translate_func_def_arg(is_func_def_arg *node)
@@ -460,7 +512,10 @@ void translate_header()
 	OUT("\tFRAME *_fp = NULL, *_temp_frame;\n");
 	OUT("\n");
 	
-	OUT("#include \"runtime/builtins.h\"\n");
+	OUT("\tgoto post_builtins;\n");
+	OUT("\t#include \"runtime/builtins.h\"\n");
+	OUT("\n");
+	OUT("post_builtins: ;\n");
 }
 
 void translate_if(is_if *node)
@@ -515,7 +570,19 @@ void translate_redirector()
 
 void translate_return(is_return *node)
 {
-	OUT("FIXME %d\n", __LINE__);
+	char * type;
+	
+	if (node->value)
+	{
+		translate_expr(node->value);
+
+		type = string_type_decl(node->symbol->data.func_data.type);
+		OUT("\t*(%s)_temp_ret = *(%s)_temp_%d;\n", type, type, node->value->temp);
+		OUT("\tgoto label_%d_end;\n", node->symbol->data.func_data.label);
+		OUT("\n");
+
+		free(type);
+	}
 }
 
 void translate_stmt(is_stmt *node)

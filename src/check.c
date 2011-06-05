@@ -612,14 +612,13 @@ int check_for_init(is_for_init* node)
 
 int check_func_call(is_func_call* node)
 {
-	SYMBOL* symbol;
 	is_expr_list* arg;
 	int errors = 0;
 	int i;
 	char *typeA, *typeB;
 
-	symbol = scope_lookup(symtab, node->id->name, t_symbol_func);
-	if (!symbol)
+	node->symbol = scope_lookup(symtab, node->id->name, t_symbol_func);
+	if (!node->symbol)
 	{
 		pretty_error(node->line, "undefined function %s", node->id->name);
 		errors++;
@@ -629,29 +628,30 @@ int check_func_call(is_func_call* node)
 
 		if (errors == 0)
 		{
-			if (node->args->length != symbol->data.func_data.nArgs)
+			if ((node->args == NULL && node->symbol->data.func_data.nArgs != 0) ||
+				(node->args != NULL && node->args->length != node->symbol->data.func_data.nArgs))
 			{
 				pretty_error(node->line, "too %s arguments for %s, got %d expected %d (declaration is here: %d)",
-					node->args->length > symbol->data.func_data.nArgs ? "many" : "few",
+					node->args->length > node->symbol->data.func_data.nArgs ? "many" : "few",
 					node->id->name,
 					node->args->length,
-					symbol->data.func_data.nArgs,
-					symbol->line);
+					node->symbol->data.func_data.nArgs,
+					node->symbol->line);
 
 				errors++;
 			} else
 			{
-				for (i = 0, arg = node->args; i < node->args->length; i++, arg = arg->next)
+				for (i = 0, arg = node->args; arg != NULL; i++, arg = arg->next)
 				{
-					if (!type_type_assign_able(symbol->data.func_data.args[i]->type, arg->node->s_type))
+					if (!type_type_assign_able(node->symbol->data.func_data.args[i]->type, arg->node->s_type))
 					{
 						errors++;
 						pretty_error(node->line, "invalid parameter %d (%s) of function %s (got %s expected %s)",
 							i,
-							symbol->data.func_data.args[i]->id->name,
+							node->symbol->data.func_data.args[i]->id->name,
 							node->id->name,
 							typeA = string_type_decl(arg->node->s_type),
-							typeB = string_type_decl(symbol->data.func_data.args[i]->type)
+							typeB = string_type_decl(node->symbol->data.func_data.args[i]->type)
 						);
 
 						free(typeA);
@@ -660,7 +660,7 @@ int check_func_call(is_func_call* node)
 				}
 
 				if (errors == 0)
-					node->s_type = duplicate_type_decl(symbol->data.func_data.type);
+					node->s_type = duplicate_type_decl(node->symbol->data.func_data.type);
 			}
 		}
 	}
@@ -940,7 +940,6 @@ int check_return(is_return* node)
 {
 	int errors = 0;
 	SCOPE* scope;
-	SYMBOL* symbol;
 
 	is_type_decl *type = NULL, *typeR;
 	char *typeA, *typeB;
@@ -958,12 +957,12 @@ int check_return(is_return* node)
 	if (errors == 0)
 	{
 		scope = scope_get_by_name(symtab, NULL, t_symbol_func);
-		symbol = scope->symbol;
-		if (!type_type_equal(typeR, symbol->data.func_data.type))
+		node->symbol = scope->symbol;
+		if (!type_type_equal(typeR, node->symbol->data.func_data.type))
 		{
 			typeA = string_type_decl(typeR);
 
-			typeB = string_type_decl(symbol->data.func_data.type);
+			typeB = string_type_decl(node->symbol->data.func_data.type);
 
 			errors++;
 			pretty_error(node->line, "invalid return type %s should be of type %s",
