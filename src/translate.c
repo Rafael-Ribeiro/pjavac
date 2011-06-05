@@ -414,22 +414,25 @@ void translate_func_call(is_func_call *node)
 	OUT("\t/* function call: %s */\n", node->id->name);
 	OUT("\t_fp->retaddr = %d;\n", label);
 
-
 	if (!type_type_equal(type_void, node->symbol->data.func_data.type))
 	{
 		type = string_type_decl(node->symbol->data.func_data.type);
-		OUT("\t_fp->retval = malloc(sizeof(%s));\n", type);
-		OUT("\n");
+
+		/* FIXME: not needed */
+		//OUT("\t_fp->retval = malloc(sizeof(%s));\n", type);
+		//OUT("\n");
 	}
 
 	for (i = 0, arg = node->args; arg != NULL; i++, arg = arg->next)
 	{
 		type_arg = string_type_decl(node->symbol->data.func_data.args[i]->type);
 
-		OUT("\t/* argument %d */\n", i);
-		OUT("\t_fp->args[%d] = (%s*)malloc(sizeof(%s));\n", i, type_arg, type_arg);
-		OUT("\t*(%s*)_fp->args[%d] = (%s)_temp_%d;\n", type_arg, i, type_arg, arg->node->temp);
-		OUT("\n");
+		/* FIXME: no need to allocate a pointer */
+		//OUT("\t/* argument %d */\n", i);
+		//OUT("\t_fp->args[%d] = (%s*)malloc(sizeof(%s));\n", i, type_arg, type_arg);
+		//OUT("\t*(%s*)_fp->args[%d] = (%s)_temp_%d;\n", type_arg, i, type_arg, arg->node->temp);
+		//OUT("\n");
+		OUT("\t_fp->args[%d] = &_temp_%d;\n", i, arg->node->temp);
 
 		free(type_arg);
 	}
@@ -440,14 +443,16 @@ void translate_func_call(is_func_call *node)
 	OUT("\t; /* end of func call*/\n");
 
 	/* FIXME: what about frees of frees? */
-	for (i = 0; i < node->symbol->data.func_data.nArgs; i++)
-		OUT("\tfree(_fp->args[%d]);\n", i);
+	//for (i = 0; i < node->symbol->data.func_data.nArgs; i++)
+	//	OUT("\tfree(_fp->args[%d]);\n", i);
 	
 	if (!type_type_equal(type_void, node->symbol->data.func_data.type))
 	{
 		temp = temp_counter++;
 		OUT("\t%s _temp_%d = *(%s*)_fp->retval;\n", type, temp, type);
-		OUT("\tfree(_fp->retval);\n");
+
+		// FIXME: not allocated
+		//OUT("\tfree(_fp->retval);\n");
 
 		node->temp = temp;
 		free(type);
@@ -509,8 +514,10 @@ void translate_func_def(is_func_def *node)
 	OUT("\t_fp = _temp_frame;\n");
 	
 	void_type = new_type_decl_void(0);
-	if (!type_type_equal(node->scope->symbol->data.func_data.type, void_type))
-		OUT("\t_temp_ret = malloc(sizeof(%s));\n", func_type);
+
+	// FIXME: not needed
+	//if (!type_type_equal(node->scope->symbol->data.func_data.type, void_type))
+	//	OUT("\t_temp_ret = malloc(sizeof(%s));\n", func_type);
 
 	OUT("\n");
 	OUT("\t/* %s body */\n",  node->id->name);
@@ -525,9 +532,9 @@ void translate_func_def(is_func_def *node)
 	if (!type_type_equal(node->scope->symbol->data.func_data.type, void_type))
 	{
 		if (strcmp(node->id->name, "main") != 0)
-			OUT("\t*(%s*)_fp->parent->retval = *(%s*)_temp_ret;\n", func_type, func_type);
+			OUT("\t_fp->parent->retval = _temp_ret;\n");
 
-		OUT("\tfree(_temp_ret);\n");
+		//OUT("\tfree(_temp_ret);\n");
 	}
 
 	OUT("\t_temp_frame = _fp->parent;\n");
@@ -626,7 +633,7 @@ void translate_return(is_return *node)
 		translate_expr(node->value);
 
 		type = string_type_decl(node->symbol->data.func_data.type);
-		OUT("\t*(%s*)_temp_ret = _temp_%d;\n", type, node->value->temp);
+		OUT("\t_temp_ret = &_temp_%d;\n", node->value->temp);
 		free(type);
 	}
 

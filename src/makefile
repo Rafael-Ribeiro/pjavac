@@ -36,7 +36,7 @@ duplicate.o: duplicate.c
 	cc -c -o duplicate.o duplicate.c ${COMP_FLAGS}
 
 translate.o: translate.c
-	cc -c -o translate.o translate.c ${COMP_FLAGS}
+	cc -c -o translate.o translate.c -lm  -Wall -g
 
 soft-clean:
 	rm -f *.o ~*
@@ -45,5 +45,5 @@ clean: soft-clean
 	rm -f lex.yy.c y.tab.c y.tab.h y.output pjava
 
 test: 
-	gcc ../outputs/out.c -I./ -Wall -o ../outputs/out
+	gcc ../outputs/out.c -I./ -Wall -g -o ../outputs/out
 
