@@ -17,10 +17,13 @@ TODOs:
 			redefinition of global variables (that would make them inaccessible)
 			function overloading
 			function var args (ellipsis)
+			% and %= operators envolving floating point types (because C doesn't allow them)
 
 		allow:
 			for (i= 0; i < n; i++)
 				int i;
+
+			==, !=, <, >, <= and >= on strings
 
 
 
