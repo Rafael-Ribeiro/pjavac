@@ -325,16 +325,20 @@ void translate_do_while(is_do_while *node)
 	int label = ++label_counter;
 
 	OUT("label_%d:\n",label);
-	OUT("\t; /* do while loop */\n");
+	OUT("\t; /* do_while loop */\n");
 
+	OUT("\t/* do_while body */\n");
 	translate_stmt(node->body);
+	OUT("\n");
 
+	OUT("\t/* do_while condition */\n");
 	translate_expr(node->cond);
+	OUT("\n");
 
 	OUT("\tif (_temp_%d)\n",node->cond->temp);
 	OUT("\t\tgoto label_%d;\n",label);
 
-	OUT("\t/* end of do while */\n");
+	OUT("\t/* end of do_while */\n");
 }
  
 void translate_expr(is_expr *node)
@@ -946,12 +950,17 @@ void translate_while(is_while *node)
 
 	OUT("label_%d:\n",label);
 	OUT("\t; /* while loop */\n");
-	translate_expr(node->cond);
 
+	OUT("\t/* while condition */\n");
+	translate_expr(node->cond);
+	OUT("\n");
+	
 	OUT("\tif (!_temp_%d)\n",node->cond->temp);
 	OUT("\t\tgoto label_%d_end;\n",label);
 
+	OUT("\t/* while body */\n");
 	translate_stmt(node->body);
+	OUT("\n");
 
 	OUT("\tgoto label_%d;\n",label);
 
