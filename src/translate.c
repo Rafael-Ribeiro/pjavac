@@ -52,9 +52,7 @@ void translate_constant(is_constant *node)
 		break;
 
 		case t_constant_string:	
-			OUT("\tchar* _temp_%d = (char*)malloc(%d * sizeof(char)); strcpy(_temp_%d, %s);\n",
-				node->temp,
-				strlen(node->value.string_val) - 1, /* +1 for null; -2 because string_val includes "" */
+			OUT("\tchar* _temp_%d = strdup(%s);\n",
 				node->temp,
 				node->value.string_val
 			);
@@ -108,7 +106,9 @@ void translate_binary_op(is_binary_op *node)
 {
 	is_type_decl* string;
 	bool isStringLeft, isStringRight;
-	char *operator, *type;
+	char *operator, *type, *typeLeft, *typeRight;
+	int tempLeft, tempRight;
+	int tempLabel;
 
 	switch (node->type)
 	{
@@ -124,8 +124,6 @@ void translate_binary_op(is_binary_op *node)
 			string = insert_type_decl_object(insert_type_object(t_type_native_string));
 			type = string_type_decl(node->s_type);
 	
-			node->temp = temp_counter++;
-
 			if (node->type == t_binary_op_add)
 			{
 				isStringLeft = type_type_equal(string, node->data.operands.left->s_type);
@@ -133,13 +131,75 @@ void translate_binary_op(is_binary_op *node)
 
 				if (isStringLeft || isStringRight)
 				{
-					OUT("FIXME %d string concats\n", __LINE__);
-					break;
-				}
-			}
+					if (!isStringLeft)
+					{
+						tempLeft = temp_counter++;
+						tempLabel = ++label_counter;
+						typeLeft = string_type_decl(node->data.operands.left->s_type);
 
-			if (node->type != t_binary_op_eq3 && node->type != t_binary_op_ne3)
+						OUT("\t/* conversion from %s to string */\n", typeLeft);
+						OUT("\t_fp->retaddr = %d;\n", tempLabel);
+						OUT("\t_fp->args[0] = (%s*)malloc(sizeof(%s));\n", typeLeft, typeLeft);
+						OUT("\t*_fp->args[0] = *_temp_%d;\n", node->data.operands.left->temp);
+						OUT("\tgoto %s_to_string;\n", typeLeft);
+						OUT("\n");
+						OUT("label_%d:\n", tempLabel);
+						OUT("\tchar* _temp_%d = (char*)fp->retval;\n", tempLeft);
+						OUT("\n");
+
+						free(typeLeft);
+					} else
+						tempLeft = node->data.operands.left->temp;
+	
+					if (!isStringRight)
+					{
+						tempRight = temp_counter++;
+						tempLabel = ++label_counter;
+						typeRight = string_type_decl(node->data.operands.right->s_type);
+
+						OUT("\t/* conversion from %s to string */\n", typeRight);
+						OUT("\t_fp->retaddr = %d;\n", tempLabel);
+						OUT("\t_fp->args[0] = (%s*)malloc(sizeof(%s));\n", typeRight, typeRight);
+						OUT("\t*_fp->args[0] = *_temp_%d;\n", node->data.operands.right->temp);
+						OUT("\tgoto %s_to_string;\n", typeRight);
+						OUT("\n");
+						OUT("label_%d:\n", tempLabel);
+						OUT("\tchar* _temp_%d = (char*)fp->retval;\n", tempRight);
+						OUT("\n");
+
+						free(typeRight);
+					} else
+						tempRight = node->data.operands.right->temp;
+
+					node->temp = temp_counter++;
+					tempLabel = ++label_counter;
+
+					OUT("\t/* string + string */\n");
+					OUT("\t_fp->retaddr = %d;\n", tempLabel);
+					OUT("\t_fp->args[0] = (char**)malloc(sizeof(char*));\n");
+					OUT("\t_fp->args[1] = (char**)malloc(sizeof(char*));\n");
+					OUT("\t*_fp->args[0] = *_temp_%d;\n", node->data.operands.left->temp);
+					OUT("\t*_fp->args[1] = *_temp_%d;\n", node->data.operands.right->temp);
+					OUT("\tgoto string_concat;\n");
+					OUT("\n");
+					OUT("label_%d:\n", tempLabel);
+					OUT("\t_temp_%d = (char*)fp->retval;\n", node->temp);
+					OUT("\n");
+				} else
+				{
+					node->temp = temp_counter++;
+
+					OUT("\t%s _temp_%d = _temp_%d + _temp_%d;\n",
+						type,
+						node->temp,
+						node->data.operands.left->temp,
+						node->data.operands.right->temp
+					);
+				}
+			} else if (node->type != t_binary_op_eq3 && node->type != t_binary_op_ne3)
 			{
+				node->temp = temp_counter++;
+
 				operator = string_binary_operator(node->type);
 				OUT("\t%s _temp_%d = _temp_%d %s _temp_%d;\n",
 					type,
@@ -480,21 +540,6 @@ void translate_func_def(is_func_def *node)
 	free(func_type);
 }
 
-void translate_func_def_arg(is_func_def_arg *node)
-{
-	OUT("FIXME %d\n", __LINE__);
-}
-
-void translate_func_def_arg_list(is_func_def_arg_list *node)
-{
-	OUT("FIXME %d\n", __LINE__);
-}
-
-void translate_func_def_args(is_func_def_args *node)
-{
-	OUT("FIXME %d\n", __LINE__);
-}
-
 void translate_header()
 {
 	OUT("#include <stdio.h>\n");
@@ -561,7 +606,7 @@ void translate_redirector()
 	OUT("\tif (_fp == NULL)\n");
 	OUT("\t\tgoto label_end;\n");
 
-	for (i = 0; i < label_counter; i++)
+	for (i = 0; i <= label_counter; i++)
 	{
 		OUT("\tif (_fp->retaddr == %d)\n", i);
 		OUT("\t\tgoto label_%d;\n", i);
@@ -578,11 +623,11 @@ void translate_return(is_return *node)
 
 		type = string_type_decl(node->symbol->data.func_data.type);
 		OUT("\t*(%s)_temp_ret = *(%s)_temp_%d;\n", type, type, node->value->temp);
-		OUT("\tgoto label_%d_end;\n", node->symbol->data.func_data.label);
-		OUT("\n");
-
 		free(type);
 	}
+
+	OUT("\tgoto label_%d_end;\n", node->symbol->data.func_data.label);
+	OUT("\n");
 }
 
 void translate_stmt(is_stmt *node)
@@ -732,21 +777,40 @@ void translate_var_def(is_var_def *node)
 		translate_var_initializer(node->var_init);
 
 	typeA = string_type_decl(symbol->data.var_data.type);
-	OUT("\t_fp->locals[%d] = (%s*)malloc(sizeof(%s));\n",
-		symbol->data.var_data.framepos,
-		typeA,
-		typeA
-	);
 
-	if (node->var_init)
+	if (symbol->data.var_data.global)
 	{
-		OUT("\t*((%s*)_fp->locals[%d]) = _temp_%d;\n",
-			typeA,
+		OUT("\t_globals[%d] = (%s*)malloc(sizeof(%s));\n",
 			symbol->data.var_data.framepos,
-			node->var_init->temp
+			typeA,
+			typeA
 		);
-	}
 
+		if (node->var_init)
+		{
+			OUT("\t*((%s*)_globals[%d]) = _temp_%d;\n",
+				typeA,
+				symbol->data.var_data.framepos,
+				node->var_init->temp
+			);
+		}
+	} else
+	{
+		OUT("\t_fp->locals[%d] = (%s*)malloc(sizeof(%s));\n",
+			symbol->data.var_data.framepos,
+			typeA,
+			typeA
+		);
+
+		if (node->var_init)
+		{
+			OUT("\t*((%s*)_fp->locals[%d]) = _temp_%d;\n",
+				typeA,
+				symbol->data.var_data.framepos,
+				node->var_init->temp
+			);
+		}
+	}
 	OUT("\n");
 	free(typeA);
 }
