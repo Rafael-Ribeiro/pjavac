@@ -29,54 +29,67 @@ label_1:
 	_fp = _temp_frame;
 
 	/* func body */
-	char* _temp_0 = strdup("");
-	int* _temp_1;
-	_temp_1 = (int*)_fp->locals[0];
-	int _temp_2 = *_temp_1;
+	int* _temp_0;
+	_temp_0 = (int*)_fp->locals[0];
+	int _temp_1 = *_temp_0;
 
-	/* conversion from int to string */
-	_fp->retaddr = 3;
-	_fp->args[0] = (int*)malloc(sizeof(int));
-	*(int*)_fp->args[0] = _temp_2;
-	goto int_to_string;
-
-label_3: ;
-	; /* temp_3 gets the string */
-	char* _temp_3 = (char*)_fp->retval;
-
-	/* string + string */
-	_fp->retaddr = 4;
-	_fp->args[0] = (char**)malloc(sizeof(char*));
-	_fp->args[1] = (char**)malloc(sizeof(char*));
-	*(char**)_fp->args[0] = _temp_0;
-	*(char**)_fp->args[1] = _temp_3;
-	goto string_concat;
-
-label_4:
-	; /* temp_4 gets the concatenated string */
-	char* _temp_4 = (char*)_fp->retval;
-
-
-	/* function call: System.out.println */
-	_fp->retaddr = 2;
-	_fp->args[0] = &_temp_4;
-	goto label_2147483647;
+	int _temp_2 = 10;
+	bool _temp_3 = _temp_1 == _temp_2;
+	if (!_temp_3)
+		goto label_2;
+	/* then */
+	goto label_1_end;
 
 label_2:
-	; /* end of func call*/
+	; /* end of if */
+	char* _temp_4 = strdup("");
 	int* _temp_5;
 	_temp_5 = (int*)_fp->locals[0];
 	int _temp_6 = *_temp_5;
 
-	int _temp_7 = 1;
-	int _temp_8 = _temp_6 + _temp_7;
+	/* conversion from int to string */
+	_fp->retaddr = 4;
+	_fp->args[0] = (int*)malloc(sizeof(int));
+	*(int*)_fp->args[0] = _temp_6;
+	goto int_to_string;
 
-	/* function call: func */
+label_4: ;
+	; /* temp_7 gets the string */
+	char* _temp_7 = (char*)_fp->retval;
+
+	/* string + string */
 	_fp->retaddr = 5;
-	_fp->args[0] = &_temp_8;
-	goto label_1;
+	_fp->args[0] = (char**)malloc(sizeof(char*));
+	_fp->args[1] = (char**)malloc(sizeof(char*));
+	*(char**)_fp->args[0] = _temp_4;
+	*(char**)_fp->args[1] = _temp_7;
+	goto string_concat;
 
 label_5:
+	; /* temp_8 gets the concatenated string */
+	char* _temp_8 = (char*)_fp->retval;
+
+
+	/* function call: System.out.println */
+	_fp->retaddr = 3;
+	_fp->args[0] = &_temp_8;
+	goto label_2147483647;
+
+label_3:
+	; /* end of func call*/
+	int* _temp_9;
+	_temp_9 = (int*)_fp->locals[0];
+	int _temp_10 = *_temp_9;
+
+	int _temp_11 = 1;
+	int _temp_12 = _temp_10 + _temp_11;
+
+	/* function call: func */
+	_fp->retaddr = 6;
+	_fp->args[0] = &_temp_12;
+	goto label_1;
+
+label_6:
 	; /* end of func call*/
 
 label_1_end:
@@ -100,14 +113,14 @@ label_0:
 	_fp = _temp_frame;
 
 	/* main body */
-	int _temp_9 = 0;
+	int _temp_13 = 0;
 
 	/* function call: func */
-	_fp->retaddr = 6;
-	_fp->args[0] = &_temp_9;
+	_fp->retaddr = 7;
+	_fp->args[0] = &_temp_13;
 	goto label_1;
 
-label_6:
+label_7:
 	; /* end of func call*/
 
 label_0_end:
@@ -141,6 +154,8 @@ redirector:
 		goto label_5;
 	if (_fp->retaddr == 6)
 		goto label_6;
+	if (_fp->retaddr == 7)
+		goto label_7;
 
 label_end:
 	return 0;

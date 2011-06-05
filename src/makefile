@@ -1,5 +1,7 @@
 COMP_FLAGS = -lm -ansi -Wall -g
 LINK_FLAGS = -lm -g
+SOURCE = ../inputs/input10.pja
+TARGET = ../outputs/out.c
 
 all: main soft-clean
 
@@ -44,6 +46,7 @@ soft-clean:
 clean: soft-clean
 	rm -f lex.yy.c y.tab.c y.tab.h y.output pjava
 
-test: 
-	gcc ../outputs/out.c -I./ -Wall -g -o ../outputs/out
+test:
+	./pjava < $(SOURCE) > $(TARGET)
+	gcc $(TARGET) -I./ -Wall -g -o ../outputs/out
 

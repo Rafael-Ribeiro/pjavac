@@ -447,7 +447,6 @@ void translate_func_def(is_func_def *node)
 
 	func_type = string_type_decl(node->scope->symbol->data.func_data.type);
 
-
 	OUT("\tgoto label_%d_postend;\n", node->scope->symbol->data.func_data.label);
 	OUT("\n");
 	OUT("label_%d:\n\t; /* %s */\n", node->scope->symbol->data.func_data.label, node->id->name);
@@ -548,7 +547,31 @@ void translate_header()
 
 void translate_if(is_if *node)
 {
-	OUT("FIXME %d\n", __LINE__);
+	translate_expr(node->cond);
+	int label;
+
+	label = ++label_counter;
+	OUT("\tif (!_temp_%d)\n", node->cond->temp);
+
+	if (node->else_body)
+		OUT("\t\tgoto label_%d_if_else;\n", label);
+	else
+		OUT("\t\tgoto label_%d;\n", label);
+
+	OUT("\t/* then */\n");
+	translate_stmt(node->then_body);
+
+	if (node->else_body)
+	{
+		OUT("\tgoto label_%d;\n", label);
+		OUT("\n");
+		OUT("label_%d_if_else:\n", label);
+		OUT("\t; /* else */\n");
+		translate_stmt(node->else_body);
+	}
+
+	OUT("label_%d:\n", label);
+	OUT("\t; /* end of if */\n");
 }
 
 void translate_incr_op(is_incr_op *node)

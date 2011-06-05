@@ -826,7 +826,7 @@ int check_if(is_if* node)
 	}	
 
 	errors += check_stmt(node->then_body);
-	node->terminates = node->then_body->terminates;
+	node->terminates = node->then_body->terminates && node->else_body != NULL;
 	if (node->else_body)
 	{
 		errors += check_stmt(node->else_body);
