@@ -414,6 +414,7 @@ void translate_func_call(is_func_call *node)
 	OUT("\t/* function call: %s */\n", node->id->name);
 	OUT("\t_fp->retaddr = %d;\n", label);
 
+
 	if (!type_type_equal(type_void, node->symbol->data.func_data.type))
 	{
 		type = string_type_decl(node->symbol->data.func_data.type);
@@ -436,6 +437,7 @@ void translate_func_call(is_func_call *node)
 	OUT("\tgoto label_%d;\n", node->symbol->data.func_data.label);
 	OUT("\n");
 	OUT("label_%d:\n", label);
+	OUT("\t; /* end of func call*/\n");
 
 	/* FIXME: what about frees of frees? */
 	for (i = 0; i < node->symbol->data.func_data.nArgs; i++)
@@ -444,9 +446,8 @@ void translate_func_call(is_func_call *node)
 	if (!type_type_equal(type_void, node->symbol->data.func_data.type))
 	{
 		temp = temp_counter++;
-		OUT("\t%s* _temp_%d = (%s*)malloc(sizeof(%s));\n", type, temp, type, type);
-		OUT("\t*_temp_%d = *(%s*)_fp->retval;\n", temp, type);
-		OUT("\t_free(_fp->retval);\n");
+		OUT("\t%s _temp_%d = *(%s*)_fp->retval;\n", type, temp, type);
+		OUT("\tfree(_fp->retval);\n");
 
 		node->temp = temp;
 		free(type);
@@ -625,7 +626,7 @@ void translate_return(is_return *node)
 		translate_expr(node->value);
 
 		type = string_type_decl(node->symbol->data.func_data.type);
-		OUT("\t*(%s)_temp_ret = *(%s)_temp_%d;\n", type, type, node->value->temp);
+		OUT("\t*(%s*)_temp_ret = _temp_%d;\n", type, node->value->temp);
 		free(type);
 	}
 

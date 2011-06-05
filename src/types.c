@@ -526,7 +526,7 @@ char *string_binary_operator(type_binary_op operator)
 
 char *string_type_native(is_type_native* type)
 {
-	char strings[][8] = {"boolean", "char", "char", "double", "float", "int", "long", "short", "char*", "void"};
+	char strings[][8] = {"bool", "char", "char", "double", "float", "int", "long", "short", "char*", "void"};
 
 	return __strdup(strings[*type]);
 }
