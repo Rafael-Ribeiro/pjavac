@@ -36,7 +36,7 @@ duplicate.o: duplicate.c
 	cc -c -o duplicate.o duplicate.c ${COMP_FLAGS}
 
 translate.o: translate.c
-	cc -c -o translate.o translate.c -lm  -Wall -g
+	cc -c -o translate.o translate.c ${COMP_FLAGS}
 
 soft-clean:
 	rm -f *.o ~*
