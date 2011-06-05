@@ -510,6 +510,19 @@ is_type_native operators_unary[MAX_OPERATORS_UNARY][MAX_NATIVE_TYPES-1] =
 	}
 };
 
+char *string_assign_operator(type_assign_op operator)
+{
+	char strings[][4] =
+	{
+		"=",
+		">>=", "<<=",
+		"+=", "-=", "*=", "/=", "%=",
+		"&=", "^=", "|="
+	};
+
+	return __strdup(strings[operator - t_assign_op_eq]);
+}
+
 char *string_binary_operator(type_binary_op operator)
 {
 	char strings[][4] =

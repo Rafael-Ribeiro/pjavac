@@ -963,6 +963,18 @@ is_type_decl* new_type_decl_void(int line)
 	return node;
 }
 
+is_type_decl* new_type_decl_string(int line)
+{
+	is_type_decl* node = (is_type_decl*)malloc(sizeof(is_type_decl));
+
+	node->type = t_type_decl_type_object;
+	node->line = line;
+
+	node->data.type_object = insert_type_object(t_type_native_string);
+
+	return node;
+}
+
 is_type_decl* insert_type_decl_object(is_type_object* object)
 {
 	is_type_decl* node = (is_type_decl*)malloc(sizeof(is_type_decl));

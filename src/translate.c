@@ -99,7 +99,58 @@ void translate_array_decl(is_array_decl *node)
 
 void translate_assign_op(is_assign_op *node)
 {
-	OUT("FIXME %d\n", __LINE__);
+	char *operator, *typeExpr;
+	int label, labelConvert, tempConvert;
+	is_type_decl *type_string;
+
+	type_string = new_type_decl_string(0);
+
+	translate_expr(node->expr);
+
+	translate_var(node->var);
+
+	if (node->type == t_assign_op_add_eq && type_type_equal(type_string, node->var->s_type))
+	{
+		label = ++label_counter;
+
+		if (type_type_equal(type_string, node->expr->s_type))
+		{
+			tempConvert = temp_counter++;
+			labelConvert = ++label_counter;
+			typeExpr = string_type_decl(node->expr->s_type);
+
+			OUT("\t/* conversion from %s to string */\n", typeExpr);
+			OUT("\t_fp->retaddr = %d;\n", labelConvert);
+			OUT("\t_fp->args[0] = &_temp_%d;\n", node->expr->temp);
+			OUT("\tgoto %s_to_string;\n", typeExpr);
+			OUT("\n");
+			OUT("label_%d:\n", labelConvert);
+			OUT("\t; /* temp_%d gets the string */\n", tempConvert);
+			OUT("\tchar*_temp_%d = (char*)fp->retval;\n", tempConvert);
+			OUT("\n");
+
+			free(typeExpr);
+		} else
+			tempConvert = node->expr->temp;
+
+		OUT("\t/* string += string */\n");
+		OUT("\t_fp->retaddr = %d;\n", label);
+		OUT("\t_fp->args[0] = _temp_%d; /* var */\n", node->var->temp);
+		OUT("\t_fp->args[1] = &_temp_%d; /* expr */\n", tempConvert);
+		OUT("\tgoto string_concat;\n");
+		OUT("\n");
+		OUT("label_%d:\n", label);
+		OUT("\t; /* temp_%d gets the concatenated string */\n", node->var->temp);
+		OUT("\t*(char**)_temp_%d = (char*)_fp->retval;\n", node->var->temp);
+		OUT("\n");
+	} else
+	{
+		operator = string_assign_operator(node->type);
+		OUT("\t*_temp_%d %s _temp_%d;\n", node->var->temp, operator, node->expr->temp);
+		free(operator);
+	}
+
+	free_type_decl(type_string);
 }
 
 void translate_binary_op(is_binary_op *node)
@@ -139,8 +190,7 @@ void translate_binary_op(is_binary_op *node)
 
 						OUT("\t/* conversion from %s to string */\n", typeLeft);
 						OUT("\t_fp->retaddr = %d;\n", tempLabel);
-						OUT("\t_fp->args[0] = (%s*)malloc(sizeof(%s));\n", typeLeft, typeLeft);
-						OUT("\t*(%s*)_fp->args[0] = _temp_%d;\n", typeLeft, node->data.operands.left->temp);
+						OUT("\t_fp->args[0] = &_temp_%d;\n", node->data.operands.left->temp);
 						OUT("\tgoto %s_to_string;\n", typeLeft);
 						OUT("\n");
 						OUT("label_%d:\n", tempLabel);
@@ -160,8 +210,7 @@ void translate_binary_op(is_binary_op *node)
 
 						OUT("\t/* conversion from %s to string */\n", typeRight);
 						OUT("\t_fp->retaddr = %d;\n", tempLabel);
-						OUT("\t_fp->args[0] = (%s*)malloc(sizeof(%s));\n", typeRight, typeRight);
-						OUT("\t*(%s*)_fp->args[0] = _temp_%d;\n", typeRight, node->data.operands.right->temp);
+						OUT("\t_fp->args[0] = &_temp_%d;\n", node->data.operands.right->temp);
 						OUT("\tgoto %s_to_string;\n", typeRight);
 						OUT("\n");
 						OUT("label_%d: ;\n", tempLabel);
@@ -178,10 +227,8 @@ void translate_binary_op(is_binary_op *node)
 
 					OUT("\t/* string + string */\n");
 					OUT("\t_fp->retaddr = %d;\n", tempLabel);
-					OUT("\t_fp->args[0] = (char**)malloc(sizeof(char*));\n");
-					OUT("\t_fp->args[1] = (char**)malloc(sizeof(char*));\n");
-					OUT("\t*(char**)_fp->args[0] = _temp_%d;\n", tempLeft);
-					OUT("\t*(char**)_fp->args[1] = _temp_%d;\n", tempRight);
+					OUT("\t_fp->args[0] = &_temp_%d;\n", tempLeft);
+					OUT("\t_fp->args[1] = &_temp_%d;\n", tempRight);
 					OUT("\tgoto string_concat;\n");
 					OUT("\n");
 					OUT("label_%d:\n", tempLabel);
@@ -547,6 +594,8 @@ void translate_header()
 
 void translate_if(is_if *node)
 {
+	OUT("\t/* begin of if */\n");
+
 	translate_expr(node->cond);
 	int label;
 
@@ -572,6 +621,7 @@ void translate_if(is_if *node)
 
 	OUT("label_%d:\n", label);
 	OUT("\t; /* end of if */\n");
+	OUT("\n");
 }
 
 void translate_incr_op(is_incr_op *node)
