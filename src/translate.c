@@ -322,7 +322,19 @@ void translate_dims_sized_list(is_dims_sized_list *node)
 
 void translate_do_while(is_do_while *node)
 {
-	OUT("FIXME %d\n", __LINE__);
+	int label = ++label_counter;
+
+	OUT("label_%d:\n",label);
+	OUT("\t; /* do while loop */\n");
+
+	translate_stmt(node->body);
+
+	translate_expr(node->cond);
+
+	OUT("\tif (_temp_%d)\n",node->cond->temp);
+	OUT("\t\tgoto label_%d;\n",label);
+
+	OUT("\t/* end of do while */\n");
 }
  
 void translate_expr(is_expr *node)
@@ -631,7 +643,20 @@ void translate_incr_op(is_incr_op *node)
 
 void translate_loop_stmt(is_loop_stmt *node)
 {
-	OUT("FIXME %d\n", __LINE__);
+	switch (node->type)
+	{
+		case t_loop_stmt_for:
+			translate_for(node->data.for_stmt);
+		break;
+
+		case t_loop_stmt_while:
+			translate_while(node->data.while_stmt);
+		break;
+
+		case t_loop_stmt_do_while:
+			translate_do_while(node->data.do_while_stmt);
+		break;
+	}
 }
  
 void translate_member_stmt(is_member_stmt *node)
@@ -917,5 +942,19 @@ void translate_var_initializer_list(is_var_initializer_list *node)
 
 void translate_while(is_while *node)
 {
-	OUT("FIXME %d\n", __LINE__);
+	int label = ++label_counter;
+
+	OUT("label_%d:\n",label);
+	OUT("\t; /* while loop */\n");
+	translate_expr(node->cond);
+
+	OUT("\tif (!_temp_%d)\n",node->cond->temp);
+	OUT("\t\tgoto label_%d_end;\n",label);
+
+	translate_stmt(node->body);
+
+	OUT("\tgoto label_%d;\n",label);
+
+	OUT("label_%d_end:\n",label);
+	OUT("\t; /* end of while */\n");
 }
