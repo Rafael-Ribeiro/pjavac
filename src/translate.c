@@ -140,10 +140,11 @@ void translate_binary_op(is_binary_op *node)
 						OUT("\t/* conversion from %s to string */\n", typeLeft);
 						OUT("\t_fp->retaddr = %d;\n", tempLabel);
 						OUT("\t_fp->args[0] = (%s*)malloc(sizeof(%s));\n", typeLeft, typeLeft);
-						OUT("\t*_fp->args[0] = *_temp_%d;\n", node->data.operands.left->temp);
+						OUT("\t*(%s*)_fp->args[0] = _temp_%d;\n", typeLeft, node->data.operands.left->temp);
 						OUT("\tgoto %s_to_string;\n", typeLeft);
 						OUT("\n");
 						OUT("label_%d:\n", tempLabel);
+						OUT("\t; /* temp_%d gets the string */\n", tempLeft);
 						OUT("\tchar* _temp_%d = (char*)fp->retval;\n", tempLeft);
 						OUT("\n");
 
@@ -160,11 +161,12 @@ void translate_binary_op(is_binary_op *node)
 						OUT("\t/* conversion from %s to string */\n", typeRight);
 						OUT("\t_fp->retaddr = %d;\n", tempLabel);
 						OUT("\t_fp->args[0] = (%s*)malloc(sizeof(%s));\n", typeRight, typeRight);
-						OUT("\t*_fp->args[0] = *_temp_%d;\n", node->data.operands.right->temp);
+						OUT("\t*(%s*)_fp->args[0] = _temp_%d;\n", typeRight, node->data.operands.right->temp);
 						OUT("\tgoto %s_to_string;\n", typeRight);
 						OUT("\n");
-						OUT("label_%d:\n", tempLabel);
-						OUT("\tchar* _temp_%d = (char*)fp->retval;\n", tempRight);
+						OUT("label_%d: ;\n", tempLabel);
+						OUT("\t; /* temp_%d gets the string */\n", tempRight);
+						OUT("\tchar* _temp_%d = (char*)_fp->retval;\n", tempRight);
 						OUT("\n");
 
 						free(typeRight);
@@ -178,12 +180,13 @@ void translate_binary_op(is_binary_op *node)
 					OUT("\t_fp->retaddr = %d;\n", tempLabel);
 					OUT("\t_fp->args[0] = (char**)malloc(sizeof(char*));\n");
 					OUT("\t_fp->args[1] = (char**)malloc(sizeof(char*));\n");
-					OUT("\t*_fp->args[0] = *_temp_%d;\n", node->data.operands.left->temp);
-					OUT("\t*_fp->args[1] = *_temp_%d;\n", node->data.operands.right->temp);
+					OUT("\t*(char**)_fp->args[0] = _temp_%d;\n", tempLeft);
+					OUT("\t*(char**)_fp->args[1] = _temp_%d;\n", tempRight);
 					OUT("\tgoto string_concat;\n");
 					OUT("\n");
 					OUT("label_%d:\n", tempLabel);
-					OUT("\t_temp_%d = (char*)fp->retval;\n", node->temp);
+					OUT("\t; /* temp_%d gets the concatenated string */\n", node->temp);
+					OUT("\tchar* _temp_%d = (char*)_fp->retval;\n", node->temp);
 					OUT("\n");
 				} else
 				{
