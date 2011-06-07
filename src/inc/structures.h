@@ -480,8 +480,8 @@ typedef struct _is_if
 
 typedef enum
 {
-	t_incr_op_inc,
-	t_incr_op_dec
+	t_incr_op_inc = 0,
+	t_incr_op_dec = 1
 } type_incr_op;
 
 typedef struct _is_incr_op

@@ -847,23 +847,25 @@ int check_incr_op(is_incr_op* node)
 	{
 		if (node->var->s_type->type != t_type_decl_array_decl)
 		{
-			type = operators_incr_op[node->var->s_type->type];
+			type = operators_incr_op[node->var->s_type->data.type_object->type];
 			if (type == ERROR)
 			{
 				errors++;
-				pretty_error(node->line, "unary operation with %s type is invalid",
+				pretty_error(node->line, "increment operation with %s type is invalid",
 					typeA = string_type_decl(node->var->s_type));
 
 				free(typeA);
 			} else if (!node->var->initialized)
 			{
 				errors++;
-				pretty_error(node->line, "variable used in a unary op without being initialized ");
-			}
+				pretty_error(node->line, "variable used in a increment op without being initialized ");
+			} else
+				node->s_type = duplicate_type_decl(node->var->s_type);
+
 		} else
 		{
 			errors++;
-			pretty_error(node->line, "unary operations are invalid between array types");
+			pretty_error(node->line, "increment operations are invalid between array types");
 		}
 	}
 
@@ -1141,8 +1143,41 @@ int check_type_object(is_type_object* node)
 
 int check_unary_op(is_unary_op* node)
 {
+	is_type_native type;
+	char* typeA;
 	int errors = 0;
-	/* TODO */
+
+	switch (node->type)
+	{
+		case t_unary_op_operation:
+			errors += check_expr(node->data.operation.expr);
+			if (errors == 0)
+			{
+				if (node->data.operation.expr->s_type->type != t_type_decl_array_decl)
+				{
+					type = operators_unary[node->data.operation.op][node->data.operation.expr->s_type->type];
+					if (type == ERROR)
+					{
+						errors++;
+						pretty_error(node->line, "unary operation with %s type is invalid",
+							typeA = string_type_decl(node->data.operation.expr->s_type));
+						free(typeA);
+					} else
+						node->s_type = duplicate_type_decl(node->data.operation.expr->s_type);
+				} else
+				{
+					errors++;
+					pretty_error(node->line, "unary operations are invalid between array types");
+				}
+			}
+		break;
+
+		case t_unary_op_incr_op:
+			errors += check_incr_op(node->data.incr);
+			if (errors == 0)
+				node->s_type = duplicate_type_decl(node->data.incr->s_type);
+		break;	
+	}
 
 	return errors;
 }
