@@ -497,6 +497,7 @@ typedef struct _is_incr_op
 
 	/* code generation */
 	int temp;
+	bool used;
 } is_incr_op;
 
 typedef enum

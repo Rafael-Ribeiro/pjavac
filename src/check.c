@@ -560,6 +560,8 @@ int check_for_expr(is_for_expr* node)
 	{
 		case t_for_expr_incr:
 			errors += check_incr_op(node->data.incr);
+			if (errors == 0)
+				node->data.incr->used = true;
 			break;
 
 		case t_for_expr_assign:
@@ -1109,8 +1111,36 @@ int check_switch_stmt_list(is_switch_stmt_list* node)
 
 int check_ternary_op(is_ternary_op* node)
 {
+	char *typeA, *typeB;
 	int errors = 0;
-	/* TODO */
+
+	errors += check_expr(node->if_expr);
+	if (errors == 0 && !type_native_assign_able(t_type_native_bool, node->if_expr->s_type))
+	{
+		errors++;
+		typeA = string_type_decl(node->if_expr->s_type);
+
+		pretty_error(node->line, "ternary conditional is not boolean (is of type %s)", typeA);
+
+		free(typeA);
+	}
+
+	errors += check_expr(node->then_expr);
+	errors += check_expr(node->else_expr);
+	if (errors == 0 && !type_type_equal(node->then_expr->s_type, node->else_expr->s_type))
+	{
+		errors++;
+		typeA = string_type_decl(node->then_expr->s_type);
+		typeB = string_type_decl(node->else_expr->s_type);
+
+		pretty_error(node->line, "ternary results are not of the same type (are of types %s and %s)", typeA, typeB);
+
+		free(typeA);
+		free(typeB);
+	}
+
+	if (errors == 0)
+		node->s_type = duplicate_type_decl(node->then_expr->s_type);
 
 	return errors;
 }
@@ -1175,7 +1205,10 @@ int check_unary_op(is_unary_op* node)
 		case t_unary_op_incr_op:
 			errors += check_incr_op(node->data.incr);
 			if (errors == 0)
+			{
 				node->s_type = duplicate_type_decl(node->data.incr->s_type);
+				node->data.incr->used = true;
+			}
 		break;	
 	}
 

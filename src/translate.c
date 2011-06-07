@@ -671,12 +671,22 @@ void translate_incr_op(is_incr_op *node)
 	operator = string_incr_operator(node->type);
 
 	translate_var(node->var);
-	node->temp = temp_counter++;
 
-	if (node->pre)
-		OUT("\t%s _temp_%d = %s(*(%s*)_temp_%d);\n", type, node->temp, operator, type, node->var->temp);
-	else
-		OUT("\t%s _temp_%d = (*(%s*)_temp_%d)%s;\n", type, node->temp, type, node->var->temp, operator);
+	if (node->used)
+	{
+		node->temp = temp_counter++;
+		if (node->pre)
+			OUT("\t%s _temp_%d = %s(*(%s*)_temp_%d);\n", type, node->temp, operator, type, node->var->temp);
+		else
+			OUT("\t%s _temp_%d = (*(%s*)_temp_%d)%s;\n", type, node->temp, type, node->var->temp, operator);
+	} else
+	{
+		node->temp = -1;
+		if (node->pre)
+			OUT("\t%s(*(%s*)_temp_%d);\n", operator, type, node->var->temp);
+		else
+			OUT("\t(*(%s*)_temp_%d)%s;\n", type, node->var->temp, operator);
+	}
 
 	free(operator);
 	free(type);
@@ -828,7 +838,45 @@ void translate_switch_stmt_list(is_switch_stmt_list *node)
 
 void translate_ternary_op(is_ternary_op *node)
 {
-	OUT("FIXME %d\n", __LINE__);
+	int label;
+	char *type;
+
+	type = string_type_decl(node->s_type);
+	label = ++label_counter;
+	node->temp = temp_counter++;
+
+	OUT("\t/* ternary op */\n");
+	OUT("\t%s _temp_%d;\n", type, node->temp);
+	OUT("\n");
+
+	translate_expr(node->if_expr);
+
+	OUT("\n");
+	OUT("\tif (!_temp_%d)\n", node->if_expr->temp);
+	OUT("\t\tgoto label_%d_else;\n", label);
+	OUT("\n");
+	OUT("\t/* ternary op then */\n");
+
+	translate_expr(node->then_expr);
+
+	OUT("\n");
+	OUT("\t_temp_%d = _temp_%d;\n", node->temp, node->then_expr->temp);
+
+	OUT("\n");
+	OUT("\tgoto label_%d;\n", label);
+	OUT("label_%d_else:\n", label);
+	OUT("\t; /* ternary op else*/");
+	
+	translate_expr(node->else_expr);
+
+	OUT("\n");
+	OUT("\t_temp_%d = _temp_%d;\n", node->temp, node->else_expr->temp);
+
+	OUT("\n");
+	OUT("label_%d:\n", label);
+	OUT("\t; /* ternary op end */\n");
+
+	free(type);
 }
 
 void translate_type_decl(is_type_decl *node)
