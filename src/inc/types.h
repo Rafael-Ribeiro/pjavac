@@ -16,6 +16,7 @@
 #endif
 
 char string_unary_operator(type_unary_op_operator operator);
+char *string_incr_operator(type_incr_op operator);
 
 char *string_assign_operator(type_assign_op operator);
 char *string_binary_operator(type_binary_op operator);

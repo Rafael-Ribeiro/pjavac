@@ -642,7 +642,21 @@ void translate_if(is_if *node)
 
 void translate_incr_op(is_incr_op *node)
 {
-	OUT("FIXME %d\n", __LINE__);
+	char *type, *operator;
+
+	type = string_type_decl(node->s_type);
+	operator = string_incr_operator(node->type);
+
+	translate_var(node->var);
+	node->temp = temp_counter++;
+
+	if (node->pre)
+		OUT("\t%s _temp_%d = %s(*(%s*)_temp_%d);\n", type, node->temp, operator, type, node->var->temp);
+	else
+		OUT("\t%s _temp_%d = (*(%s*)_temp_%d)%s;\n", type, node->temp, type, node->var->temp, operator);
+
+	free(operator);
+	free(type);
 }
 
 void translate_loop_stmt(is_loop_stmt *node)
@@ -825,7 +839,8 @@ void translate_unary_op(is_unary_op *node)
 		break;
 
 		case t_unary_op_incr_op:
-			OUT("FIXME %d\n", __LINE__);
+			translate_incr_op(node->data.incr);
+			node->temp = node->data.incr->temp;
 		break;	
 	}
 
