@@ -278,7 +278,8 @@ void translate_binary_op(is_binary_op *node)
 
 void translate_break(is_break *node)
 {
-	OUT("goto label_%d\n", node->scope->symbol->data.loop_data.label);
+	OUT("\t/* breaking loop */");
+	OUT("\tgoto label_%d_end;\n", node->scope->symbol->data.loop_data.label);
 }
 
 void translate_class_def(is_class_def *node)
@@ -307,7 +308,8 @@ void translate_class_stmt_scope(is_class_stmt_scope *node)
  
 void translate_continue(is_continue *node)
 {
-	OUT("FIXME %d\n", __LINE__);
+	OUT("\t/* continuing loop */");
+	OUT("\tgoto label_%d_continue;\n", node->scope->symbol->data.loop_data.label);
 }
 
 void translate_dims(is_dims *node)
@@ -328,6 +330,7 @@ void translate_dims_sized_list(is_dims_sized_list *node)
 void translate_do_while(is_do_while *node)
 {
 	OUT("label_%d:\n",node->scope->symbol->data.loop_data.label);
+	OUT("label_%d_continue:\n",node->scope->symbol->data.loop_data.label);
 	OUT("\t; /* do_while loop */\n");
 
 	OUT("\t/* do_while body */\n");
@@ -453,6 +456,9 @@ void translate_for(is_for *node)
 	OUT("\n");
 	OUT("\t/* for loop body */\n");
 	translate_stmt(node->body);
+
+	OUT("label_%d_continue:\n", node->scope->symbol->data.loop_data.label);
+	OUT("\t; /* for continue label */");
 
 	if (node->inc)
 		translate_for_inc(node->inc);
@@ -1094,6 +1100,7 @@ void translate_var_initializer_list(is_var_initializer_list *node)
 void translate_while(is_while *node)
 {
 	OUT("label_%d:\n",node->scope->symbol->data.loop_data.label);
+	OUT("label_%d_continue:\n",node->scope->symbol->data.loop_data.label);
 	OUT("\t; /* while loop */\n");
 
 	OUT("\t/* while condition */\n");
