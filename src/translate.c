@@ -18,7 +18,7 @@
 
 void translate_id(is_id *node)
 {
-	OUT("FIXME %d\n", __LINE__);
+	/* OUT("FIXME %d\n", __LINE__); */
 }
 
 void translate_constant(is_constant *node)
@@ -64,19 +64,19 @@ void translate_constant(is_constant *node)
 /* YACC */
 void translate_dims_empty_list(is_dims_empty_list* val)
 {
-	OUT("FIXME %d\n", __LINE__);
+	/* OUT("FIXME %d\n", __LINE__); */
 }
 
 
 /* enums */
 void translate_class_stmt_privacy(is_class_stmt_privacy val)
 {
-	OUT("FIXME %d\n", __LINE__);
+	/* OUT("FIXME %d\n", __LINE__); */
 }
 
 void translate_type_native(is_type_native val)
 {
-	OUT("FIXME %d\n", __LINE__);
+	/* OUT("FIXME %d\n", __LINE__); */
 }
 
 
@@ -777,7 +777,30 @@ void translate_type_object(is_type_object *node)
 
 void translate_unary_op(is_unary_op *node)
 {
-	OUT("FIXME %d\n", __LINE__);
+	char *type;
+
+	type = string_type_decl(node->s_type);
+	switch (node->type)
+	{
+		case t_unary_op_operation:
+			translate_expr(node->data.operation.expr);
+			
+			node->temp = temp_counter++;			
+			OUT("\t%s _temp_%d = %c_temp_%d;\n",
+				type,
+				node->temp,
+				string_unary_operator(node->data.operation.op),
+				node->data.operation.expr->temp
+			);
+			
+		break;
+
+		case t_unary_op_incr_op:
+			OUT("FIXME %d\n", __LINE__);
+		break;	
+	}
+
+	free(type);
 }
 
 void translate_var(is_var *node)

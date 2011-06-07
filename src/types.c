@@ -523,6 +523,13 @@ char *string_assign_operator(type_assign_op operator)
 	return __strdup(strings[operator - t_assign_op_eq]);
 }
 
+char string_unary_operator(type_unary_op_operator operator)
+{
+	char operators[] = { '+', '-', '!', '~' };
+
+	return operators[operator];
+}
+
 char *string_binary_operator(type_binary_op operator)
 {
 	char strings[][4] =
