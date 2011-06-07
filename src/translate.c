@@ -85,6 +85,11 @@ void translate_application(is_application *node)
 {
 	temp_counter = 0;
 
+	OUT("/*\n");
+	OUT(" * This program was compiled from PJava using\n");
+	OUT(" * https://www.assembla.com/code/2010_dei_comp/");
+	OUT("\n */\n\n");
+
 	translate_header();
 	
 	translate_class_def(node);
@@ -431,53 +436,90 @@ void translate_for(is_for *node)
 {
 	int label = ++label_counter;
 
-	OUT("/* for loop */\n");
+	OUT("\t/* for loop */\n");
 	if (node->init)
 	{
-		OUT("/* for loop initialization */\n");
+		OUT("\t/* for loop initialization */\n");
 		translate_for_init(node->init);
 	}
 
 	OUT("label_%d:\n", label);
-	OUT("; /* for loop (condition, body, inc) */\n");
+	OUT("\t; /* for loop (condition, body, inc) */\n");
 	if (node->cond)
 	{
-		OUT("/* for loop condition */\n");
+		OUT("\t/* for loop condition */\n");
 		translate_for_cond(node->cond);
+
+		OUT("\tif (!_temp_%d)\n", node->cond->temp);
+		OUT("\t\tgoto label_%d_end;\n", label);
 	}
 
-	OUT("/* for loop body */\n");
+	OUT("\n");
+	OUT("\t/* for loop body */\n");
 	translate_stmt(node->body);
 
 	if (node->inc)
 		translate_for_inc(node->inc);
 
-	OUT("goto label_%d;\n", label);
+	OUT("\tgoto label_%d;\n", label);
+
+	OUT("label_%d_end:\n", label);
+	OUT("\t; /* for loop end */");
 }
 
 void translate_for_cond(is_for_cond *node)
 {
-	OUT("FIXME %d\n", __LINE__);
+	/* is_for_cond is typedef'd from is_expr */
+	translate_expr(node);
 }
 
 void translate_for_expr(is_for_expr *node)
 {
-	OUT("FIXME %d\n", __LINE__);
+	switch (node->type)
+	{
+		case t_for_expr_incr:
+			translate_incr_op(node->data.incr);
+		break;
+
+		case t_for_expr_assign:
+			translate_assign_op(node->data.assign);
+		break;
+
+		case t_for_expr_func_call:
+			translate_func_call(node->data.func_call);
+		break;
+	}
 }
  
 void translate_for_expr_list(is_for_expr_list *node)
 {
-	OUT("FIXME %d\n", __LINE__);
+	if (!node)
+		return;
+
+	translate_for_expr(node->node);
+	OUT("\n");
+
+	translate_for_expr_list(node->next);
 }
  
 void translate_for_inc(is_for_inc *node)
 {
-	OUT("FIXME %d\n", __LINE__);
+	/* is_for_inc is typedef'd from is_for_expr_list */
+	translate_for_expr_list(node);
 }
 
 void translate_for_init(is_for_init *node)
 {
-	OUT("FIXME %d\n", __LINE__);
+	switch (node->type)
+	{
+		case t_for_init_var_defs:
+			translate_var_defs(node->data.var_defs);
+		break;
+
+		case t_for_init_for_expr_list:
+			translate_for_expr_list(node->data.expr_list);
+		break;
+	}
 }
 
 void translate_func_call(is_func_call *node)
