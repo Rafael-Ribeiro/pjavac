@@ -847,12 +847,14 @@ int check_incr_op(is_incr_op* node)
 	{
 		if (node->var->s_type->type != t_type_decl_array_decl)
 		{
-			type = operators_unary[node->type][node->var->s_type->type];
+			type = operators_incr_op[node->var->s_type->type];
 			if (type == ERROR)
 			{
 				errors++;
 				pretty_error(node->line, "unary operation with %s type is invalid",
 					typeA = string_type_decl(node->var->s_type));
+
+				free(typeA);
 			} else if (!node->var->initialized)
 			{
 				errors++;
@@ -864,6 +866,7 @@ int check_incr_op(is_incr_op* node)
 			pretty_error(node->line, "unary operations are invalid between array types");
 		}
 	}
+
 	return errors;
 }
 

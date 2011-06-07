@@ -12,6 +12,7 @@
 #ifndef TYPES_C
 	extern is_type_native operators_binary[MAX_OPERATORS_BINARY][MAX_NATIVE_TYPES-1][MAX_NATIVE_TYPES-1];
 	extern is_type_native operators_unary[MAX_OPERATORS_UNARY][MAX_NATIVE_TYPES-1];
+	extern is_type_native operators_incr_op[MAX_NATIVE_TYPES-1];
 #endif
 
 char string_unary_operator(type_unary_op_operator operator);
