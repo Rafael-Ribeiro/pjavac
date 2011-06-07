@@ -200,7 +200,7 @@ void translate_binary_op(is_binary_op *node)
 						OUT("\n");
 						OUT("label_%d:\n", tempLabel);
 						OUT("\t; /* temp_%d gets the string */\n", tempLeft);
-						OUT("\tchar* _temp_%d = (char*)fp->retval;\n", tempLeft);
+						OUT("\tchar* _temp_%d = (char*)_fp->retval;\n", tempLeft);
 						OUT("\n");
 
 						free(typeLeft);
