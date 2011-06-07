@@ -429,7 +429,30 @@ void translate_footer()
 
 void translate_for(is_for *node)
 {
-	OUT("FIXME %d\n", __LINE__);
+	int label = ++label_counter;
+
+	OUT("/* for loop */\n");
+	if (node->init)
+	{
+		OUT("/* for loop initialization */\n");
+		translate_for_init(node->init);
+	}
+
+	OUT("label_%d:\n", label);
+	OUT("; /* for loop (condition, body, inc) */\n");
+	if (node->cond)
+	{
+		OUT("/* for loop condition */\n");
+		translate_for_cond(node->cond);
+	}
+
+	OUT("/* for loop body */\n");
+	translate_stmt(node->body);
+
+	if (node->inc)
+		translate_for_inc(node->inc);
+
+	OUT("goto label_%d;\n", label);
 }
 
 void translate_for_cond(is_for_cond *node)
