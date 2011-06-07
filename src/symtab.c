@@ -143,7 +143,7 @@ void scope_push(SCOPE* scope)
 {
 	scope->parent = symtab;
 
-	if (symtab)
+	if (!symtab)
 		scope->framepos = 0;
 	else
 		scope->framepos = symtab->framepos;

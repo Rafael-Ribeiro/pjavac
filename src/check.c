@@ -77,8 +77,8 @@ int check_assign_op(is_assign_op* node)
 	is_type_native type;
 	SYMBOL* symbol;
 
-	check_var(node->var);
-	check_expr(node->expr);
+	errors += check_var(node->var);
+	errors += check_expr(node->expr);
 
 	if (errors == 0)
 	{
@@ -179,6 +179,7 @@ int check_binary_op(is_binary_op* node)
 				node->s_type = insert_type_decl_object(insert_type_object(type));
 		break;
 	}
+
 	return errors;
 }
 
@@ -537,10 +538,11 @@ int check_for(is_for* node)
 			errors += check_for_inc(node->inc);
 
 		errors += check_stmt(node->body);
+
 		if (errors == 0)
 			node->terminates = node->body->terminates;
 	scope_pop();
-
+ 
 	return errors;
 }
 
