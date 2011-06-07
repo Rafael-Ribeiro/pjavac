@@ -455,30 +455,28 @@ is_type_native operators_unary[MAX_OPERATORS_UNARY][MAX_NATIVE_TYPES-1] =
 {
 	/* t_unary_op_operator_plus (pre ++ / pos ++) */
 	{
-		/*						bool					, byte					, char					, double				, float					, int					, long					, short					, String					<- first operand */
-		/*	++bool++	*/	ERROR,
-		/*	++byte++	*/	t_type_native_byte,
-		/*	++char++	*/	t_type_native_char,
-		/*	++double++	*/	t_type_native_double,
-		/*	++float++	*/	t_type_native_float,
-		/*	++int++		*/	t_type_native_int,
-		/*	++long++	*/	t_type_native_long,
-		/*	++short++	*/	t_type_native_short,
-		/*	++String++	*/	ERROR,
+		/*	+bool+		*/	ERROR,
+		/*	+byte+		*/	t_type_native_byte,
+		/*	+char+		*/	t_type_native_char,
+		/*	+double+	*/	t_type_native_double,
+		/*	+float+		*/	t_type_native_float,
+		/*	+int+		*/	t_type_native_int,
+		/*	+long+		*/	t_type_native_long,
+		/*	+short+		*/	t_type_native_short,
+		/*	+String+	*/	ERROR,
 	},
 
 	/* t_unary_op_operator_minus (pre -- / pos --) */
 	{
-		/*						bool					, byte					, char					, double				, float					, int					, long					, short					, String					<- first operand */
-		/*	--bool--	*/	ERROR,
-		/*	--byte--	*/	t_type_native_byte,
-		/*	--char--	*/	t_type_native_char,
-		/*	--double--	*/	t_type_native_double,
-		/*	--float--	*/	t_type_native_float,
-		/*	--int--		*/	t_type_native_int,
-		/*	--long--	*/	t_type_native_long,
-		/*	--short--	*/	t_type_native_short,
-		/*	--String--	*/	ERROR,
+		/*	-bool		*/	ERROR,
+		/*	-byte		*/	t_type_native_byte,
+		/*	-char		*/	t_type_native_char,
+		/*	-double		*/	t_type_native_double,
+		/*	-float		*/	t_type_native_float,
+		/*	-int		*/	t_type_native_int,
+		/*	-long		*/	t_type_native_long,
+		/*	-short		*/	t_type_native_short,
+		/*	-String		*/	ERROR,
 	},
 
 	/* t_unary_op_operator_not (!) */
@@ -508,6 +506,20 @@ is_type_native operators_unary[MAX_OPERATORS_UNARY][MAX_NATIVE_TYPES-1] =
 		/*	~short		*/	t_type_native_int,
 		/*	~String		*/	ERROR
 	}
+};
+
+/* t_incr_op_inc / t_incr_op_dec (pre ++ / pos ++ / pre -- / pos --) */
+is_type_native operators_incr_op[MAX_NATIVE_TYPES-1] =
+{
+	/*	++--bool++--	*/	ERROR,
+	/*	++--byte++--	*/	t_type_native_byte,
+	/*	++--char++--	*/	t_type_native_char,
+	/*	++--double++--	*/	t_type_native_double,
+	/*	++--float++--	*/	t_type_native_float,
+	/*	++--int++--		*/	t_type_native_int,
+	/*	++--long++--	*/	t_type_native_long,
+	/*	++--short++--	*/	t_type_native_short,
+	/*	++--String++--	*/	ERROR
 };
 
 char *string_assign_operator(type_assign_op operator)
