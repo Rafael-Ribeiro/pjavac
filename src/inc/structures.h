@@ -156,6 +156,7 @@ typedef struct _is_break
 	int line;
 
 	struct _is_id* label;	/* nullable */
+	struct _SCOPE* scope;
 } is_break;
 
 typedef struct _is_class_def
@@ -239,6 +240,7 @@ typedef struct _is_continue
 	int line;
 
 	struct _is_id* label;	/* nullable */
+	struct _SCOPE* scope;
 } is_continue;
 
 typedef struct _is_dims

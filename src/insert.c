@@ -157,6 +157,7 @@ is_break* insert_break (is_id* label)
 	is_break *node = (is_break*)malloc(sizeof(is_break));
 
 	node->label = label;
+	node->scope = NULL;
 	node->line = yyline;
 
 	return node;
@@ -222,6 +223,7 @@ is_continue* insert_continue (is_id* label)
 {
 	is_continue *node = (is_continue*)malloc(sizeof(is_continue));
 	node->label = label;
+	node->scope = NULL;
 	node->line = yyline;
 
 	return node;

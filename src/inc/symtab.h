@@ -36,12 +36,11 @@ typedef struct _SYMBOL
 		struct
 		{
 		} class_data;
-
+*/
 		struct
 		{
+			int label; /* label id used by the loop (used on breaks and continues) */
 		} loop_data;
-
-*/
 	} data;
 } SYMBOL;
 
@@ -78,7 +77,7 @@ typedef struct _SCOPE
 */
 SYMBOL* symbol_new_var(char* id, int line, is_type_decl *type, bool global, int framepos);
 SYMBOL* symbol_new_func(char* id, int line, is_type_decl *retval, is_func_def_args* args, int label);
-SYMBOL* symbol_new_loop(int line/* TODO */);
+SYMBOL* symbol_new_loop(int line/* TODO */, int label);
 SYMBOL* symbol_new_class(char* id, int line /*, ...*/);
 void symbol_delete(SYMBOL* symbol);
 SYMBOL* symbol_lookup(NODE* node, char* id);

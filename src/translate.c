@@ -278,7 +278,7 @@ void translate_binary_op(is_binary_op *node)
 
 void translate_break(is_break *node)
 {
-	OUT("FIXME %d\n", __LINE__);
+	OUT("goto label_%d\n", node->scope->symbol->data.loop_data.label);
 }
 
 void translate_class_def(is_class_def *node)
@@ -327,9 +327,7 @@ void translate_dims_sized_list(is_dims_sized_list *node)
 
 void translate_do_while(is_do_while *node)
 {
-	int label = ++label_counter;
-
-	OUT("label_%d:\n",label);
+	OUT("label_%d:\n",node->scope->symbol->data.loop_data.label);
 	OUT("\t; /* do_while loop */\n");
 
 	OUT("\t/* do_while body */\n");
@@ -341,7 +339,7 @@ void translate_do_while(is_do_while *node)
 	OUT("\n");
 
 	OUT("\tif (_temp_%d)\n",node->cond->temp);
-	OUT("\t\tgoto label_%d;\n",label);
+	OUT("\t\tgoto label_%d;\n",node->scope->symbol->data.loop_data.label);
 
 	OUT("\t/* end of do_while */\n");
 }
@@ -434,8 +432,6 @@ void translate_footer()
 
 void translate_for(is_for *node)
 {
-	int label = ++label_counter;
-
 	OUT("\t/* for loop */\n");
 	if (node->init)
 	{
@@ -443,7 +439,7 @@ void translate_for(is_for *node)
 		translate_for_init(node->init);
 	}
 
-	OUT("label_%d:\n", label);
+	OUT("label_%d:\n", node->scope->symbol->data.loop_data.label);
 	OUT("\t; /* for loop (condition, body, inc) */\n");
 	if (node->cond)
 	{
@@ -451,7 +447,7 @@ void translate_for(is_for *node)
 		translate_for_cond(node->cond);
 
 		OUT("\tif (!_temp_%d)\n", node->cond->temp);
-		OUT("\t\tgoto label_%d_end;\n", label);
+		OUT("\t\tgoto label_%d_end;\n", node->scope->symbol->data.loop_data.label);
 	}
 
 	OUT("\n");
@@ -461,9 +457,9 @@ void translate_for(is_for *node)
 	if (node->inc)
 		translate_for_inc(node->inc);
 
-	OUT("\tgoto label_%d;\n", label);
+	OUT("\tgoto label_%d;\n", node->scope->symbol->data.loop_data.label);
 
-	OUT("label_%d_end:\n", label);
+	OUT("label_%d_end:\n", node->scope->symbol->data.loop_data.label);
 	OUT("\t; /* for loop end */");
 }
 
@@ -1097,9 +1093,7 @@ void translate_var_initializer_list(is_var_initializer_list *node)
 
 void translate_while(is_while *node)
 {
-	int label = ++label_counter;
-
-	OUT("label_%d:\n",label);
+	OUT("label_%d:\n",node->scope->symbol->data.loop_data.label);
 	OUT("\t; /* while loop */\n");
 
 	OUT("\t/* while condition */\n");
@@ -1107,14 +1101,14 @@ void translate_while(is_while *node)
 	OUT("\n");
 	
 	OUT("\tif (!_temp_%d)\n",node->cond->temp);
-	OUT("\t\tgoto label_%d_end;\n",label);
+	OUT("\t\tgoto label_%d_end;\n",node->scope->symbol->data.loop_data.label);
 
 	OUT("\t/* while body */\n");
 	translate_stmt(node->body);
 	OUT("\n");
 
-	OUT("\tgoto label_%d;\n",label);
+	OUT("\tgoto label_%d;\n",node->scope->symbol->data.loop_data.label);
 
-	OUT("label_%d_end:\n",label);
+	OUT("label_%d_end:\n",node->scope->symbol->data.loop_data.label);
 	OUT("\t; /* end of while */\n");
 }
