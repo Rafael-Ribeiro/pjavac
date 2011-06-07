@@ -612,6 +612,7 @@ is_incr_op* insert_incr_op(type_incr_op type, bool pre, is_var* var)
 
 	/* semantics */
 	node->s_type = NULL;
+	node->used = false;
 
 	return node;
 }
