@@ -64,7 +64,7 @@ void translate_constant(is_constant *node)
 /* YACC */
 void translate_dims_empty_list(is_dims_empty_list* val)
 {
-	/* OUT("FIXME %d\n", __LINE__); */
+/*	OUT("FIXME %d\n", __LINE__); */
 }
 
 
@@ -314,17 +314,23 @@ void translate_continue(is_continue *node)
 
 void translate_dims(is_dims *node)
 {
-	OUT("FIXME %d\n", __LINE__);
+	translate_dims_sized_list(node->sized);
+	translate_dims_empty_list(node->empty);
 }
 
 void translate_dims_sized(is_dims_sized *node)
 {
-	OUT("FIXME %d\n", __LINE__);
+	translate_expr(node);
+	OUT("\n");
 }
 
 void translate_dims_sized_list(is_dims_sized_list *node)
 {
-	OUT("FIXME %d\n", __LINE__);
+	if (node)
+	{
+		translate_dims_sized(node->node);
+		translate_dims_sized_list(node->next);
+	}
 }
 
 void translate_do_while(is_do_while *node)
@@ -369,7 +375,8 @@ void translate_expr(is_expr *node)
 		break;
 	
 		case t_expr_new_op:
-			OUT("FIXME %d\n", __LINE__);
+			translate_new_op(node->data.new_op);
+			node->temp = node->data.new_op->temp;
 		break;
 
 		case t_expr_type_cast:
@@ -768,9 +775,62 @@ void translate_member_stmt(is_member_stmt *node)
 	}
 }
 
+void translate_new_op_recursive(is_new_op *node, int temp, is_dims_sized_list* dim)
+{
+	int dimsize, totalsize;
+	char* type;
+
+	if (dim == NULL)
+		dimsize = 0;
+	else
+		dimsize = dim->length;
+
+	totalsize = dimsize + node->dims->empty->size;
+
+	type = string_type_native_array(node->type_object->type, totalsize-1);
+
+	OUT("\t%s* _temp_%d_%d = (%s*)malloc(sizeof(%s) * _temp_%d);\n",
+		type, temp, dimsize, type, type, dim->node->temp); /* <--- TODO */
+
+	if (dim->next != NULL)
+	{
+		OUT("\tint _temp_%d_%d_i = 0;\n", temp, dimsize);
+		
+		OUT("label_%d_%d_new:\n", temp, dimsize);
+		OUT("\t; /* new op at dim %d*/\n", dimsize);
+
+		translate_new_op_recursive(node, temp, dim->next);
+
+		OUT("\t /* mid of op */\n");
+		OUT("\n");
+		OUT("\t_temp_%d_%d[_temp_%d_%d_i] = _temp_%d_%d;\n", temp, dimsize, temp, dimsize, temp, dimsize-1);
+		OUT("\t_temp_%d_%d_i++;\n", temp, dimsize);
+		OUT("\n");
+		OUT("\tif (_temp_%d_%d_i != _temp_%d)\n", temp, dimsize, dim->node->temp);
+		OUT("\t\t goto label_%d_%d_new;\n", temp, dimsize);
+		OUT("\t /* end of new op */\n");
+		OUT("\n");
+		
+	}
+	free(type);
+}
+
 void translate_new_op(is_new_op *node)
 {
-	OUT("FIXME %d\n", __LINE__);
+	char *type;
+	
+	translate_dims(node->dims);
+
+	node->temp = temp_counter++;
+	translate_new_op_recursive(node, node->temp, node->dims->sized);
+	
+	type = string_type_native_array(node->type_object->type, node->dims->length);
+
+	OUT("\n");
+	OUT("\t /* end of new op */\n");
+	OUT("\t%s _temp_%d = _temp_%d_%d;\n", type, node->temp, node->temp, node->dims->sized->length);
+
+	free(type);
 }
 
 void translate_redirector()
@@ -995,7 +1055,7 @@ void translate_var(is_var *node)
 		case t_var_array:
 			translate_var(node->data.array.var);
 			translate_dims_sized(node->data.array.dims);
-			OUT("\t_temp_%d = _temp_%d[_temp_%d];\n",
+			OUT("\t_temp_%d = &((*_temp_%d)[_temp_%d]);\n",
 				node->temp,
 				node->data.array.var->temp,
 				node->data.array.dims->temp

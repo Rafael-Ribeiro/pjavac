@@ -249,6 +249,9 @@ typedef struct _is_dims
 
 	struct _is_dims_sized_list* sized;
 	struct _is_dims_empty_list* empty; /* NOT nullable, 0 if not existant, 1+ otherwise */
+
+	/* semantics */
+	int length;
 } is_dims;
 
 typedef struct _is_dims_empty_list
@@ -267,6 +270,7 @@ typedef struct _is_dims_sized_list
 
 	is_dims_sized* node;
 	struct _is_dims_sized_list* next;
+
 } is_dims_sized_list;
 
 typedef struct _is_do_while

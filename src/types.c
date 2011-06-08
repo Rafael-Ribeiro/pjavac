@@ -570,6 +570,20 @@ char *string_type_native(is_type_native* type)
 	return __strdup(strings[*type]);
 }
 
+char *string_type_native_array(is_type_native type, int dims)
+{
+	char *base = string_type_native(&type);
+	int len = strlen(base);
+	int i;
+	base = (char*)realloc(base, sizeof(char)*(len+dims+1));
+	
+	for (i = 0; i < dims; i++)
+		base[len+i] = '*';
+	base[len+i] = 0;
+
+	return base;
+}
+
 char *string_type_decl(is_type_decl* type)
 {
 	if (type->type == t_type_decl_type_object)

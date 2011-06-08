@@ -21,6 +21,7 @@ char *string_incr_operator(type_incr_op operator);
 char *string_assign_operator(type_assign_op operator);
 char *string_binary_operator(type_binary_op operator);
 char *string_type_native(is_type_native* type);
+char *string_type_native_array(is_type_native type, int dims);
 char *string_type_decl(is_type_decl* type);
 char *string_array_decl(is_array_decl* array);
 
