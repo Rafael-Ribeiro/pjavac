@@ -18,7 +18,8 @@
 
 void translate_id(is_id *node)
 {
-	/* OUT("FIXME %d\n", __LINE__); */
+	/* NOTHING TO DO HERE! */
+	OUT("ERROR %d", __LINE__);
 }
 
 void translate_constant(is_constant *node)
@@ -64,19 +65,21 @@ void translate_constant(is_constant *node)
 /* YACC */
 void translate_dims_empty_list(is_dims_empty_list* val)
 {
-/*	OUT("FIXME %d\n", __LINE__); */
+	/* NOTHING TO DO HERE! */
+	OUT("ERROR %d", __LINE__);
 }
-
 
 /* enums */
 void translate_class_stmt_privacy(is_class_stmt_privacy val)
 {
-	/* OUT("FIXME %d\n", __LINE__); */
+	/* NOTHING TO DO HERE! */
+	OUT("ERROR %d", __LINE__);
 }
 
 void translate_type_native(is_type_native val)
 {
-	/* OUT("FIXME %d\n", __LINE__); */
+	/* NOTHING TO DO HERE! */
+	OUT("ERROR %d", __LINE__);
 }
 
 
@@ -99,7 +102,8 @@ void translate_application(is_application *node)
 
 void translate_array_decl(is_array_decl *node)
 {
-	OUT("FIXME %d\n", __LINE__);
+	/* NOTHING TO DO HERE! */
+	OUT("ERROR %d", __LINE__);
 }
 
 void translate_assign_op(is_assign_op *node)
@@ -401,7 +405,13 @@ void translate_expr(is_expr *node)
 
 void translate_expr_list(is_expr_list *node)
 {
-	OUT("FIXME %d\n", __LINE__);
+	if (!node)
+		return;
+
+	translate_expr(node->node);
+	OUT("\n");
+
+	translate_expr_list(node->next);
 }
 
 void translate_expr_op(is_expr_op *node)
