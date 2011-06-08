@@ -21,4 +21,10 @@ void insert_builtins()
 
 	symbol = symbol_new_func("System.out.println", 0, type_void, args, SYSTEM_OUT_PRINTLN);
 	scope_insert(symtab, symbol);
+
+	/* nextInt */
+	is_type_decl* type_int = insert_type_decl_object(insert_type_object(t_type_native_int));
+
+	symbol = symbol_new_func("System.in.nextInt", 0, type_int, NULL, SYSTEM_IN_NEXTINT);
+	scope_insert(symtab, symbol);
 }

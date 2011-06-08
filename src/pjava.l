@@ -74,6 +74,7 @@ JAVA_COMMENT		(\/\/[^\n]*\n)|(\/\*([^\/]|[^\*]\/)*\*\/)
 {ALPHA}({ALPHA}|{N10})* { yylval.val_id = insert_id(yytext); return ID; } /* IDENTIFIERS */
 
 "System"{WS}*"."{WS}*"out"{WS}*"."{WS}*"println" { yylval.val_id = insert_id("System.out.println"); return ID; } /* TODO: add other bultins (Math.cos) here if wanted */
+"System"{WS}*"."{WS}*"in"{WS}*"."{WS}*"nextInt" { yylval.val_id = insert_id("System.in.nextInt"); return ID; } /* TODO: add other bultins (Math.cos) here if wanted */
 
 ">>="			{ return SHIFT_R_ASSIGN;} /* OPERATORS */
 "<<="			{ return SHIFT_L_ASSIGN; }

@@ -1,16 +1,16 @@
 class teste
 {
-	int a(int b)
+	public int factorial(int n)
 	{
-		if (b > 1)
-			return a(b-1) * b;
+		if (n > 1)
+			return n * factorial(n-1);
 
 		return 1;
 	}
 
-	public static void main()
+	public static void main(String[] args)
 	{
-		System.out.println(""+ a(10));
+		System.out.println("" + factorial(5));
 	}
 }
 

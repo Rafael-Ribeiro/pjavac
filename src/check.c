@@ -546,7 +546,7 @@ int check_for(is_for* node)
 		errors += check_stmt(node->body);
 
 		if (errors == 0)
-			node->terminates = node->body->terminates;
+			node->terminates = (node->body ? node->body->terminates : true);
 	scope_pop();
  
 	return errors;

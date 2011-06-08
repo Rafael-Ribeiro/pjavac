@@ -5,6 +5,9 @@
 #define SYSTEM_OUT_PRINTLN 2147483647
 #define LABEL_SYSTEM_OUT_PRINTLN label_2147483647
 
+#define SYSTEM_IN_NEXTINT 2147483646
+#define LABEL_SYSTEM_IN_NEXTINT label_2147483646
+
 void include_builtins();
 
 #endif

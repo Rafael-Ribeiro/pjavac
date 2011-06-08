@@ -365,7 +365,7 @@ typedef struct _is_for
 	struct _is_for_init* init; 	/* nullable */
 	is_for_cond* cond; 		/* nullable */
 	is_for_inc* inc; 	/* nullable */
-	struct _is_stmt* body;
+	struct _is_stmt* body; 	/* nullable */
 
 	/* semantics */
 	struct _SCOPE* scope;
