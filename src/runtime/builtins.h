@@ -1,5 +1,3 @@
-#include <stdbool.h>
-#include <string.h>
 #include "../inc/builtins.h"
 
 #define MAX_BUFFER_SIZE 200
@@ -9,6 +7,12 @@ char buffer[MAX_BUFFER_SIZE];
 LABEL_SYSTEM_OUT_PRINTLN:
 	/* no need to alocate a stack frame */
 	printf("%s\n", *(char**)_fp->args[0]);
+	goto redirector;
+
+LABEL_SYSTEM_IN_NEXTINT:
+	/* no need to alocate a stack frame */
+	_fp->retval = (int*)malloc(sizeof(int));
+	scanf("%d", (int*)_fp->retval);
 	goto redirector;
 
 bool_to_string:

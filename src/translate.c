@@ -461,8 +461,11 @@ void translate_for(is_for *node)
 	}
 
 	OUT("\n");
-	OUT("\t/* for loop body */\n");
-	translate_stmt(node->body);
+	if (node->body)
+	{
+		OUT("\t/* for loop body */\n");
+		translate_stmt(node->body);
+	}
 
 	OUT("label_%d_continue:\n", node->scope->symbol->data.loop_data.label);
 	OUT("\t; /* for continue label */");

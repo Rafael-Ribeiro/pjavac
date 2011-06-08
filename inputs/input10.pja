@@ -1,0 +1,13 @@
+class teste
+{
+	/**
+	 * @param args
+	 */
+	public static void main(String[] args)
+	{
+		int k[];
+
+		k[0] = 0;
+	}
+}
+

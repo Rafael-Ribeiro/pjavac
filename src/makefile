@@ -1,6 +1,6 @@
 COMP_FLAGS = -lm -ansi -Wall -g
 LINK_FLAGS = -lm -g
-SOURCE = ../inputs/input10.pja
+SOURCE = ../inputs/input11.pja
 TARGET = ../outputs/out.c
 
 all: main soft-clean

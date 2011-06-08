@@ -1,0 +1,47 @@
+class teste
+{
+	int vertexes[][] = new int[16][2];
+
+	boolean cw(int a, int b, int c)
+	{
+		int u[] = new int[2], v[] = new int[2];
+
+		u[0] = vertexes[a][0] - vertexes[b][0];
+		u[1] = vertexes[a][1] - vertexes[b][1];
+
+		v[0] = vertexes[c][0] - vertexes[b][0];
+		v[1] = vertexes[c][1] - vertexes[b][1];
+
+		/* cross product between u and v */
+		return u[0] * v[1] - u[1] * v[0] > 0;
+	}
+
+	public static void main()
+	{
+		int i, j;
+		int n;
+		int nEars;
+
+		n = System.in.nextInt();
+			for (i = 0; i < n; i++)
+			{
+				vertexes[i][0] = System.in.nextInt();
+				vertexes[i][1] = System.in.nextInt();
+			}
+
+		nEars = 0;
+		for (i = 0; i < n; i++)
+		{
+			if (cw(i%n,(i+1)%n,(i+2)%n))
+			{
+				for (j = 0; j < n && (!cw(i%n,(i+1)%n,j) || !cw((i+1)%n, (i+2)%n, j) || !cw((i+2)%n, i%n, j)); j++);
+
+				if (j == n)
+					nEars++;
+
+			}
+		}
+
+		System.out.println("" + nEars);
+	}
+}
