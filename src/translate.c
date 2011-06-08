@@ -1055,9 +1055,8 @@ void translate_var(is_var *node)
 		case t_var_array:
 			translate_var(node->data.array.var);
 			translate_dims_sized(node->data.array.dims);
-			OUT("\t_temp_%d = _temp_%d[_temp_%d];\n",
+			OUT("\t_temp_%d = &((*_temp_%d)[_temp_%d]);\n",
 				node->temp,
-				type,
 				node->data.array.var->temp,
 				node->data.array.dims->temp
 			);
