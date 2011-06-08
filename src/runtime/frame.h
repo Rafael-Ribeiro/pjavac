@@ -6,7 +6,7 @@
 #define MAX_REGISTERS 64
 #define MAX_ARGS 16
 
-typedef long long REGISTER;
+typedef char REGISTER[8];
 
 typedef struct _FRAME
 {

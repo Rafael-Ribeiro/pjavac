@@ -29,31 +29,31 @@ void translate_constant(is_constant *node)
 	switch (node->type)
 	{
 		case t_constant_bool:
-			OUT("\t_registers[%d] = (REGISTER)%s;\n", node->temp, node->value.bool_val ? "true": "false");
+			OUT("\t*(bool*)_registers[%d] = %s;\n", node->temp, node->value.bool_val ? "true": "false");
 		break;
 
 		case t_constant_int:
-			OUT("\t_registers[%d] = (REGISTER)%d;\n", node->temp, node->value.int_val);
+			OUT("\t*(int*)_registers[%d] = %d;\n", node->temp, node->value.int_val);
 		break;
 
 		case t_constant_long:
-			OUT("\t_registers[%d] = (REGISTER)%lld;\n", node->temp, node->value.long_val);
+			OUT("\t*(long long*)_registers[%d] = %lld;\n", node->temp, node->value.long_val);
 		break;
 
 		case t_constant_double:
-			OUT("\t_registers[%d] = (REGISTER)%Lf;\n", node->temp, node->value.double_val);
+			OUT("\t*(double*)_registers[%d] = %Lf;\n", node->temp, node->value.double_val);
 		break;
 
 		case t_constant_float:
-			OUT("\t_registers[%d] = (REGISTER)%ff;\n", node->temp, node->value.float_val);
+			OUT("\t*(float*)_registers[%d] = %ff;\n", node->temp, node->value.float_val);
 		break;
 
 		case t_constant_char:
-			OUT("\t_registers[%d] = (REGISTER)%s;\n", node->temp, node->value.string_val);
+			OUT("\t*(char*)_registers[%d] = %s;\n", node->temp, node->value.string_val);
 		break;
 
 		case t_constant_string:	
-			OUT("\t_registers[%d] = (REGISTER)strdup(%s);\n",
+			OUT("\t*(char**)_registers[%d] = strdup(%s);\n",
 				node->temp,
 				node->value.string_val
 			);
