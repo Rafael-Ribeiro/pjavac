@@ -96,8 +96,11 @@ int check_assign_op(is_assign_op* node)
 					free(typeB);
 				} else
 				{
-					symbol = scope_lookup(symtab, node->var->data.id->name, t_symbol_var);
-					symbol->data.var_data.initialized = true;
+					if (node->var->type == t_var_id)
+					{
+						symbol = scope_lookup(symtab, node->var->data.id->name, t_symbol_var);
+						symbol->data.var_data.initialized = true;
+					}
 
 					node->s_type = duplicate_type_decl(node->var->s_type);
 				}
@@ -1254,8 +1257,15 @@ int check_var(is_var* node)
 			{
 				if (node->data.array.var->s_type->type == t_type_decl_array_decl)
 				{
-					node->s_type = duplicate_type_decl(node->data.array.var->s_type);
-					node->s_type->data.array->dims->size--;
+					if (node->data.array.var->s_type->data.array->dims->size > 1)
+					{
+						node->s_type = duplicate_type_decl(node->data.array.var->s_type);
+						node->s_type->data.array->dims->size--;
+					} else
+					{
+						node->s_type = insert_type_decl_object(insert_type_object(node->data.array.var->s_type->data.array->type->type));
+					}
+
 				} else
 				{
 					errors++;
