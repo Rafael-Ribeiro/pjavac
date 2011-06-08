@@ -997,7 +997,6 @@ void translate_var(is_var *node)
 			translate_dims_sized(node->data.array.dims);
 			OUT("\t_temp_%d = _temp_%d[_temp_%d];\n",
 				node->temp,
-				type,
 				node->data.array.var->temp,
 				node->data.array.dims->temp
 			);
