@@ -1,0 +1,16 @@
+class teste
+{
+	int a(int b)
+	{
+		if (b > 1)
+			return a(b-1) * b;
+
+		return 1;
+	}
+
+	public static void main()
+	{
+		System.out.println(""+ a(10));
+	}
+}
+
