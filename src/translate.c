@@ -272,12 +272,11 @@ void translate_binary_op(is_binary_op *node)
 			} else
 				OUT("FIXME === or !== %d\n", __LINE__);
 
+			free_type_decl(string);
 			free(type);
 		break;
 	}
 
-	
-	free_type_decl(string);
 }
 
 void translate_break(is_break *node)
@@ -486,7 +485,7 @@ void translate_for(is_for *node)
 	OUT("\tgoto label_%d;\n", node->scope->symbol->data.loop_data.label);
 
 	OUT("label_%d_end:\n", node->scope->symbol->data.loop_data.label);
-	OUT("\t; /* for loop end */");
+	OUT("\t; /* for loop end */\n\n");
 }
 
 void translate_for_cond(is_for_cond *node)
@@ -803,28 +802,28 @@ void translate_new_op_recursive(is_new_op *node, int temp, is_dims_sized_list* d
 	type = string_type_native_array(node->type_object->type, totalsize-1);
 
 	OUT("\t%s* _temp_%d_%d = (%s*)malloc(sizeof(%s) * _temp_%d);\n",
-		type, temp, dimsize, type, type, dim->node->temp); /* <--- TODO */
+		type, temp, dimsize, type, type, dim->node->temp);
 
 	if (dim->next != NULL)
 	{
+		OUT("\n");
+		OUT("\t /* new op: subdimension */\n");
 		OUT("\tint _temp_%d_%d_i = 0;\n", temp, dimsize);
 		
 		OUT("label_%d_%d_new:\n", temp, dimsize);
-		OUT("\t; /* new op at dim %d*/\n", dimsize);
+		OUT("\t; /* new op at subdimension %d*/\n", dimsize);
 
 		translate_new_op_recursive(node, temp, dim->next);
 
-		OUT("\t /* mid of op */\n");
 		OUT("\n");
 		OUT("\t_temp_%d_%d[_temp_%d_%d_i] = _temp_%d_%d;\n", temp, dimsize, temp, dimsize, temp, dimsize-1);
 		OUT("\t_temp_%d_%d_i++;\n", temp, dimsize);
 		OUT("\n");
 		OUT("\tif (_temp_%d_%d_i != _temp_%d)\n", temp, dimsize, dim->node->temp);
 		OUT("\t\t goto label_%d_%d_new;\n", temp, dimsize);
-		OUT("\t /* end of new op */\n");
-		OUT("\n");
-		
+		OUT("\t/* new op: end of subdimension*/\n");
 	}
+
 	free(type);
 }
 
@@ -834,14 +833,16 @@ void translate_new_op(is_new_op *node)
 	
 	translate_dims(node->dims);
 
+	OUT("\t /* begin of new op */\n");
+
 	node->temp = temp_counter++;
 	translate_new_op_recursive(node, node->temp, node->dims->sized);
 	
 	type = string_type_native_array(node->type_object->type, node->dims->length);
 
 	OUT("\n");
-	OUT("\t /* end of new op */\n");
 	OUT("\t%s _temp_%d = _temp_%d_%d;\n", type, node->temp, node->temp, node->dims->sized->length);
+	OUT("\t /* end of new op */\n\n");
 
 	free(type);
 }
@@ -1062,7 +1063,8 @@ void translate_var(is_var *node)
 		break;
 
 		case t_var_new_op:
-			OUT("FIXME %d\n", __LINE__);
+			translate_new_op(node->data.new_op);
+			OUT("\t_temp_%d = &_temp_%d;\n", node->temp, node->data.new_op->temp);
 		break;
 
 		case t_var_array:
