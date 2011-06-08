@@ -130,12 +130,11 @@ void translate_assign_op(is_assign_op *node)
 
 			OUT("\t/* conversion from %s to string */\n", typeExpr);
 			OUT("\t_fp->retaddr = %d;\n", labelConvert);
-			OUT("\t_fp->args[0] = &_register[%d];\n", node->expr->temp);
+			OUT("\t_fp->args[0] = _register[%d];\n", node->expr->temp);
 			OUT("\tgoto %s_to_string;\n", typeExpr);
 			OUT("\n");
 			OUT("label_%d:\n", labelConvert);
-			OUT("\t; /* temp_%d gets the string */\n", tempConvert);
-			OUT("\tchar* _temp_%d = (char*)_fp->retval;\n", tempConvert);
+			OUT("\t_registers[%d] = _fp->retval;\n", tempConvert);
 			OUT("\n");
 
 			free(typeExpr);
@@ -146,8 +145,8 @@ void translate_assign_op(is_assign_op *node)
 
 		OUT("\t/* string += string */\n");
 		OUT("\t_fp->retaddr = %d;\n", label);
-		OUT("\t_fp->args[0] = *(%s*)& _temp_%d; /* var */\n", var_type, node->var->temp);
-		OUT("\t_fp->args[1] = &_registers[%d]; /* expr */\n", tempConvert);
+		OUT("\t_fp->args[0] = *(char**)& _registers[%d]; /* var */\n", var_type, node->var->temp);
+		OUT("\t_fp->args[1] = _registers[%d]; /* expr */\n", tempConvert);
 		OUT("\tgoto string_concat;\n");
 		OUT("\n");
 		OUT("label_%d:\n", label);
@@ -155,6 +154,7 @@ void translate_assign_op(is_assign_op *node)
 		OUT("\t*(char**)& _registers[%d] = (char*)_fp->retval;\n", node->var->temp);
 		OUT("\n");
 
+		/* FIXME: fp->locals */
 		free(var_type);
 	} else
 	{
