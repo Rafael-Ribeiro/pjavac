@@ -324,6 +324,9 @@ int check_dims(is_dims* node)
 	errors += check_dims_sized_list(node->sized);
 	errors += check_dims_empty_list(node->empty);
 
+	if (errors == 0)
+		node->length = node->sized->length + node->empty->size;
+
 	return errors;
 }
 
