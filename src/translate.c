@@ -673,8 +673,9 @@ void translate_header()
 	OUT("\n");
 	OUT("int main(int _argc, char **_argv)\n");	/* TODO: main arguments */
 	OUT("{\n");
-	OUT("\tvoid* _temp_ret;\n");
-	OUT("\tvoid* _globals[MAX_GLOBALS];\n");
+	OUT("\tvoid *_temp_ret;\n");
+	OUT("\tvoid *_globals[MAX_GLOBALS];\n");
+	OUT("\tvoid *_registers[MAX_REGISTERS];\n");
 	OUT("\tFRAME *_fp = NULL, *_temp_frame;\n");
 	OUT("\n");
 	
