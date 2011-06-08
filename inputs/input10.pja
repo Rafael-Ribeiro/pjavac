@@ -1,13 +1,19 @@
 class teste
 {
-	/**
-	 * @param args
-	 */
+	public int factorial(int n)
+	{
+		if (n > 1)
+		{
+			int result = factorial(n-1);
+			return n * result;
+		}
+
+		return 1;
+	}
+
 	public static void main(String[] args)
 	{
-		int k[];
-
-		k[0] = 0;
+		System.out.println("" + factorial(5));
 	}
 }
 
