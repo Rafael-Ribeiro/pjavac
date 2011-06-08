@@ -29,31 +29,31 @@ void translate_constant(is_constant *node)
 	switch (node->type)
 	{
 		case t_constant_bool:
-			OUT("\tbool _temp_%d = %s;\n", node->temp, node->value.bool_val ? "true": "false");
+			OUT("\t*(bool*)& _registers[%d] = %s;\n", node->temp, node->value.bool_val ? "true": "false");
 		break;
 
 		case t_constant_int:
-			OUT("\tint _temp_%d = %d;\n", node->temp, node->value.int_val);
+			OUT("\t*(int*)& _registers[%d] = %d;\n", node->temp, node->value.int_val);
 		break;
 
 		case t_constant_long:
-			OUT("\tlong long _temp_%d = %lld;\n", node->temp, node->value.long_val);
+			OUT("\t*(long long*)& _registers[%d] = %lld;\n", node->temp, node->value.long_val);
 		break;
 
 		case t_constant_double:
-			OUT("\tlong double _temp_%d = %Lf;\n", node->temp, node->value.double_val);
+			OUT("\t*(long double*)& _registers[%d] = %Lf;\n", node->temp, node->value.double_val);
 		break;
 
 		case t_constant_float:
-			OUT("\tfloat _temp_%d = %ff;\n", node->temp, node->value.float_val);
+			OUT("\t*(float*)& _registers[%d] = %ff;\n", node->temp, node->value.float_val);
 		break;
 
 		case t_constant_char:
-			OUT("\tchar _temp_%d = %s;\n", node->temp, node->value.string_val);
+			OUT("\t*(char*)& _registers[%d] = %s;\n", node->temp, node->value.string_val);
 		break;
 
-		case t_constant_string:	
-			OUT("\tchar* _temp_%d = strdup(%s);\n",
+		case t_constant_string:
+			OUT("\t*(char**)& _registers[%d]  = strdup(%s);\n",
 				node->temp,
 				node->value.string_val
 			);
@@ -130,7 +130,7 @@ void translate_assign_op(is_assign_op *node)
 
 			OUT("\t/* conversion from %s to string */\n", typeExpr);
 			OUT("\t_fp->retaddr = %d;\n", labelConvert);
-			OUT("\t_fp->args[0] = &_temp_%d;\n", node->expr->temp);
+			OUT("\t_fp->args[0] = &_register[%d];\n", node->expr->temp);
 			OUT("\tgoto %s_to_string;\n", typeExpr);
 			OUT("\n");
 			OUT("label_%d:\n", labelConvert);
@@ -142,20 +142,25 @@ void translate_assign_op(is_assign_op *node)
 		} else
 			tempConvert = node->expr->temp;
 
+		var_type = string_type_decl(node->var->s_type);
+
 		OUT("\t/* string += string */\n");
 		OUT("\t_fp->retaddr = %d;\n", label);
-		OUT("\t_fp->args[0] = _temp_%d; /* var */\n", node->var->temp);
-		OUT("\t_fp->args[1] = &_temp_%d; /* expr */\n", tempConvert);
+		OUT("\t_fp->args[0] = *(%s*)& _temp_%d; /* var */\n", var_type, node->var->temp);
+		OUT("\t_fp->args[1] = &_registers[%d]; /* expr */\n", tempConvert);
 		OUT("\tgoto string_concat;\n");
 		OUT("\n");
 		OUT("label_%d:\n", label);
 		OUT("\t; /* temp_%d gets the concatenated string */\n", node->var->temp);
-		OUT("\t*(char**)_temp_%d = (char*)_fp->retval;\n", node->var->temp);
+		OUT("\t*(char**)& _registers[%d] = (char*)_fp->retval;\n", node->var->temp);
 		OUT("\n");
+
+		free(var_type);
 	} else
 	{
 		operator = string_assign_operator(node->type);
-		OUT("\t*_temp_%d %s _temp_%d;\n", node->var->temp, operator, node->expr->temp);
+		OUT("\t**(%s**)& _registers[%d] = %s *(%s*)& _registers[%d];\n",
+			var_type, node->var->temp, operator, var_type, node->expr->temp);
 		free(operator);
 	}
 

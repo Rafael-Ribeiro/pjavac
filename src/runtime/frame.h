@@ -10,12 +10,12 @@ typedef unsigned long long REGISTER;
 
 typedef struct _FRAME
 {
-	void *args[MAX_ARGS];
-	void *locals[MAX_LOCALS];
+	REGISTER args[MAX_ARGS];
+	REGISTER locals[MAX_LOCALS];
 	REGISTER registers[MAX_REGISTERS];
 
-	void *retval;
-	int retaddr; /* not really an "address", but a unique identifier (label) placed after every call to a function */
+	REGISTER retval;
+	REGISTER retaddr; /* not really an "address", but a unique identifier (label) placed after every call to a function */
 
 	struct _FRAME *parent;
 } FRAME;
