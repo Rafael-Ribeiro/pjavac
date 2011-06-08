@@ -96,8 +96,11 @@ int check_assign_op(is_assign_op* node)
 					free(typeB);
 				} else
 				{
-					symbol = scope_lookup(symtab, node->var->data.id->name, t_symbol_var);
-					symbol->data.var_data.initialized = true;
+					if (node->var->type == t_var_id)
+					{
+						symbol = scope_lookup(symtab, node->var->data.id->name, t_symbol_var);
+						symbol->data.var_data.initialized = true;
+					}
 
 					node->s_type = duplicate_type_decl(node->var->s_type);
 				}
@@ -186,7 +189,6 @@ int check_binary_op(is_binary_op* node)
 int check_break(is_break* node)
 {
 	int errors = 0;
-	SCOPE* scope;
 
 	if (node->label)
 	{
@@ -199,9 +201,9 @@ int check_break(is_break* node)
 
 	if (errors == 0)
 	{
-		scope = scope_get_by_name(symtab, NULL, t_symbol_loop);
+		node->scope = scope_get_by_name(symtab, NULL, t_symbol_loop);
 
-		if (!scope)
+		if (!node->scope)
 		{
 			errors++;
 			pretty_error(node->line, "break stmt outside of loop or case", node->label);		
@@ -292,7 +294,6 @@ int check_class_stmt_scope(is_class_stmt_scope* node)
 int check_continue(is_continue* node)
 {
 	int errors = 0;
-	SCOPE* scope;
 
 	if (node->label)
 	{
@@ -305,9 +306,9 @@ int check_continue(is_continue* node)
 
 	if (errors == 0)
 	{
-		scope = scope_get_by_name(symtab, NULL, t_symbol_loop);
+		node->scope = scope_get_by_name(symtab, NULL, t_symbol_loop);
 
-		if (!scope)
+		if (!node->scope)
 		{
 			errors++;
 			pretty_error(node->line, "continue stmt outside of loop", node->label);		
@@ -376,7 +377,9 @@ int check_do_while(is_do_while* node)
 {
 	int errors = 0;
 
-	node->scope = scope_new(symbol_new_loop(node->line), false);
+	int label = ++label_counter; /* setting label for use with loops and break/continue */
+
+	node->scope = scope_new(symbol_new_loop(node->line, label), false);
 	scope_push(node->scope);
 		errors += check_stmt(node->body);
 		if (errors == 0)
@@ -515,7 +518,9 @@ int check_for(is_for* node)
 	int errors = 0, cond_errors;
 	char* typeA;
 
-	node->scope = scope_new(symbol_new_loop(node->line), false);
+	int label = ++label_counter; /* setting label for use with loops and break/continue */
+
+	node->scope = scope_new(symbol_new_loop(node->line, label), false);
 	scope_push(node->scope);
 		if (node->init)
 			errors += check_for_init(node->init);
@@ -1255,8 +1260,15 @@ int check_var(is_var* node)
 			{
 				if (node->data.array.var->s_type->type == t_type_decl_array_decl)
 				{
-					node->s_type = duplicate_type_decl(node->data.array.var->s_type);
-					node->s_type->data.array->dims->size--;
+					if (node->data.array.var->s_type->data.array->dims->size > 1)
+					{
+						node->s_type = duplicate_type_decl(node->data.array.var->s_type);
+						node->s_type->data.array->dims->size--;
+					} else
+					{
+						node->s_type = insert_type_decl_object(insert_type_object(node->data.array.var->s_type->data.array->type->type));
+					}
+
 				} else
 				{
 					errors++;
@@ -1429,8 +1441,10 @@ int check_while(is_while* node)
 {
 	int errors = 0;
 	char *string;
+
+	int label = ++label_counter; /* setting label for use with loops and break/continue */
 	
-	node->scope = scope_new(symbol_new_loop(node->line), false);
+	node->scope = scope_new(symbol_new_loop(node->line, label), false);
 	scope_push(node->scope);
 		errors += check_expr(node->cond);
 		if (errors == 0)
