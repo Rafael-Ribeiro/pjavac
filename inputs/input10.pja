@@ -1,13 +1,54 @@
-class teste
+public teste
 {
-	public String[] cenas()
+	boolean forbidden[11][11];
+	int p;
+	int result = 0;
+
+	void flood(int col, int row)
 	{
-		String[] a = {"ahaha", "b"}; 
-		return a;
+		if (col == p && row == p)
+		{
+			result++;
+			return;
+		}
+
+		if (col <= p && row <= p && forbidden[col][row])
+			return;
+
+		if (col <= p)
+			flood(col+1,row);
+
+		if (row <= p)
+			flood(col,row+1);
+
 	}
 
-	public static void main(String[] args)
+	public int main()
 	{
-		System.out.println(cenas()[0]);
+		int i;
+		int m;
+		int col, row;
+
+		p = System.in.nextInt();
+		m = System.in.nextInt();
+		p--;
+
+		for (i = 0; i < 11; i++)
+			for (j = 0; j < 11; j++)
+				forbidden[i][j] = false;
+
+		for (i = 0; i < m; i++)
+		{
+			col = System.in.nextInt();
+			row = System.in.nextInt();
+
+			forbidden[col][row] = true;
+		}
+
+		flood(0,0);
+
+		System.out.println(result);
+
+		return 0;
 	}
 }
