@@ -636,6 +636,7 @@ typedef struct _is_switch
 
 	/* semantics */
 	bool terminates;
+	struct _SCOPE* scope;
 } is_switch;
 
 typedef enum
@@ -651,6 +652,9 @@ typedef struct _is_switch_stmt
 	type_switch_stmt type;
 	struct _is_stmt_list *list;
 	struct _is_constant *constant; /* nullable, if default */
+
+	/* semantics */
+	bool terminates;
 } is_switch_stmt;
 
 typedef struct _is_switch_stmt_list
@@ -659,6 +663,9 @@ typedef struct _is_switch_stmt_list
 
 	struct _is_switch_stmt *node;
 	struct _is_switch_stmt_list *next; /* nullable */
+
+	/* semantics */
+	bool terminates;
 } is_switch_stmt_list;
 
 typedef struct _is_ternary_op

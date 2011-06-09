@@ -83,6 +83,18 @@ SYMBOL* symbol_new_class(char* id, int line)
 	return symbol;
 }
 
+SYMBOL* symbol_new_switch(int line, int label, is_type_object *type)
+{
+	SYMBOL* symbol = (SYMBOL*)malloc(sizeof(SYMBOL));
+	
+	symbol->id = NULL;
+	symbol->line = line;
+	symbol->data.switch_data.label = label;
+	symbol->data.switch_data.type = duplicate_type_object(type);
+
+	return symbol;
+}
+
 void symbol_delete(SYMBOL* symbol)
 {
 	free(symbol->id);	
@@ -94,13 +106,22 @@ void symbol_delete(SYMBOL* symbol)
 			break;
 
 		case t_symbol_class:
+			/* TODO */
 			
 			break;
 
 		case t_symbol_loop:
+			/* TODO */
+
 			break;
 
 		case t_symbol_func:
+			/* TODO */
+
+			break;
+
+		case t_symbol_switch:
+			/* TODO */
 			break;
 	}
 

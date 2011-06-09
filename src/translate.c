@@ -462,7 +462,7 @@ void translate_footer()
 
 	OUT("\n");
 	OUT("label_end:\n");
-	OUT("\treturn 0;\n");
+	OUT("\treturn *(int*)& _temp_ret;\n");
 	OUT("}\n");
 }
 
@@ -699,12 +699,13 @@ void translate_header()
 	OUT("\n");
 	OUT("int main(int _argc, char **_argv)\n");	/* TODO: main arguments */
 	OUT("{\n");
-	OUT("\tREGISTER _temp_ret;\n");
+	OUT("\tREGISTER _temp_ret = 0;\n");
 	OUT("\tREGISTER _globals[MAX_GLOBALS];\n");
 	OUT("\tREGISTER _registers[MAX_REGISTERS];\n");
 	OUT("\tFRAME *_fp = NULL, *_temp_frame;\n");
 	OUT("\n");
-	
+	OUT("\t_globals[0] = 0L; /* warning suppression */\n");
+	OUT("\n");	
 	OUT("\tgoto post_builtins;\n");
 	OUT("\t#include \"runtime/builtins.h\"\n");
 	OUT("\n");

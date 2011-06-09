@@ -884,6 +884,8 @@ is_switch* insert_switch(is_expr* expr, is_switch_stmt_list* list)
 	node->list = list;
 	node->line = expr->line;
 
+	node->scope = NULL;
+
 	return node;
 }
 

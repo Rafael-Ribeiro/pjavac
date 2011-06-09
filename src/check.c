@@ -1113,10 +1113,34 @@ int check_stmt_list(is_stmt_list* node)
 int check_switch(is_switch* node)
 {
 	int errors = 0;
-	errors += 1;
-	pretty_error(node->line, "switch statement's are not supported yet");
+	int mylabel = ++label_counter; /* setting label for use with break */
+	char *type;
 
-	/* TODO: propagate terminates*/
+	errors += check_expr(node->expr);
+
+	if (errors == 0)
+	{
+		if (node->expr->s_type->type == t_type_decl_array_decl)
+		{
+			errors++;
+
+			type = string_type_decl(node->expr->s_type);
+			pretty_error(node->line, "switch statement expression must be of object type (got %s)", type);
+			free(type);
+		}	
+	}
+
+	if (errors == 0)
+	{
+		node->scope = scope_new(symbol_new_switch(node->line, mylabel, node->expr->s_type->data.type_object), false);
+		
+		scope_push(node->scope);
+			check_switch_stmt_list(node->list);
+
+			if (errors == 0)
+				node->terminates = (node->list ? node->list->terminates : true);
+		scope_pop();
+ 	}
 
 	return errors;
 }
@@ -1132,6 +1156,7 @@ int check_switch_stmt(is_switch_stmt* node)
 int check_switch_stmt_list(is_switch_stmt_list* node)
 {
 	int errors = 0;
+
 	/* TODO */
 
 	return errors;
