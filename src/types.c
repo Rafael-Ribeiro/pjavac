@@ -572,7 +572,7 @@ char *string_type_native(is_type_native* type)
 
 char *string_type_native_c(is_type_native* type)
 {
-	char strings[][10] = {"bool", "char", "char", "double", "float", "int", "long long", "short", "char*", "void"};
+	char strings[][13] = {"bool", "char", "char", "long double", "float", "int", "long long", "short", "char*", "void"};
 
 	return __strdup(strings[*type]);
 }

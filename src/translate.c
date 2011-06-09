@@ -193,12 +193,12 @@ void translate_binary_op(is_binary_op *node)
 			typeLeft = string_type_decl_c(node->data.operands.left->s_type);
 			typeRight = string_type_decl_c(node->data.operands.right->s_type);
 
-			if (node->type == t_binary_op_add)
-			{
-				isStringLeft = type_type_equal(string, node->data.operands.left->s_type);
-				isStringRight = type_type_equal(string, node->data.operands.right->s_type);
+			isStringLeft = type_type_equal(string, node->data.operands.left->s_type);
+			isStringRight = type_type_equal(string, node->data.operands.right->s_type);
 
-				if (isStringLeft || isStringRight)
+			if (isStringLeft || isStringRight)
+			{
+				if (node->type == t_binary_op_add)
 				{
 					if (!isStringLeft)
 					{
@@ -252,20 +252,20 @@ void translate_binary_op(is_binary_op *node)
 					OUT("label_%d:\n", tempLabel);
 					OUT("\t_registers[%d] = _fp->retval;\n", node->temp);
 					OUT("\n");
-				} else
+				} else if (node->type == t_binary_op_eq || node->type == t_binary_op_ne)
 				{
 					node->temp = temp_counter++;
+					operator = string_binary_operator(node->type);
 
-					OUT("\t*(%s*)& _registers[%d] = *(%s*)& _registers[%d] + *(%s*)& _registers[%d];\n",
-						type,
-						node->temp,
-						typeLeft,
-						node->data.operands.left->temp,
-						typeRight,
-						node->data.operands.right->temp
-					);
+					OUT("\t*(bool*)& _registers[%d] = strcmp(*(char**)& _registers[%d], *(char**)& _registers[%d]) %s 0;\n",
+						node->temp, node->data.operands.left->temp, node->data.operands.right->temp, operator);
+
+					free(operator);
 				}
-			} else if (node->type != t_binary_op_eq3 && node->type != t_binary_op_ne3)
+			} else if (node->type == t_binary_op_eq3 || node->type == t_binary_op_ne3)
+			{
+				OUT("FIXME === or !== %d\n", __LINE__);
+			} else
 			{
 				node->temp = temp_counter++;
 
@@ -281,9 +281,8 @@ void translate_binary_op(is_binary_op *node)
 				);
 
 				free(operator);
-			} else
-				OUT("FIXME === or !== %d\n", __LINE__);
-
+			}
+				
 			free_type_decl(string);
 
 			free(type);
@@ -372,6 +371,7 @@ void translate_do_while(is_do_while *node)
  
 void translate_expr(is_expr *node)
 {
+	char *type_expr, *type_decl;
 	switch (node->type)
 	{
 		case t_expr_var:
@@ -385,7 +385,17 @@ void translate_expr(is_expr *node)
 		break;
 
 		case t_expr_type_cast:
-			OUT("FIXME %d\n", __LINE__);
+			translate_expr(node->data.type_cast.expr);
+
+			node->temp = node->data.type_cast.expr->temp;
+			type_decl = string_type_decl_c(node->data.type_cast.type);
+			type_expr = string_type_decl_c(node->data.type_cast.expr->s_type);
+
+			OUT("\t*(%s*)& _registers[%d] = (%s) (*(%s*)& _registers[%d]);\n",
+				type_decl, node->temp, type_decl, type_expr, node->temp);
+
+			free(type_decl);
+			free(type_expr);
 		break;
 
 		case t_expr_constant:
@@ -952,8 +962,6 @@ void translate_switch_stmt_list(is_switch_stmt_list *node)
 
 void translate_ternary_op(is_ternary_op *node)
 {
-	OUT("FIXME REGISTERS %d\n", __LINE__);
-
 	int label;
 
 	label = ++label_counter;
