@@ -87,7 +87,7 @@ is_type_decl * decapsulate_type_decl(is_type_decl *type)
 	{
 		newtype->type = t_type_decl_array_decl;
 		newtype->data.array = duplicate_array_decl(type->data.array);
-		newtype->data.array->dims->size++;
+		newtype->data.array->dims->size--;
 	} else
 	{
 		newtype->type = t_type_decl_type_object;
