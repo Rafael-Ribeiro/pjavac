@@ -791,7 +791,7 @@ typedef struct _is_var
 	bool initialized;
 
 	/* code generation */
-	int temp; /* temp will store the address of the var in runtime */
+	int temp;
 	struct _SYMBOL* symbol;
 } is_var;
 
