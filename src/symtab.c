@@ -57,12 +57,15 @@ SYMBOL* symbol_new_func(char* id, int line, is_type_decl *retval, is_func_def_ar
 	return symbol;
 }
 
-/* TODO: store is_loop_stmt* for code generation */ 
-SYMBOL* symbol_new_loop(int line,/*, is_loop_stmt* loop*/ int label)
+SYMBOL* symbol_new_loop(char* id, int line, int label)
 {
 	SYMBOL* symbol = (SYMBOL*)malloc(sizeof(SYMBOL));
 
-	symbol->id = NULL;
+	if (id)
+		symbol->id = __strdup(id);
+	else
+		symbol->id = NULL;
+
 	symbol->type = t_symbol_loop;
 	symbol->line = line;
 	symbol->data.loop_data.label = label;

@@ -1,17 +1,23 @@
 class Main
 {
-	static int[] glob = new int[10];
-	
-	public static int[] a()
-	{
-		return glob;
-	}
-	
 	public static int main(String[] args)
-	{	
-		a()[0] = 1;
-		
-		System.out.println("" + glob[0]);
+	{
+
+		as: for (int i = 0; i < 100; i++)
+		{
+			label: for (int j = 0; j < 100; j++)
+			{
+				System.out.println("i: " + i +" j: " + j);
+
+				if (i == 50 && j == 50)
+				{
+					System.out.println("exit!\n");
+					break label;
+				}
+			}
+
+		}
+
 		return 0;
 	}
 }

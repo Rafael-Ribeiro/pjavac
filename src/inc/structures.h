@@ -59,7 +59,7 @@ typedef struct _is_var_defs is_var_stmt;
 typedef struct _is_class_def is_application;
 typedef struct _is_expr_list is_func_call_arg_list;
 typedef struct _is_func_def_arg_list is_func_def_args;
-
+typedef struct _is_id is_label;
 /***********************************************************************/
 
 /* semantics */
@@ -518,7 +518,7 @@ typedef struct _is_loop_stmt
 	int line;
 
 	type_loop_stmt type;
-	struct _is_id* loop_label; /* nullable */
+	is_label* loop_label; /* nullable */
 	union
 	{
 		struct _is_for* for_stmt;

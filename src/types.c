@@ -713,8 +713,13 @@ bool type_type_assign_able(is_type_decl* s_type, is_type_decl* s_type2)
 		if (s_type->data.array->dims->size != s_type2->data.array->dims->size)
 			return false;
 
+		if (!type_array_decl_equal(s_type->data.array, s_type2->data.array))
+			return false;
+
+		/* FIXME: long a[] = new int[]; should be allowed
 		if (operators_binary[t_assign_op_eq][s_type->data.array->type->type][s_type2->data.array->type->type] == ERROR)
 			return false;
+		*/
 	} else
 		return operators_binary[t_assign_op_eq][s_type->data.type_object->type][s_type2->data.type_object->type] != ERROR;
 

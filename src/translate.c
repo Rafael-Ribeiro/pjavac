@@ -345,11 +345,14 @@ void translate_dims_sized_list(is_dims_sized_list *node)
 
 void translate_do_while(is_do_while *node)
 {
-	OUT("label_%d:\n",node->scope->symbol->data.loop_data.label);
-	OUT("label_%d_continue:\n",node->scope->symbol->data.loop_data.label);
-	OUT("\t; /* do_while loop */\n");
+	OUT("\t/* begin of do_while */\n");
 
-	OUT("\t/* do_while body */\n");
+	OUT("label_%d:\n",node->scope->symbol->data.loop_data.label);
+
+	if (node->scope->symbol->data.loop_data.continued)
+		OUT("label_%d_continue:\n",node->scope->symbol->data.loop_data.label);
+
+	OUT("\t; /* do_while body */\n");
 	translate_stmt(node->body);
 	OUT("\n");
 
@@ -490,7 +493,8 @@ void translate_for(is_for *node)
 		translate_stmt(node->body);
 	}
 
-	OUT("label_%d_continue:\n", node->scope->symbol->data.loop_data.label);
+	if (node->scope->symbol->data.loop_data.continued)
+		OUT("label_%d_continue:\n", node->scope->symbol->data.loop_data.label);
 
 	if (node->inc)
 		translate_for_inc(node->inc);
@@ -1223,7 +1227,9 @@ void translate_var_initializer_list(is_var_initializer_list *node)
 void translate_while(is_while *node)
 {
 	OUT("label_%d:\n",node->scope->symbol->data.loop_data.label);
-	OUT("label_%d_continue:\n",node->scope->symbol->data.loop_data.label);
+
+	if (node->scope->symbol->data.loop_data.continued)
+		OUT("label_%d_continue:\n",node->scope->symbol->data.loop_data.label);
 	OUT("\t; /* while loop */\n");
 
 	OUT("\t/* while condition */\n");

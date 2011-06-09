@@ -23,11 +23,11 @@ int check_dims(is_dims* node);
 int check_dims_empty_list(is_dims_empty_list* val);
 int check_dims_sized(is_dims_sized* node);
 int check_dims_sized_list(is_dims_sized_list* node);
-int check_do_while(is_do_while* node); 
+int check_do_while(is_do_while* node, is_label* label);
 int check_expr(is_expr* node);
 int check_expr_list(is_expr_list* node);
 int check_expr_op(is_expr_op* node);
-int check_for(is_for* node);
+int check_for(is_for* node, is_label* label);
 int check_for_cond(is_for_cond* node);
 int check_for_expr(is_for_expr* node); 
 int check_for_expr_list(is_for_expr_list* node); 
@@ -63,7 +63,7 @@ int check_var_defs(is_var_defs* node, bool first_pass);
 int check_var_stmt(is_var_stmt* node, bool first_pass);
 int check_var_initializer(is_var_initializer* node);
 int check_var_initializer_list(is_var_initializer_list* node);
-int check_while(is_while* node);
+int check_while(is_while* node, is_label* label);
 
 #ifdef CHECK_C
 	int globalpos;

@@ -190,23 +190,21 @@ int check_break(is_break* node)
 {
 	int errors = 0;
 
-	if (node->label)
-	{
-		pretty_error(node->line, "labels are not supported at this time");		
-		errors++;
-		/* TODO: 
-			errors += check_label(node->label);
-		*/
-	}
-
 	if (errors == 0)
 	{
-		node->scope = scope_get_by_name(symtab, NULL, t_symbol_loop);
+		if (node->label)
+			node->scope = scope_get_by_name(symtab, node->label->name, t_symbol_loop);
+		else
+			node->scope = scope_get_by_name(symtab, NULL, t_symbol_loop);
 
 		if (!node->scope)
 		{
 			errors++;
-			pretty_error(node->line, "break stmt outside of loop or case", node->label);		
+	
+			if (node->label)
+				pretty_error(node->line, "break stmt label \"%s\" is undefined", node->label->name);
+			else
+				pretty_error(node->line, "break stmt outside of loop or case");
 		}
 	}
 
@@ -222,7 +220,7 @@ int check_class_def(is_class_def* node)
 	if (symbol)
 	{
 		errors++;
-		pretty_error(node->line, "class %s is already defined (previous declaration was here: %d)", node->id->name, symbol->line);
+		pretty_error(node->line, "class \"%s\" is already defined (previous declaration was here: %d)", node->id->name, symbol->line);
 	} else
 		scope_insert(symtab, symbol = symbol_new_class(node->id->name, node->line));
 
@@ -295,24 +293,25 @@ int check_continue(is_continue* node)
 {
 	int errors = 0;
 
-	if (node->label)
-	{
-		pretty_error(node->line, "labels are not supported at this time");		
-		errors++;
-		/* TODO: 
-			errors += check_label(node->label);
-		*/
-	}
 
 	if (errors == 0)
 	{
-		node->scope = scope_get_by_name(symtab, NULL, t_symbol_loop);
+		if (node->label)
+			node->scope = scope_get_by_name(symtab, node->label->name, t_symbol_loop);
+		else
+			node->scope = scope_get_by_name(symtab, NULL, t_symbol_loop);
 
 		if (!node->scope)
 		{
 			errors++;
-			pretty_error(node->line, "continue stmt outside of loop", node->label);		
-		}
+
+			if (node->label)
+				pretty_error(node->line, "continue stmt label \"%s\" is undefined", node->label->name);
+			else
+				pretty_error(node->line, "continue stmt outside of loop");		
+
+		} else
+			node->scope->symbol->data.loop_data.continued = true;
 	}
 
 	return errors;
@@ -373,13 +372,17 @@ int check_dims_sized_list(is_dims_sized_list* node)
 	return errors;
 }
 
-int check_do_while(is_do_while* node)
+int check_do_while(is_do_while* node, is_label* label)
 {
 	int errors = 0;
 
-	int label = ++label_counter; /* setting label for use with loops and break/continue */
+	int mylabel = ++label_counter; /* setting label for use with loops and break/continue */
 
-	node->scope = scope_new(symbol_new_loop(node->line, label), false);
+	if (label)
+		node->scope = scope_new(symbol_new_loop(label->name, node->line, mylabel), false);
+	else
+		node->scope = scope_new(symbol_new_loop(NULL, node->line, mylabel), false);
+		
 	scope_push(node->scope);
 		errors += check_stmt(node->body);
 		if (errors == 0)
@@ -513,14 +516,18 @@ int check_expr_op(is_expr_op* node)
 	return errors;
 }
 
-int check_for(is_for* node)
+int check_for(is_for* node, is_label* label)
 {
 	int errors = 0, cond_errors;
 	char* typeA;
 
-	int label = ++label_counter; /* setting label for use with loops and break/continue */
+	int mylabel = ++label_counter; /* setting label for use with loops and break/continue */
 
-	node->scope = scope_new(symbol_new_loop(node->line, label), false);
+	if (label)
+		node->scope = scope_new(symbol_new_loop(label->name, node->line, mylabel), false);
+	else
+		node->scope = scope_new(symbol_new_loop(NULL, node->line, mylabel), false);
+		
 	scope_push(node->scope);
 		if (node->init)
 			errors += check_for_init(node->init);
@@ -632,7 +639,7 @@ int check_func_call(is_func_call* node)
 	node->symbol = scope_lookup(symtab, node->id->name, t_symbol_func);
 	if (!node->symbol)
 	{
-		pretty_error(node->line, "undefined function %s", node->id->name);
+		pretty_error(node->line, "undefined function \"%s\"", node->id->name);
 		errors++;
 	} else
 	{
@@ -643,7 +650,7 @@ int check_func_call(is_func_call* node)
 			if ((node->args == NULL && node->symbol->data.func_data.nArgs != 0) ||
 				(node->args != NULL && node->args->length != node->symbol->data.func_data.nArgs))
 			{
-				pretty_error(node->line, "too %s arguments for %s, got %d expected %d (declaration is here: %d)",
+				pretty_error(node->line, "too %s arguments for \"%s\", got %d expected %d (declaration is here: %d)",
 					node->args->length > node->symbol->data.func_data.nArgs ? "many" : "few",
 					node->id->name,
 					node->args->length,
@@ -658,7 +665,7 @@ int check_func_call(is_func_call* node)
 					if (!type_type_assign_able(node->symbol->data.func_data.args[i]->type, arg->node->s_type))
 					{
 						errors++;
-						pretty_error(node->line, "invalid parameter %d (%s) of function %s (got %s expected %s)",
+						pretty_error(node->line, "invalid parameter \"%d\" (%s) of function %s (got %s expected %s)",
 							i,
 							node->symbol->data.func_data.args[i]->id->name,
 							node->id->name,
@@ -700,7 +707,7 @@ int check_func_def(is_func_def* node, bool first_pass)
 		symbol = scope_lookup(symtab, node->id->name, t_symbol_func);
 		if (symbol)
 		{
-			pretty_error(node->line, "symbol %s is already defined (previous declaration was here: %d)", node->id->name, symbol->line);
+			pretty_error(node->line, "symbol \"%s\" is already defined (previous declaration was here: %d)", node->id->name, symbol->line);
 			errors++;
 		} else
 		{
@@ -788,7 +795,7 @@ int check_func_def_arg(is_func_def_arg* node)
 		symbol = scope_local_lookup(symtab, node->id->name, t_symbol_var);
 		if (symbol)
 		{
-			pretty_error(node->line, "argument %s colides with already defined symbol (previous declaration was here: %d)",
+			pretty_error(node->line, "argument \"%s\" colides with already defined symbol (previous declaration was here: %d)",
 				node->id->name, symbol->line);
 			errors++;
 		} else
@@ -887,7 +894,14 @@ int check_incr_op(is_incr_op* node)
 int check_label(is_id* node)
 {
 	int errors = 0;
-	/* TODO */
+	SCOPE* scope;
+
+	scope = scope_get_by_name(symtab, node->name, t_symbol_loop);
+	if (scope != NULL)
+	{
+		errors++;
+		pretty_error(node->line, "ambiguous label \"%s\"", node->name); 
+	}	
 
 	return errors;
 }
@@ -896,18 +910,21 @@ int check_loop_stmt(is_loop_stmt* node)
 {
 	int errors = 0;
 
+	if (node->loop_label)
+		errors += check_label(node->loop_label);
+
 	switch (node->type)
 	{
 		case t_loop_stmt_for:
-			errors += check_for(node->data.for_stmt);
+			errors += check_for(node->data.for_stmt, node->loop_label);
 		break;
 
 		case t_loop_stmt_while:
-			errors += check_while(node->data.while_stmt);
+			errors += check_while(node->data.while_stmt, node->loop_label);
 		break;
 
 		case t_loop_stmt_do_while:
-			errors += check_do_while(node->data.do_while_stmt);
+			errors += check_do_while(node->data.do_while_stmt, node->loop_label);
 		break;
 	}
 
@@ -918,6 +935,7 @@ int check_loop_stmt(is_loop_stmt* node)
 			propagate loop terminates, only if node condition is ALWAYS true
 		*/
 	}
+
 	return errors;
 }
  
@@ -1237,7 +1255,7 @@ int check_var(is_var* node)
 			if (!node->symbol)
 			{
 				errors++;
-				pretty_error(node->line, "undefined variable %s", node->data.id->name);
+				pretty_error(node->line, "undefined variable \"%s\"", node->data.id->name);
 				node->initialized = false;
 			} else
 			{
@@ -1349,7 +1367,7 @@ int check_var_defs(is_var_defs* node, bool first_pass)
 		if (symbol)
 		{
 			errors++;
-			pretty_error(it->node->line, "symbol %s is already defined (previous declaration was here: %d)", it->node->left->id->name, symbol->line);
+			pretty_error(it->node->line, "symbol \"%s\" is already defined (previous declaration was here: %d)", it->node->left->id->name, symbol->line);
 		} else
 		{
 			if (it->node->left->empty->size != 0)
@@ -1383,7 +1401,7 @@ int check_var_defs(is_var_defs* node, bool first_pass)
 				else
 				{
 					errors++;
-					pretty_error(it->node->line, "%s initalization is invalid", it->node->left->id->name);
+					pretty_error(it->node->line, "\"%s\"'s initalization is invalid", it->node->left->id->name);
 				}
 			}
 		}
@@ -1434,14 +1452,18 @@ int check_var_initializer_list(is_var_initializer_list* node)
 	return errors;
 }
 
-int check_while(is_while* node)
+int check_while(is_while* node, is_label* label)
 {
 	int errors = 0;
 	char *string;
 
-	int label = ++label_counter; /* setting label for use with loops and break/continue */
+	int mylabel = ++label_counter; /* setting label for use with loops and break/continue */
 	
-	node->scope = scope_new(symbol_new_loop(node->line, label), false);
+	if (label)
+		node->scope = scope_new(symbol_new_loop(label->name, node->line, mylabel), false);
+	else
+		node->scope = scope_new(symbol_new_loop(NULL, node->line, mylabel), false);
+		
 	scope_push(node->scope);
 		errors += check_expr(node->cond);
 		if (errors == 0)
