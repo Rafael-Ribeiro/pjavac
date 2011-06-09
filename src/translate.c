@@ -1033,11 +1033,11 @@ void translate_var(is_var *node)
 {
 	char *type, *type_subscript;
 
-	node->temp = temp_counter++;
-
 	switch (node->type)
 	{
 		case t_var_id:
+			node->temp = temp_counter++;
+
 			if (node->symbol->data.var_data.global)
 				OUT("\t_registers[%d] = _globals[%d];\n",
 					node->temp,
@@ -1052,12 +1052,14 @@ void translate_var(is_var *node)
 
 		case t_var_new_op:
 			translate_new_op(node->data.new_op);
-			OUT("\t_registers[%d] = _registers[%d];\n", node->temp, node->data.new_op->temp);
+			node->temp = node->data.new_op->temp;
 		break;
 
 		case t_var_array:
 			translate_var(node->data.array.var);
 			translate_dims_sized(node->data.array.dims);
+
+			node->temp = node->data.array.var->temp;
 
 			type = string_type_decl_c(node->s_type);
 			type_subscript = string_type_decl_c(node->data.array.var->s_type);
@@ -1078,6 +1080,8 @@ void translate_var(is_var *node)
 		case t_var_func_call:
 			translate_func_call(node->data.func_call.call);
 			translate_dims_sized(node->data.array.dims);
+
+			node->temp  =node->data.func_call.call->temp;
 
 			type = string_type_decl_c(node->s_type);
 			type_subscript = string_type_decl_c(node->data.func_call.call->s_type);

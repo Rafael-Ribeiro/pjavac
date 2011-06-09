@@ -10,6 +10,7 @@
 #include "inc/types.h"
 #include "inc/insert.h"
 #include "inc/free.h"
+#include "inc/duplicate.h"
 
 is_type_native operators_binary[MAX_OPERATORS_BINARY][MAX_NATIVE_TYPES-1][MAX_NATIVE_TYPES-1] =
 {
