@@ -3,7 +3,7 @@
 
 char *__strdup(char *s)
 {
-	char *dupS = (char*)malloc(strlen(s) * sizeof(char));
+	char *dupS = (char*)malloc((strlen(s)+1) * sizeof(char));
 	strcpy(dupS,s);
 
 	return dupS;
