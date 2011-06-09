@@ -19,11 +19,11 @@ bool_to_string:
 		goto bool_to_string_true;
 
 	/* else: */
-		*(char**)& _fp->retval = strdup("false");
+		*(char**)& _fp->retval = __strdup("false");
 		goto bool_to_string_end;
 
 	bool_to_string_true:
-		*(char**)& _fp->retval = strdup("true");
+		*(char**)& _fp->retval = __strdup("true");
 
 	bool_to_string_end:
 	goto redirector;

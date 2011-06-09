@@ -48,5 +48,5 @@ clean: soft-clean
 
 test:
 	./pjava < $(SOURCE) > $(TARGET)
-	gcc $(TARGET) -I./ -Wall -g -o ../outputs/out
+	gcc $(TARGET) -I./ -Wall -ansi -g -o ../outputs/out
 
