@@ -2,9 +2,13 @@ class teste
 {
 	public static void main(String[] args)
 	{
-		long i = 1L * 1L;
+		int a[][] = {{1,2,3},{6,5,4},{69,69,69}};
 
-		System.out.println(""+ i);
+		int i, j;
+
+		for (i = 0; i < 3; i++)
+			for (j = 0; j < 3; j++)
+				System.out.println("" + a[i][j]);
 	}
 }
 
