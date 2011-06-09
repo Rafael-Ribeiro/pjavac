@@ -795,6 +795,8 @@ void translate_member_stmt(is_member_stmt *node)
 
 void translate_new_op_recursive(is_new_op *node, int temp, is_dims_sized_list* dim)
 {
+	OUT("FIXME %d\n", __LINE__);
+
 	int dimsize, totalsize;
 	char* type;
 
