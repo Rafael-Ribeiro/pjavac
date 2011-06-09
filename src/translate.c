@@ -1109,7 +1109,7 @@ void translate_var(is_var *node)
 			type = string_type_decl_c(node->s_type);
 			type_subscript = string_type_decl_c(node->data.func_call.call->s_type);
 
-			OUT("\t*(%s**)& _registers[%d] = &( (**(%s**)& _registers[%d]) [*(int*)& _registers[%d]] );\n",
+			OUT("\t*(%s**)& _registers[%d] = &( (*(%s*)& _registers[%d]) [*(int*)& _registers[%d]] );\n",
 				type,
 				node->temp,
 				type_subscript,
