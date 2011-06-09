@@ -838,9 +838,9 @@ int translate_new_op_recursive(is_new_op *node, is_dims_sized_list* dim)
 		OUT("\t(*(%s**)& _registers[%d])[*(int*)& _registers[%d]] = *(%s*)&_registers[%d];\n",
 			type, temp, inner_temp, type, result_temp);
 
-		OUT("\t(*(int*)&_registers[%d])++;\n", inner_temp);
+		OUT("\t(*(int*)& _registers[%d])++;\n", inner_temp);
 		OUT("\n");
-		OUT("\tif (_registers[%d] != _registers[%d])\n", inner_temp, dim->node->temp);
+		OUT("\tif (*(int*)& _registers[%d] != *(int*)& _registers[%d])\n", inner_temp, dim->node->temp);
 		OUT("\t\t goto label_%d;\n", label);
 		OUT("\n");
 	}
