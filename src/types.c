@@ -565,7 +565,14 @@ char *string_binary_operator(type_binary_op operator)
 
 char *string_type_native(is_type_native* type)
 {
-	char strings[][8] = {"bool", "char", "char", "double", "float", "int", "long", "short", "char*", "void"};
+	char strings[][8] = {"bool", "byte", "char", "double", "float", "int", "long", "short", "string", "void"};
+
+	return __strdup(strings[*type]);
+}
+
+char *string_type_native_c(is_type_native* type)
+{
+	char strings[][10] = {"bool", "char", "char", "double", "float", "int", "long long", "short", "char*", "void"};
 
 	return __strdup(strings[*type]);
 }
@@ -573,6 +580,20 @@ char *string_type_native(is_type_native* type)
 char *string_type_native_array(is_type_native type, int dims)
 {
 	char *base = string_type_native(&type);
+	int len = strlen(base);
+	int i;
+	base = (char*)realloc(base, sizeof(char)*(len+dims+1));
+	
+	for (i = 0; i < dims; i++)
+		base[len+i] = '*';
+	base[len+i] = 0;
+
+	return base;
+}
+
+char *string_type_native_array_c(is_type_native type, int dims)
+{
+	char *base = string_type_native_c(&type);
 	int len = strlen(base);
 	int i;
 	base = (char*)realloc(base, sizeof(char)*(len+dims+1));
@@ -592,12 +613,39 @@ char *string_type_decl(is_type_decl* type)
 	return string_array_decl(type->data.array);
 }
 
+char *string_type_decl_c(is_type_decl* type)
+{
+	if (type->type == t_type_decl_type_object)
+		return string_type_native_c(&(type->data.type_object->type));
+
+	return string_array_decl_c(type->data.array);
+}
+
 char *string_array_decl(is_array_decl* array)
 {
 	char *native, *val;
 	int size, i;
 
 	native = string_type_native(&(array->type->type));
+	size = strlen(native) + 2*(array->dims->size)+1;
+
+	val = (char*)malloc(sizeof(char)*size);
+	strcpy(val, native); 
+	
+	for (i = 0; i < array->dims->size; i++)
+		strcat(val, "*");
+
+	free(native);
+
+	return val;
+}
+
+char *string_array_decl_c(is_array_decl* array)
+{
+	char *native, *val;
+	int size, i;
+
+	native = string_type_native_c(&(array->type->type));
 	size = strlen(native) + 2*(array->dims->size)+1;
 
 	val = (char*)malloc(sizeof(char)*size);

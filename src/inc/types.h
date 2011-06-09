@@ -25,6 +25,11 @@ char *string_type_native_array(is_type_native type, int dims);
 char *string_type_decl(is_type_decl* type);
 char *string_array_decl(is_array_decl* array);
 
+char *string_type_native_c(is_type_native* type);
+char *string_type_native_array_c(is_type_native type, int dims);
+char *string_type_decl_c(is_type_decl* type);
+char *string_array_decl_c(is_array_decl* array);
+
 bool type_dims_empty_list_equal(is_dims_empty_list* dims1, is_dims_empty_list* dims2);
 bool type_array_decl_equal(is_array_decl* array1, is_array_decl* array2);
 bool type_type_object_equal(is_type_object* type1, is_type_object* type2);

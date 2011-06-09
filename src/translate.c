@@ -108,7 +108,7 @@ void translate_array_decl(is_array_decl *node)
 
 void translate_assign_op(is_assign_op *node)
 {
-	char *operator, *expr_type, *var_type;
+	char *operator, *expr_type, *var_type, *expr_type_java;
 	int label, labelConvert, tempConvert;
 	is_type_decl *type_string;
 
@@ -117,8 +117,8 @@ void translate_assign_op(is_assign_op *node)
 	translate_expr(node->expr);
 	translate_var(node->var);
 
-	var_type = string_type_decl(node->var->s_type);
-	expr_type = string_type_decl(node->expr->s_type);
+	var_type = string_type_decl_c(node->var->s_type);
+	expr_type = string_type_decl_c(node->expr->s_type);
 
 	if (node->type == t_assign_op_add_eq && type_type_equal(type_string, node->var->s_type))
 	{
@@ -129,15 +129,18 @@ void translate_assign_op(is_assign_op *node)
 			tempConvert = temp_counter++;
 			labelConvert = ++label_counter;
 
+			expr_type_java = string_type_decl(node->expr->s_type);
+
 			OUT("\t/* conversion from %s to string */\n", expr_type);
 			OUT("\t_fp->retaddr = %d;\n", labelConvert);
 			OUT("\t_fp->args[0] = _register[%d];\n", node->expr->temp);
-			OUT("\tgoto %s_to_string;\n", expr_type);
+			OUT("\tgoto %s_to_string;\n", expr_type_java);
 			OUT("\n");
 			OUT("label_%d:\n", labelConvert);
 			OUT("\t_registers[%d] = _fp->retval;\n", tempConvert);
 			OUT("\n");
 
+			free(expr_type_java);
 		} else
 			tempConvert = node->expr->temp;
 
@@ -173,7 +176,7 @@ void translate_binary_op(is_binary_op *node)
 {
 	is_type_decl* string;
 	bool isStringLeft, isStringRight;
-	char *operator, *type, *typeLeft, *typeRight;
+	char *operator, *type, *typeLeft, *typeRight, *typeLeftJava, *typeRightJava;
 	int tempLeft, tempRight;
 	int tempLabel;
 
@@ -189,9 +192,9 @@ void translate_binary_op(is_binary_op *node)
 			translate_expr(node->data.operands.right);
 	
 			string = insert_type_decl_object(insert_type_object(t_type_native_string));
-			type = string_type_decl(node->s_type);
-			typeLeft = string_type_decl(node->data.operands.left->s_type);
-			typeRight = string_type_decl(node->data.operands.right->s_type);
+			type = string_type_decl_c(node->s_type);
+			typeLeft = string_type_decl_c(node->data.operands.left->s_type);
+			typeRight = string_type_decl_c(node->data.operands.right->s_type);
 
 			if (node->type == t_binary_op_add)
 			{
@@ -204,18 +207,19 @@ void translate_binary_op(is_binary_op *node)
 					{
 						tempLeft = temp_counter++;
 						tempLabel = ++label_counter;
-						typeLeft = string_type_decl(node->data.operands.left->s_type);
+
+						typeLeftJava = string_type_decl(node->data.operands.left->s_type);
 
 						OUT("\t/* conversion from %s to string */\n", typeLeft);
 						OUT("\t_fp->retaddr = %d;\n", tempLabel);
 						OUT("\t_fp->args[0] = _registers[%d];\n", node->data.operands.left->temp);
-						OUT("\tgoto %s_to_string;\n", typeLeft);
+						OUT("\tgoto %s_to_string;\n", typeLeftJava);
 						OUT("\n");
 						OUT("label_%d:\n", tempLabel);
 						OUT("\t_registers[%d] = _fp->retval;\n", tempLeft);
 						OUT("\n");
 
-						free(typeLeft);
+						free(typeLeftJava);
 					} else
 						tempLeft = node->data.operands.left->temp;
 	
@@ -223,18 +227,19 @@ void translate_binary_op(is_binary_op *node)
 					{
 						tempRight = temp_counter++;
 						tempLabel = ++label_counter;
-						typeRight = string_type_decl(node->data.operands.right->s_type);
+
+						typeRightJava = string_type_decl(node->data.operands.right->s_type);
 
 						OUT("\t/* conversion from %s to string */\n", typeRight);
 						OUT("\t_fp->retaddr = %d;\n", tempLabel);
 						OUT("\t_fp->args[0] = _registers[%d];\n", node->data.operands.right->temp);
-						OUT("\tgoto %s_to_string;\n", typeRight);
+						OUT("\tgoto %s_to_string;\n", typeRightJava);
 						OUT("\n");
 						OUT("label_%d: ;\n", tempLabel);
 						OUT("\t_registers[%d] = _fp->retval;\n", tempRight);
 						OUT("\n");
 
-						free(typeRight);
+						free(typeRightJava);
 					} else
 						tempRight = node->data.operands.right->temp;
 
@@ -268,7 +273,7 @@ void translate_binary_op(is_binary_op *node)
 				node->temp = temp_counter++;
 
 				operator = string_binary_operator(node->type);
-				OUT("\t*(%s*)& _registers[%d] = *(%s*)& _registers[%d] %s *(%s*)& _registers[%d];\n",
+				OUT("\t*(%s*)& _registers[%d] = (*(%s*)& _registers[%d]) %s (*(%s*)& _registers[%d]);\n",
 					type,
 					node->temp,
 					typeLeft,
@@ -564,13 +569,13 @@ void translate_func_call(is_func_call *node)
 	OUT("\t_fp->retaddr = %d;\n", label);
 
 	if (!type_type_equal(type_void, node->symbol->data.func_data.type))
-		type = string_type_decl(node->symbol->data.func_data.type);
+		type = string_type_decl_c(node->symbol->data.func_data.type);
 
 	/* TODO FIXME TODO FIXME TODO FIXME: store registers */ 
-
+	OUT("\tmemcpy(_fp->registers, _registers, sizeof(REGISTER) * MAX_REGISTERS);\n");
 	for (i = 0, arg = node->args; arg != NULL; i++, arg = arg->next)
 	{
-		type_arg = string_type_decl(node->symbol->data.func_data.args[i]->type);
+		type_arg = string_type_decl_c(node->symbol->data.func_data.args[i]->type);
 		OUT("\t_fp->args[%d] = _registers[%d];\n", i, arg->node->temp);
 		free(type_arg);
 	}
@@ -579,7 +584,8 @@ void translate_func_call(is_func_call *node)
 	OUT("\n");
 	OUT("label_%d:\n", label);
 
-	/* TODO FIXME TODO FIXME TODO FIXME: restore registers */ 
+	OUT("\tmemcpy(_registers, _fp->registers, sizeof(REGISTER) * MAX_REGISTERS);\n");
+
 	OUT("\t; /* end of func call*/\n");
 
 	if (!type_type_equal(type_void, node->symbol->data.func_data.type))
@@ -598,7 +604,7 @@ void translate_func_def(is_func_def *node)
 	char *func_type;
 	is_type_decl *void_type;
 
-	func_type = string_type_decl(node->scope->symbol->data.func_data.type);
+	func_type = string_type_decl_c(node->scope->symbol->data.func_data.type);
 
 	OUT("\tgoto label_%d_postend;\n", node->scope->symbol->data.func_data.label);
 	OUT("\n");
@@ -624,7 +630,7 @@ void translate_func_def(is_func_def *node)
 			OUT("\tif (*(int*)& _registers[%d] == 0)\n", temp);
 			OUT("\t\tgoto label_main_args_end;\n");
 			OUT("\t(*(char***)& _temp_frame->locals[0])[*(int*)& _registers[%d] - 1] = strdup(_argv[*(int*)&_registers[%d] - 1]);\n", temp, temp);
-			OUT("\t*(int*)& _registers[%d] --;\n", temp);
+			OUT("\t(*(int*)& _registers[%d]) --;\n", temp);
 			OUT("\tgoto label_main_args;\n");
 			OUT("\n");
 			OUT("label_main_args_end:\n");
@@ -729,7 +735,7 @@ void translate_incr_op(is_incr_op *node)
 {
 	char *type, *operator;
 
-	type = string_type_decl(node->s_type);
+	type = string_type_decl_c(node->s_type);
 	operator = string_incr_operator(node->type);
 
 	translate_var(node->var);
@@ -792,7 +798,7 @@ void translate_new_op_recursive(is_new_op *node, int temp, is_dims_sized_list* d
 
 	totalsize = dimsize + node->dims->empty->size;
 
-	type = string_type_native_array(node->type_object->type, totalsize-1);
+	type = string_type_native_array_c(node->type_object->type, totalsize-1);
 
 	OUT("\t%s* _temp_%d_%d = (%s*)malloc(sizeof(%s) * _temp_%d);\n",
 		type, temp, dimsize, type, type, dim->node->temp);
@@ -833,7 +839,7 @@ void translate_new_op(is_new_op *node)
 	node->temp = temp_counter++;
 	translate_new_op_recursive(node, node->temp, node->dims->sized);
 	
-	type = string_type_native_array(node->type_object->type, node->dims->length);
+	type = string_type_native_array_c(node->type_object->type, node->dims->length);
 
 	OUT("\n");
 	OUT("\t%s _temp_%d = _temp_%d_%d;\n", type, node->temp, node->temp, node->dims->sized->length);
@@ -844,8 +850,6 @@ void translate_new_op(is_new_op *node)
 
 void translate_redirector()
 {
-	OUT("FIXME REGISTERS %d\n", __LINE__);
-
 	int i;
 
 	OUT("redirector:\n");
@@ -855,23 +859,21 @@ void translate_redirector()
 
 	for (i = 0; i <= label_counter; i++)
 	{
-		OUT("\tif (_fp->retaddr == %d)\n", i);
+		OUT("\tif (*(int*)& _fp->retaddr == %d)\n", i);
 		OUT("\t\tgoto label_%d;\n", i);
 	}
 }
 
 void translate_return(is_return *node)
 {
-	OUT("FIXME REGISTERS %d\n", __LINE__);
-
 	char * type;
 	
 	if (node->value)
 	{
 		translate_expr(node->value);
 
-		type = string_type_decl(node->symbol->data.func_data.type);
-		OUT("\t_temp_ret = &_temp_%d;\n", node->value->temp);
+		type = string_type_decl_c(node->symbol->data.func_data.type);
+		OUT("\t_temp_ret = _registers[%d];\n", node->value->temp);
 		free(type);
 	}
 
@@ -881,7 +883,7 @@ void translate_return(is_return *node)
 
 void translate_stmt(is_stmt *node)
 {
-	OUT("FIXME REGISTERS %d\n", __LINE__);
+	temp_counter = 0;
 
 	switch (node->type)
 	{
@@ -960,20 +962,17 @@ void translate_ternary_op(is_ternary_op *node)
 	OUT("FIXME REGISTERS %d\n", __LINE__);
 
 	int label;
-	char *type;
 
-	type = string_type_decl(node->s_type);
 	label = ++label_counter;
 	node->temp = temp_counter++;
 
 	OUT("\t/* ternary op */\n");
-	OUT("\t%s _temp_%d;\n", type, node->temp);
 	OUT("\n");
 
 	translate_expr(node->if_expr);
 
 	OUT("\n");
-	OUT("\tif (!_temp_%d)\n", node->if_expr->temp);
+	OUT("\tif (! *(bool*)& _registers[%d])\n", node->if_expr->temp);
 	OUT("\t\tgoto label_%d_else;\n", label);
 	OUT("\n");
 	OUT("\t/* ternary op then */\n");
@@ -981,7 +980,7 @@ void translate_ternary_op(is_ternary_op *node)
 	translate_expr(node->then_expr);
 
 	OUT("\n");
-	OUT("\t_temp_%d = _temp_%d;\n", node->temp, node->then_expr->temp);
+	OUT("\t_registers[%d] = _registers[%d];\n", node->temp, node->then_expr->temp);
 
 	OUT("\n");
 	OUT("\tgoto label_%d;\n", label);
@@ -991,13 +990,11 @@ void translate_ternary_op(is_ternary_op *node)
 	translate_expr(node->else_expr);
 
 	OUT("\n");
-	OUT("\t_temp_%d = _temp_%d;\n", node->temp, node->else_expr->temp);
+	OUT("\t_registers[%d] = _registers[%d];\n", node->temp, node->else_expr->temp);
 
 	OUT("\n");
 	OUT("label_%d:\n", label);
 	OUT("\t; /* ternary op end */\n");
-
-	free(type);
 }
 
 void translate_type_decl(is_type_decl *node)
@@ -1012,24 +1009,18 @@ void translate_type_object(is_type_object *node)
 
 void translate_unary_op(is_unary_op *node)
 {
-	OUT("FIXME REGISTERS %d\n", __LINE__);
-
-	char *type;
-
-	type = string_type_decl(node->s_type);
 	switch (node->type)
 	{
 		case t_unary_op_operation:
 			translate_expr(node->data.operation.expr);
-			
-			node->temp = temp_counter++;			
-			OUT("\t%s _temp_%d = %c_temp_%d;\n",
-				type,
+
+			node->temp = temp_counter++;
+			OUT("\t_registers[%d] = %c_registers[%d];\n",
 				node->temp,
 				string_unary_operator(node->data.operation.op),
 				node->data.operation.expr->temp
 			);
-			
+
 		break;
 
 		case t_unary_op_incr_op:
@@ -1037,68 +1028,56 @@ void translate_unary_op(is_unary_op *node)
 			node->temp = node->data.incr->temp;
 		break;	
 	}
-
-	free(type);
 }
 
 void translate_var(is_var *node)
 {
-	OUT("FIXME REGISTERS %d\n", __LINE__);
-
 	char *type;
-	
-	node->temp = temp_counter++;
-	type = string_type_decl(node->s_type);
 
-	OUT("\t%s* _temp_%d;\n", type, node->temp);
-			
+	node->temp = temp_counter++;
+
 	switch (node->type)
 	{
 		case t_var_id:
 			if (node->symbol->data.var_data.global)
-				OUT("\t_temp_%d = (%s*)_globals[%d];\n",
+				OUT("\t_registers[%d] = _globals[%d];\n",
 					node->temp,
-					type,
 					node->symbol->data.var_data.framepos
 				);
 			else
-				OUT("\t_temp_%d = (%s*)_fp->locals[%d];\n", 
+				OUT("\t_registers[%d] = _fp->locals[%d];\n", 
 					node->temp,
-					type,
 					node->symbol->data.var_data.framepos
 				);
 		break;
 
 		case t_var_new_op:
 			translate_new_op(node->data.new_op);
-			OUT("\t_temp_%d = &_temp_%d;\n", node->temp, node->data.new_op->temp);
+			OUT("\t_registers[%d] = _registers[%d];\n", node->temp, node->data.new_op->temp);
 		break;
 
 		case t_var_array:
 			translate_var(node->data.array.var);
 			translate_dims_sized(node->data.array.dims);
-			OUT("\t_temp_%d = &((*_temp_%d)[_temp_%d]);\n",
+			OUT("\t_registers[%d] = &(( **(%s*)& _registers[%d])[*(int*)& _registers[%d]]);\n",
 				node->temp,
+				type = string_type_decl_c(node->data.array.var->s_type),
 				node->data.array.var->temp,
 				node->data.array.dims->temp
 			);
 			OUT("\n");
 
+			free(type);
 		break;
 
 		case t_var_func_call:
 			OUT("FIXME %d\n", __LINE__);
 		break;
 	}
-
-	free(type);
 }
 
 void translate_var_def(is_var_def *node)
 {
-	OUT("FIXME REGISTERS %d\n", __LINE__);
-
-	char *typeA;
 	SYMBOL* symbol;
 
 	symbol = node->left->symbol;
@@ -1106,43 +1085,26 @@ void translate_var_def(is_var_def *node)
 	if (node->var_init)
 		translate_var_initializer(node->var_init);
 
-	typeA = string_type_decl(symbol->data.var_data.type);
-
 	if (symbol->data.var_data.global)
 	{
-		OUT("\t_globals[%d] = (%s*)malloc(sizeof(%s));\n",
-			symbol->data.var_data.framepos,
-			typeA,
-			typeA
-		);
-
 		if (node->var_init)
 		{
-			OUT("\t*((%s*)_globals[%d]) = _temp_%d;\n",
-				typeA,
+			OUT("\t_globals[%d] = _registers[%d];\n",
 				symbol->data.var_data.framepos,
 				node->var_init->temp
 			);
 		}
 	} else
 	{
-		OUT("\t_fp->locals[%d] = (%s*)malloc(sizeof(%s));\n",
-			symbol->data.var_data.framepos,
-			typeA,
-			typeA
-		);
-
 		if (node->var_init)
 		{
-			OUT("\t*((%s*)_fp->locals[%d]) = _temp_%d;\n",
-				typeA,
+			OUT("\t_fp->locals[%d] = _registers[%d];\n",
 				symbol->data.var_data.framepos,
 				node->var_init->temp
 			);
 		}
 	}
 	OUT("\n");
-	free(typeA);
 }
 
 void translate_var_def_list(is_var_def_list *node)
@@ -1192,8 +1154,6 @@ void translate_var_initializer_list(is_var_initializer_list *node)
 
 void translate_while(is_while *node)
 {
-	OUT("FIXME REGISTERS %d\n", __LINE__);
-
 	OUT("label_%d:\n",node->scope->symbol->data.loop_data.label);
 	OUT("label_%d_continue:\n",node->scope->symbol->data.loop_data.label);
 	OUT("\t; /* while loop */\n");
@@ -1202,7 +1162,7 @@ void translate_while(is_while *node)
 	translate_expr(node->cond);
 	OUT("\n");
 	
-	OUT("\tif (!_temp_%d)\n",node->cond->temp);
+	OUT("\tif (! *(bool*)& _registers[%d])\n",node->cond->temp);
 	OUT("\t\tgoto label_%d_end;\n",node->scope->symbol->data.loop_data.label);
 
 	OUT("\t/* while body */\n");
