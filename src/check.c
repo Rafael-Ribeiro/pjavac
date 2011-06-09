@@ -1260,15 +1260,7 @@ int check_var(is_var* node)
 			{
 				if (node->data.array.var->s_type->type == t_type_decl_array_decl)
 				{
-					if (node->data.array.var->s_type->data.array->dims->size > 1)
-					{
-						node->s_type = duplicate_type_decl(node->data.array.var->s_type);
-						node->s_type->data.array->dims->size--;
-					} else
-					{
-						node->s_type = insert_type_decl_object(insert_type_object(node->data.array.var->s_type->data.array->type->type));
-					}
-
+					node->s_type = decapsulate_type_decl(node->data.array.var->s_type);
 				} else
 				{
 					errors++;
@@ -1289,8 +1281,7 @@ int check_var(is_var* node)
 			{
 				if (node->data.func_call.call->s_type->type == t_type_decl_array_decl)
 				{
-					node->s_type = duplicate_type_decl(node->data.func_call.call->s_type);
-					node->s_type->data.array->dims->size--;
+					node->s_type = decapsulate_type_decl(node->data.func_call.call->s_type);
 				} else
 				{
 					errors++;
