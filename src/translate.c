@@ -658,6 +658,7 @@ void translate_func_def(is_func_def *node)
 	translate_stmt_list(node->body);
 	
 	OUT("\n");
+	OUT("goto label_%d_end;\n",node->scope->symbol->data.func_data.label); /* warning suppression */
 	OUT("label_%d_end:\n\t/* end of %s */\n", node->scope->symbol->data.func_data.label, node->id->name);
 
 	if (!type_type_equal(node->scope->symbol->data.func_data.type, void_type) &&
