@@ -1102,19 +1102,19 @@ void translate_var(is_var *node)
 
 		case t_var_func_call:
 			translate_func_call(node->data.func_call.call);
-			translate_dims_sized(node->data.array.dims);
+			translate_dims_sized(node->data.func_call.dims);
 
 			node->temp = node->data.func_call.call->temp;
 
 			type = string_type_decl_c(node->s_type);
 			type_subscript = string_type_decl_c(node->data.func_call.call->s_type);
 
-			OUT("\t*(%s**)& _registers[%d] = &( (**(%s**)& _registers[%d]) [*(int*)& _registers[%d]] );\n",
+			OUT("\t*(%s**)& _registers[%d] = &( (*(%s*)& _registers[%d]) [*(int*)& _registers[%d]] );\n",
 				type,
 				node->temp,
 				type_subscript,
-				node->data.array.var->temp,
-				node->data.array.dims->temp
+				node->data.func_call.call->temp,
+				node->data.func_call.dims->temp
 			);
 			OUT("\n");
 			
