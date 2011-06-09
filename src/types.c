@@ -778,10 +778,10 @@ bool type_var_init_assign_able(is_type_decl *type, int nDimensions, is_var_initi
 
 			/*
 			 * init->data.array is never NULL;
-			 * duplicate type_decl of the first var_initializer and update "parent" var_initializer	
+			 * duplicate type_decl of the first var_initializer and update "parent" var_initializer
 			 */
 			if (init->data.array->node->s_type)
-				init->s_type = duplicate_type_decl(init->data.array->node->s_type);
+				init->s_type = encapsulate_type_decl(init->data.array->node->s_type);
 			else /* if s_type is NULL, then something went wrong */
 			{
 				free_type_decl(dupType);
