@@ -63,11 +63,6 @@ void translate_constant(is_constant *node)
 
 
 /* YACC */
-void translate_dims_empty_list(is_dims_empty_list* val)
-{
-	/* NOTHING TO DO HERE! */
-	OUT("ERROR %d", __LINE__);
-}
 
 /* enums */
 void translate_class_stmt_privacy(is_class_stmt_privacy val)
@@ -162,7 +157,9 @@ void translate_assign_op(is_assign_op *node)
 
 		OUT("\t*(%s*)& _registers[%d] %s *(%s*)& _registers[%d];\n",
 			var_type, node->var->temp, operator, expr_type, node->expr->temp);
-		OUT("\t_fp->locals[%d] = _registers[%d];\n", node->var->symbol->data.var_data.framepos, node->var->temp);
+
+		if (node->var->symbol)
+			OUT("\t_fp->locals[%d] = _registers[%d];\n", node->var->symbol->data.var_data.framepos, node->var->temp);
 
 		free(operator);
 	}
@@ -335,7 +332,7 @@ void translate_continue(is_continue *node)
 void translate_dims(is_dims *node)
 {
 	translate_dims_sized_list(node->sized);
-	translate_dims_empty_list(node->empty);
+	/* translate_dims_empty_list(node->empty); */
 }
 
 void translate_dims_sized(is_dims_sized *node)
@@ -571,7 +568,6 @@ void translate_func_call(is_func_call *node)
 	if (!type_type_equal(type_void, node->symbol->data.func_data.type))
 		type = string_type_decl_c(node->symbol->data.func_data.type);
 
-	/* TODO FIXME TODO FIXME TODO FIXME: store registers */ 
 	OUT("\tmemcpy(_fp->registers, _registers, sizeof(REGISTER) * MAX_REGISTERS);\n");
 	for (i = 0, arg = node->args; arg != NULL; i++, arg = arg->next)
 	{
@@ -741,11 +737,12 @@ void translate_incr_op(is_incr_op *node)
 	translate_var(node->var);
 
 	if (node->pre)
+	{
 		OUT("\t%s(*(%s*)& _registers[%d]);\n", operator, type, node->var->temp);
-	else
-		OUT("\t(*(%s*)& _registers[%d])%s;\n", type, node->var->temp, operator);
-
-	OUT("\t_fp->locals[%d] = _registers[%d];\n", node->var->symbol->data.var_data.framepos, node->var->temp);
+		OUT("\t_fp->locals[%d] = _registers[%d];\n", node->var->symbol->data.var_data.framepos, node->var->temp);
+	} else
+		OUT("\t(*(%s*)& _fp->locals[%d])%s;\n", type, node->var->symbol->data.var_data.framepos, operator);
+		/* register stays the same */
 
 	node->temp = node->var->temp;
 	free(operator);
@@ -784,12 +781,13 @@ void translate_member_stmt(is_member_stmt *node)
 	}
 }
 
-void translate_new_op_recursive(is_new_op *node, int temp, is_dims_sized_list* dim)
+int translate_new_op_recursive(is_new_op *node, is_dims_sized_list* dim)
 {
-	OUT("FIXME REGISTERS %d\n", __LINE__);
-
 	int dimsize, totalsize;
-	char* type;
+	char *type, *type_element;
+	int temp, inner_temp, result_temp;
+
+	int label;
 
 	if (dim == NULL)
 		dimsize = 0;
@@ -799,53 +797,48 @@ void translate_new_op_recursive(is_new_op *node, int temp, is_dims_sized_list* d
 	totalsize = dimsize + node->dims->empty->size;
 
 	type = string_type_native_array_c(node->type_object->type, totalsize-1);
+	type_element = string_type_decl_c(dim->node->s_type);
 
-	OUT("\t%s* _temp_%d_%d = (%s*)malloc(sizeof(%s) * _temp_%d);\n",
-		type, temp, dimsize, type, type, dim->node->temp);
+	temp = temp_counter++;
+
+	OUT("\t*(%s**)& _registers[%d] = (%s*)malloc(sizeof(%s) * (*(%s*)& _registers[%d]));\n",
+		type, temp, type, type, type_element, dim->node->temp);
 
 	if (dim->next != NULL)
 	{
+		inner_temp = temp_counter++;
+		label = ++label_counter;
+
 		OUT("\n");
-		OUT("\t /* new op: subdimension */\n");
-		OUT("\tint _temp_%d_%d_i = 0;\n", temp, dimsize);
+		OUT("\t*(int*)& _registers[%d] = 0;\n", inner_temp);
 		
-		OUT("label_%d_%d_new:\n", temp, dimsize);
-		OUT("\t; /* new op at subdimension %d*/\n", dimsize);
+		OUT("label_%d:\n", label);
 
-		translate_new_op_recursive(node, temp, dim->next);
+		result_temp = translate_new_op_recursive(node, dim->next);
 
+		OUT("\t(*(%s**)& _registers[%d])[*(int*)& _registers[%d]] = *(%s*)&_registers[%d];\n",
+			type, temp, inner_temp, type, result_temp);
+
+		OUT("\t(*(int*)&_registers[%d])++;\n", inner_temp);
 		OUT("\n");
-		OUT("\t_temp_%d_%d[_temp_%d_%d_i] = _temp_%d_%d;\n", temp, dimsize, temp, dimsize, temp, dimsize-1);
-		OUT("\t_temp_%d_%d_i++;\n", temp, dimsize);
+		OUT("\tif (_registers[%d] != _registers[%d])\n", inner_temp, dim->node->temp);
+		OUT("\t\t goto label_%d;\n", label);
 		OUT("\n");
-		OUT("\tif (_temp_%d_%d_i != _temp_%d)\n", temp, dimsize, dim->node->temp);
-		OUT("\t\t goto label_%d_%d_new;\n", temp, dimsize);
-		OUT("\t/* new op: end of subdimension*/\n");
 	}
 
 	free(type);
+	free(type_element);
+
+	return temp;
 }
 
 void translate_new_op(is_new_op *node)
 {
-	OUT("FIXME REGISTERS %d\n", __LINE__);
-
-	char *type;
-	
 	translate_dims(node->dims);
 
 	OUT("\t /* begin of new op */\n");
-
-	node->temp = temp_counter++;
-	translate_new_op_recursive(node, node->temp, node->dims->sized);
-	
-	type = string_type_native_array_c(node->type_object->type, node->dims->length);
-
-	OUT("\n");
-	OUT("\t%s _temp_%d = _temp_%d_%d;\n", type, node->temp, node->temp, node->dims->sized->length);
+	node->temp = translate_new_op_recursive(node, node->dims->sized);
 	OUT("\t /* end of new op */\n\n");
-
-	free(type);
 }
 
 void translate_redirector()
