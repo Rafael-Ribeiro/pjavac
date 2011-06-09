@@ -1,49 +1,22 @@
 class test
 {
-	int h = 0, w = 0;
-	int house[] = new int[2500];
-
-	void flood(int p, int q)
-	{
-		if ((house[p*50+q] & 0x10) != 0)
-			return;
-
-		house[p*50+q] |= 0x10;
-
-		if ((house[p*50+q] & 0x1) == 0)
-			flood(p,q-1);
-
-		if ((house[p*50+q] & 0x2) == 0)
-			flood(p-1,q);
-
-		if ((house[p*50+q] & 0x4) == 0)
-			flood(p,q+1);
-
-		if ((house[p*50+q] & 0x8) == 0)
-			flood(p+1,q);
-	}
-
 	public int main()
 	{
-		int rooms = 0;
-		int i, j;
+		int a = 3;
 
-		h = System.in.nextInt();
-		w = System.in.nextInt();
+		switch (a)
+		{
+			case 3:
+				System.out.println("" + 3);
+			break;
 
-		for (i = 0; i < h; i++)
-			for (j = 0; j < w; j++)
-				house[i*50+j] = System.in.nextInt();
+			case 5:
+				System.out.println("" + 5);
+			break;
 
-		for (i = 0; i < h; i++)
-			for (j = 0; j < w; j++)
-				if ((house[i*50+j] & 0x10) == 0)
-				{
-					flood(i,j);
-					rooms++;
-				}
-
-		System.out.println("" + rooms);
+			default:
+				System.out.println("Default");
+		}
 
 		return 0;
 	}
