@@ -859,12 +859,12 @@ void translate_redirector()
 
 	OUT("redirector:\n");
 
-	OUT("\tif (_fp == NULL)\n");
+	OUT("\tif (*(int*)& _fp == NULL)\n");
 	OUT("\t\tgoto label_end;\n");
 
 	for (i = 0; i <= label_counter; i++)
 	{
-		OUT("\tif (_fp->retaddr == %d)\n", i);
+		OUT("\tif (*(int*)& _fp->retaddr == %d)\n", i);
 		OUT("\t\tgoto label_%d;\n", i);
 	}
 }
@@ -878,7 +878,7 @@ void translate_return(is_return *node)
 		translate_expr(node->value);
 
 		type = string_type_decl(node->symbol->data.func_data.type);
-		OUT("\t_temp_ret = &_temp_%d;\n", node->value->temp);
+		OUT("\t_temp_ret = _registers[%d];\n", node->value->temp);
 		free(type);
 	}
 
@@ -963,20 +963,17 @@ void translate_switch_stmt_list(is_switch_stmt_list *node)
 void translate_ternary_op(is_ternary_op *node)
 {
 	int label;
-	char *type;
 
-	type = string_type_decl(node->s_type);
 	label = ++label_counter;
 	node->temp = temp_counter++;
 
 	OUT("\t/* ternary op */\n");
-	OUT("\t%s _temp_%d;\n", type, node->temp);
 	OUT("\n");
 
 	translate_expr(node->if_expr);
 
 	OUT("\n");
-	OUT("\tif (!_temp_%d)\n", node->if_expr->temp);
+	OUT("\tif (! *(bool*)& _registers[%d])\n", node->if_expr->temp);
 	OUT("\t\tgoto label_%d_else;\n", label);
 	OUT("\n");
 	OUT("\t/* ternary op then */\n");
@@ -984,7 +981,7 @@ void translate_ternary_op(is_ternary_op *node)
 	translate_expr(node->then_expr);
 
 	OUT("\n");
-	OUT("\t_temp_%d = _temp_%d;\n", node->temp, node->then_expr->temp);
+	OUT("\t_registers[%d] = _registers[%d];\n", node->temp, node->then_expr->temp);
 
 	OUT("\n");
 	OUT("\tgoto label_%d;\n", label);
@@ -994,13 +991,11 @@ void translate_ternary_op(is_ternary_op *node)
 	translate_expr(node->else_expr);
 
 	OUT("\n");
-	OUT("\t_temp_%d = _temp_%d;\n", node->temp, node->else_expr->temp);
+	OUT("\t_registers[%d] = _registers[%d];\n", node->temp, node->else_expr->temp);
 
 	OUT("\n");
 	OUT("label_%d:\n", label);
 	OUT("\t; /* ternary op end */\n");
-
-	free(type);
 }
 
 void translate_type_decl(is_type_decl *node)
@@ -1015,22 +1010,18 @@ void translate_type_object(is_type_object *node)
 
 void translate_unary_op(is_unary_op *node)
 {
-	char *type;
-
-	type = string_type_decl(node->s_type);
 	switch (node->type)
 	{
 		case t_unary_op_operation:
 			translate_expr(node->data.operation.expr);
-			
-			node->temp = temp_counter++;			
-			OUT("\t%s _temp_%d = %c_temp_%d;\n",
-				type,
+
+			node->temp = temp_counter++;
+			OUT("\t_registers[%d] = %c_registers[%d];\n",
 				node->temp,
 				string_unary_operator(node->data.operation.op),
 				node->data.operation.expr->temp
 			);
-			
+
 		break;
 
 		case t_unary_op_incr_op:
@@ -1038,64 +1029,56 @@ void translate_unary_op(is_unary_op *node)
 			node->temp = node->data.incr->temp;
 		break;	
 	}
-
-	free(type);
 }
 
 void translate_var(is_var *node)
 {
 	char *type;
-	
-	node->temp = temp_counter++;
-	type = string_type_decl(node->s_type);
 
-	OUT("\t%s* _temp_%d;\n", type, node->temp);
-			
+	node->temp = temp_counter++;
+
 	switch (node->type)
 	{
 		case t_var_id:
 			if (node->symbol->data.var_data.global)
-				OUT("\t_temp_%d = (%s*)_globals[%d];\n",
+				OUT("\t_registers[%d] = _globals[%d];\n",
 					node->temp,
-					type,
 					node->symbol->data.var_data.framepos
 				);
 			else
-				OUT("\t_temp_%d = (%s*)_fp->locals[%d];\n", 
+				OUT("\t_registers[%d] = _fp->locals[%d];\n", 
 					node->temp,
-					type,
 					node->symbol->data.var_data.framepos
 				);
 		break;
 
 		case t_var_new_op:
 			translate_new_op(node->data.new_op);
-			OUT("\t_temp_%d = &_temp_%d;\n", node->temp, node->data.new_op->temp);
+			OUT("\t_registers[%d] = _registers[%d];\n", node->temp, node->data.new_op->temp);
 		break;
 
 		case t_var_array:
 			translate_var(node->data.array.var);
 			translate_dims_sized(node->data.array.dims);
-			OUT("\t_temp_%d = &((*_temp_%d)[_temp_%d]);\n",
+			OUT("\t_registers[%d] = &(( **(%s*)& _registers[%d])[*(int*)& _registers[%d]]);\n",
 				node->temp,
+				type = string_type_decl(node->data.array.var->s_type),
 				node->data.array.var->temp,
 				node->data.array.dims->temp
 			);
 			OUT("\n");
 
+			free(type);
 		break;
 
 		case t_var_func_call:
 			OUT("FIXME %d\n", __LINE__);
 		break;
 	}
-
-	free(type);
 }
 
 void translate_var_def(is_var_def *node)
 {
-	char *typeA;
 	SYMBOL* symbol;
 
 	symbol = node->left->symbol;
@@ -1103,43 +1086,26 @@ void translate_var_def(is_var_def *node)
 	if (node->var_init)
 		translate_var_initializer(node->var_init);
 
-	typeA = string_type_decl(symbol->data.var_data.type);
-
 	if (symbol->data.var_data.global)
 	{
-		OUT("\t_globals[%d] = (%s*)malloc(sizeof(%s));\n",
-			symbol->data.var_data.framepos,
-			typeA,
-			typeA
-		);
-
 		if (node->var_init)
 		{
-			OUT("\t*((%s*)_globals[%d]) = _temp_%d;\n",
-				typeA,
+			OUT("\t_globals[%d] = _registers[%d];\n",
 				symbol->data.var_data.framepos,
 				node->var_init->temp
 			);
 		}
 	} else
 	{
-		OUT("\t_fp->locals[%d] = (%s*)malloc(sizeof(%s));\n",
-			symbol->data.var_data.framepos,
-			typeA,
-			typeA
-		);
-
 		if (node->var_init)
 		{
-			OUT("\t*((%s*)_fp->locals[%d]) = _temp_%d;\n",
-				typeA,
+			OUT("\t_fp->locals[%d] = _registers[%d];\n",
 				symbol->data.var_data.framepos,
 				node->var_init->temp
 			);
 		}
 	}
 	OUT("\n");
-	free(typeA);
 }
 
 void translate_var_def_list(is_var_def_list *node)
@@ -1196,7 +1162,7 @@ void translate_while(is_while *node)
 	translate_expr(node->cond);
 	OUT("\n");
 	
-	OUT("\tif (!_temp_%d)\n",node->cond->temp);
+	OUT("\tif (! *(bool*)& _registers[%d])\n",node->cond->temp);
 	OUT("\t\tgoto label_%d_end;\n",node->scope->symbol->data.loop_data.label);
 
 	OUT("\t/* while body */\n");
