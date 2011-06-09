@@ -1,53 +1,49 @@
-public teste
+class test
 {
-	boolean forbidden[11][11];
-	int p;
-	int result = 0;
+	int h = 0, w = 0;
+	int house[] = new int[2500];
 
-	void flood(int col, int row)
+	void flood(int p, int q)
 	{
-		if (col == p && row == p)
-		{
-			result++;
-			return;
-		}
-
-		if (col <= p && row <= p && forbidden[col][row])
+		if ((house[p*50+q] & 0x10) != 0)
 			return;
 
-		if (col <= p)
-			flood(col+1,row);
+		house[p*50+q] |= 0x10;
 
-		if (row <= p)
-			flood(col,row+1);
+		if ((house[p*50+q] & 0x1) == 0)
+			flood(p,q-1);
 
+		if ((house[p*50+q] & 0x2) == 0)
+			flood(p-1,q);
+
+		if ((house[p*50+q] & 0x4) == 0)
+			flood(p,q+1);
+
+		if ((house[p*50+q] & 0x8) == 0)
+			flood(p+1,q);
 	}
 
 	public int main()
 	{
-		int i;
-		int m;
-		int col, row;
+		int rooms = 0;
+		int i, j;
 
-		p = System.in.nextInt();
-		m = System.in.nextInt();
-		p--;
+		h = System.in.nextInt();
+		w = System.in.nextInt();
 
-		for (i = 0; i < 11; i++)
-			for (j = 0; j < 11; j++)
-				forbidden[i][j] = false;
+		for (i = 0; i < h; i++)
+			for (j = 0; j < w; j++)
+				house[i*50+j] = System.in.nextInt();
 
-		for (i = 0; i < m; i++)
-		{
-			col = System.in.nextInt();
-			row = System.in.nextInt();
+		for (i = 0; i < h; i++)
+			for (j = 0; j < w; j++)
+				if ((house[i*50+j] & 0x10) == 0)
+				{
+					flood(i,j);
+					rooms++;
+				}
 
-			forbidden[col][row] = true;
-		}
-
-		flood(0,0);
-
-		System.out.println(result);
+		System.out.println("" + rooms);
 
 		return 0;
 	}
