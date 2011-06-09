@@ -1414,15 +1414,11 @@ int check_var_initializer(is_var_initializer* node)
 	{
 		case t_var_initializer_val_arr:
 			errors += check_var_initializer_list(node->data.array);
-			if (errors == 0)
-				node->s_type = encapsulate_type_decl(node->data.array->node->s_type);
 
 		break;
 
 		case t_var_initializer_expr:
 			errors += check_expr(node->data.expr);
-			if (errors == 0)
-				node->s_type = duplicate_type_decl(node->data.expr->s_type);
 		break;
 	}
 
