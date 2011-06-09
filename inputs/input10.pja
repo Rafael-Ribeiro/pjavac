@@ -1,16 +1,14 @@
 class teste
 {
+	public String[] cenas()
+	{
+		String[] a = {"ahaha", "b"}; 
+		return a;	
+	}
+
 	public static void main(String[] args)
 	{
-		int a[][] = new int[3][10];
-
-		for (int i = 0; i < 3; i++)
-			for (int j = 0; j < 10; j++) 
-				a[i][j] = i*10+j;
-
-		for (int i = 0; i < 3; i++)
-			for (int j = 0; j < 10; j++) 
-				System.out.println("" + a[i][j]);
+		System.out.println(cenas()[0]);
 	}
 }
 
