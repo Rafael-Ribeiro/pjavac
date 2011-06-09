@@ -655,6 +655,7 @@ typedef struct _is_switch_stmt
 
 	/* semantics */
 	bool terminates;
+	struct _is_type_decl* s_type;
 } is_switch_stmt;
 
 typedef struct _is_switch_stmt_list
@@ -666,6 +667,9 @@ typedef struct _is_switch_stmt_list
 
 	/* semantics */
 	bool terminates;
+	int length;
+
+	bool has_default;
 } is_switch_stmt_list;
 
 typedef struct _is_ternary_op

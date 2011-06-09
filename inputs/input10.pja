@@ -17,7 +17,5 @@ class test
 			default:
 				System.out.println("Default");
 		}
-
-		return 0;
 	}
 }

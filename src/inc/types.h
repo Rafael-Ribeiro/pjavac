@@ -45,4 +45,6 @@ bool type_type_cast_able(is_type_decl* s_type, is_type_decl* s_type2);
 is_type_decl* duplicate_type_decl(is_type_decl* type);
 is_type_decl* new_type_decl_void();
 
+bool constant_constant_equal(is_constant* a, is_constant* b);
+
 #endif

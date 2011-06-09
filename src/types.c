@@ -814,3 +814,42 @@ bool type_var_init_assign_able(is_type_decl *type, int nDimensions, is_var_initi
 
 	return true;
 }
+
+bool constant_constant_equal(is_constant* a, is_constant* b)
+{
+	if (a->type != b->type)
+		return false;
+
+	switch (a->type)
+	{
+		case t_constant_bool:
+			return a->value.bool_val == b->value.bool_val;
+		break;
+
+		case t_constant_int:
+			return a->value.int_val == b->value.int_val;
+		break;
+
+		case t_constant_long:
+			return a->value.long_val == b->value.long_val;
+		break;
+
+		case t_constant_double:
+			return a->value.double_val == b->value.double_val;
+		break;
+
+		case t_constant_float:
+			return a->value.float_val == b->value.float_val;
+		break;
+
+		case t_constant_char:
+			return strcmp(a->value.string_val, b->value.string_val) == 0;
+		break;
+
+		case t_constant_string:
+			return strcmp(a->value.string_val, b->value.string_val) == 0;
+		break;
+	}
+
+	return false;
+}
