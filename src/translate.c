@@ -489,7 +489,6 @@ void translate_for(is_for *node)
 	}
 
 	OUT("label_%d_continue:\n", node->scope->symbol->data.loop_data.label);
-	OUT("\t; /* for continue label */");
 
 	if (node->inc)
 		translate_for_inc(node->inc);
@@ -1176,22 +1175,21 @@ void translate_var_initializer(is_var_initializer *node)
 void translate_var_initializer_list(is_var_initializer_list *node)
 {
 	int i;
-	int temp = temp_counter++;
-
 	char *type;
 	is_var_initializer_list *it = NULL;
 
+	node->temp = temp_counter++;
 	type = string_type_decl_c(node->node->s_type);
 
 	OUT("\t/* array initialization */\n");
-	OUT("\t*(%s**)& _registers[%d] = (%s*)malloc(%d * sizeof(%s));\n", type, temp, type, node->length, type);
+	OUT("\t*(%s**)& _registers[%d] = (%s*)malloc(%d * sizeof(%s));\n", type, node->temp, type, node->length, type);
 
 	for (i = 0, it = node; it != NULL; i++, it = it->next)
 	{
 		translate_var_initializer(it->node);
 
 		OUT("\t/* array initialization: element %d */\n",i);
-		OUT("\t(*(%s**)& _registers[%d])[%d] = *(%s*)& _registers[%d];\n", type, temp, i, type, it->node->temp);
+		OUT("\t(*(%s**)& _registers[%d])[%d] = *(%s*)& _registers[%d];\n", type, node->temp, i, type, it->node->temp);
 		OUT("\n");
 	}
 
