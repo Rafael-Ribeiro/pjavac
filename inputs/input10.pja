@@ -3,7 +3,7 @@ class teste
 	public String[] cenas()
 	{
 		String[] a = {"ahaha", "b"}; 
-		return a;	
+		return a;
 	}
 
 	public static void main(String[] args)
@@ -11,4 +11,3 @@ class teste
 		System.out.println(cenas()[0]);
 	}
 }
-

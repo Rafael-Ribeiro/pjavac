@@ -76,6 +76,27 @@ is_type_decl * encapsulate_type_decl(is_type_decl *type)
 	return newtype;
 }
 
+is_type_decl * decapsulate_type_decl(is_type_decl *type)
+{
+	is_type_decl* newtype;
+	
+	newtype = (is_type_decl*)malloc(sizeof(is_type_decl));
+	newtype->line = type->line; /* needed? */
+
+	if (type->data.array->dims->size > 1)
+	{
+		newtype->type = t_type_decl_array_decl;
+		newtype->data.array = duplicate_array_decl(type->data.array);
+		newtype->data.array->dims->size++;
+	} else
+	{
+		newtype->type = t_type_decl_type_object;
+		newtype->data.type_object = duplicate_type_object(type->data.array->type);
+	}
+
+	return newtype;
+}
+
 is_dims_empty_list* duplicate_dims_empty_list(is_dims_empty_list* list)
 {
 	is_dims_empty_list* newlist;
