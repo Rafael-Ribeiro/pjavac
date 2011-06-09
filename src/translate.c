@@ -53,7 +53,7 @@ void translate_constant(is_constant *node)
 		break;
 
 		case t_constant_string:
-			OUT("\t*(char**)& _registers[%d]  = strdup(%s);\n",
+			OUT("\t*(char**)& _registers[%d]  = __strdup(%s);\n",
 				node->temp,
 				node->value.string_val
 			);
@@ -636,7 +636,7 @@ void translate_func_def(is_func_def *node)
 			OUT("label_main_args:\n");
 			OUT("\tif (*(int*)& _registers[%d] == 0)\n", temp);
 			OUT("\t\tgoto label_main_args_end;\n");
-			OUT("\t(*(char***)& _temp_frame->locals[0])[*(int*)& _registers[%d] - 1] = strdup(_argv[*(int*)&_registers[%d] - 1]);\n", temp, temp);
+			OUT("\t(*(char***)& _temp_frame->locals[0])[*(int*)& _registers[%d] - 1] = __strdup(_argv[*(int*)&_registers[%d] - 1]);\n", temp, temp);
 			OUT("\t(*(int*)& _registers[%d]) --;\n", temp);
 			OUT("\tgoto label_main_args;\n");
 			OUT("\n");
@@ -660,6 +660,7 @@ void translate_func_def(is_func_def *node)
 	translate_stmt_list(node->body);
 	
 	OUT("\n");
+	OUT("goto label_%d_end;\n",node->scope->symbol->data.func_data.label); /* warning suppression */
 	OUT("label_%d_end:\n\t/* end of %s */\n", node->scope->symbol->data.func_data.label, node->id->name);
 
 	if (!type_type_equal(node->scope->symbol->data.func_data.type, void_type) &&
@@ -689,6 +690,8 @@ void translate_header()
 	OUT("#include <strings.h>\n");
 	OUT("\n");
 	OUT("#include \"runtime/frame.h\"\n");
+	OUT("\n");
+	OUT("#include \"runtime/custom_lib.h\"\n");
 	OUT("\n");
 	OUT("int main(int _argc, char **_argv)\n");	/* TODO: main arguments */
 	OUT("{\n");
