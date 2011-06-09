@@ -141,25 +141,19 @@ void translate_assign_op(is_assign_op *node)
 
 		OUT("\t/* string += string */\n");
 		OUT("\t_fp->retaddr = %d;\n", label);
-		OUT("\t_fp->args[0] = _registers[%d]; /* var */\n", node->var->temp);
+		OUT("\t_fp->args[0] = **(char***)&_registers[%d]; /* var */\n", node->var->temp);
 		OUT("\t_fp->args[1] = _registers[%d]; /* expr */\n", tempConvert);
 		OUT("\tgoto string_concat;\n");
 		OUT("\n");
 		OUT("label_%d:\n", label);
-		OUT("\t; /* _registers[%d] gets the concatenated string */\n", node->var->temp);
-		OUT("\t_registers[%d] = _fp->retval;\n", node->var->temp);
-		OUT("\t_fp->locals[%d] = _registers[%d];\n", node->var->symbol->data.var_data.framepos, node->var->temp);
+		OUT("\t**(char***)&_registers[%d] = *(char**)&_fp->retval;\n", node->var->temp);
 		OUT("\n");
-
 	} else
 	{
 		operator = string_assign_operator(node->type);
 
-		OUT("\t*(%s*)& _registers[%d] %s *(%s*)& _registers[%d];\n",
+		OUT("\t**(%s**)& _registers[%d] %s *(%s*)& _registers[%d];\n",
 			var_type, node->var->temp, operator, expr_type, node->expr->temp);
-
-		if (node->var->symbol)
-			OUT("\t_fp->locals[%d] = _registers[%d];\n", node->var->symbol->data.var_data.framepos, node->var->temp);
 
 		free(operator);
 	}
@@ -377,6 +371,14 @@ void translate_expr(is_expr *node)
 		case t_expr_var:
 			translate_var(node->data.var);
 			node->temp = node->data.var->temp;
+
+
+			type_expr = string_type_decl_c(node->s_type);
+
+			OUT("\t*(%s*)& _registers[%d] = **(%s**)& _registers[%d];\n",
+				type_expr, node->temp, type_expr, node->temp);
+
+			free(type_expr);
 		break;
 	
 		case t_expr_new_op:
@@ -746,15 +748,25 @@ void translate_incr_op(is_incr_op *node)
 
 	translate_var(node->var);
 
-	if (node->pre)
+	if (node->used)
 	{
-		OUT("\t%s(*(%s*)& _registers[%d]);\n", operator, type, node->var->temp);
-		OUT("\t_fp->locals[%d] = _registers[%d];\n", node->var->symbol->data.var_data.framepos, node->var->temp);
-	} else
-		OUT("\t(*(%s*)& _fp->locals[%d])%s;\n", type, node->var->symbol->data.var_data.framepos, operator);
-		/* register stays the same */
+		node->temp = temp_counter++;
 
-	node->temp = node->var->temp;
+		if (node->pre)
+			OUT("\t*(%s*)& _registers[%d] = %s( **(%s**)& _registers[%d] );\n", type, node->temp, operator, type, node->var->temp);
+		else
+			OUT("\t*(%s*)& _registers[%d] = ( **(%s**)& _registers[%d] ) %s;\n", type, node->temp, type, node->var->temp, operator);
+	} else
+	{
+		node->temp = node->var->temp;
+
+		if (node->pre)
+			OUT("\t%s( **(%s**)& _registers[%d] );\n", operator, type, node->var->temp);
+		else
+			OUT("\t( **(%s**)& _registers[%d] ) %s;\n", type, node->var->temp, operator);
+
+	}
+
 	free(operator);
 	free(type);
 }
@@ -829,9 +841,9 @@ int translate_new_op_recursive(is_new_op *node, is_dims_sized_list* dim)
 		OUT("\t(*(%s**)& _registers[%d])[*(int*)& _registers[%d]] = *(%s*)&_registers[%d];\n",
 			type, temp, inner_temp, type, result_temp);
 
-		OUT("\t(*(int*)&_registers[%d])++;\n", inner_temp);
+		OUT("\t(*(int*)& _registers[%d])++;\n", inner_temp);
 		OUT("\n");
-		OUT("\tif (_registers[%d] != _registers[%d])\n", inner_temp, dim->node->temp);
+		OUT("\tif (*(int*)& _registers[%d] != *(int*)& _registers[%d])\n", inner_temp, dim->node->temp);
 		OUT("\t\t goto label_%d;\n", label);
 		OUT("\n");
 	}
@@ -1040,19 +1052,28 @@ void translate_var(is_var *node)
 		case t_var_id:
 			node->temp = temp_counter++;
 
+			type = string_type_decl_c(node->s_type);
+
 			if (node->symbol->data.var_data.global)
-				OUT("\t_registers[%d] = _globals[%d];\n",
+				OUT("\t*(%s**)& _registers[%d] = (%s*)& _globals[%d];\n",
+					type,
 					node->temp,
+					type,
 					node->symbol->data.var_data.framepos
 				);
 			else
-				OUT("\t_registers[%d] = _fp->locals[%d];\n", 
+				OUT("\t*(%s**)& _registers[%d] = (%s*)& _fp->locals[%d];\n", 
+					type,
 					node->temp,
+					type,
 					node->symbol->data.var_data.framepos
 				);
+
+			free(type);
 		break;
 
 		case t_var_new_op:
+			/* TODO add a * here */
 			translate_new_op(node->data.new_op);
 			node->temp = node->data.new_op->temp;
 		break;
@@ -1066,7 +1087,7 @@ void translate_var(is_var *node)
 			type = string_type_decl_c(node->s_type);
 			type_subscript = string_type_decl_c(node->data.array.var->s_type);
 
-			OUT("\t*(%s*)& _registers[%d] = ((*(%s*)& _registers[%d])[*(int*)& _registers[%d]]);\n",
+			OUT("\t*(%s**)& _registers[%d] = &( (**(%s**)& _registers[%d]) [*(int*)& _registers[%d]] );\n",
 				type,
 				node->temp,
 				type_subscript,
@@ -1083,12 +1104,12 @@ void translate_var(is_var *node)
 			translate_func_call(node->data.func_call.call);
 			translate_dims_sized(node->data.array.dims);
 
-			node->temp  =node->data.func_call.call->temp;
+			node->temp = node->data.func_call.call->temp;
 
 			type = string_type_decl_c(node->s_type);
 			type_subscript = string_type_decl_c(node->data.func_call.call->s_type);
 
-			OUT("\t*(%s*)& _registers[%d] = (( *(%s*)& _registers[%d])[*(int*)& _registers[%d]]);\n",
+			OUT("\t*(%s**)& _registers[%d] = &( (**(%s**)& _registers[%d]) [*(int*)& _registers[%d]] );\n",
 				type,
 				node->temp,
 				type_subscript,
