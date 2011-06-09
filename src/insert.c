@@ -898,6 +898,9 @@ is_switch_stmt* insert_switch_stmt_default(is_stmt_list* stmt_list)
 	node->list = stmt_list;
 	node->line = stmt_list->line;
 
+	/* semantics */
+	node->s_type = NULL;
+
 	return node;
 }
 
@@ -910,6 +913,9 @@ is_switch_stmt* insert_switch_stmt_case(is_constant* constant, is_stmt_list* stm
 	node->list = stmt_list;
 	node->line = constant->line;
 
+	/* semantics */
+	node->s_type = NULL;
+
 	return node;
 }
 
@@ -920,6 +926,10 @@ is_switch_stmt_list* insert_switch_stmt_list(is_switch_stmt* stmt, is_switch_stm
 	node->node = stmt;
 	node->next = next;
 	node->line = stmt->line;
+
+	/* semantics */
+	node->length = 0;
+	node->has_default = false;
 
 	return node;
 }

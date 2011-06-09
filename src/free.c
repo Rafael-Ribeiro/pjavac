@@ -589,6 +589,9 @@ void free_switch_stmt(is_switch_stmt* node)
 				free_constant(node->constant);
 		}
 
+		if (node->s_type)
+			free_type_decl(node->s_type);
+
 		free_stmt_list(node->list);
 		free(node);
 	}

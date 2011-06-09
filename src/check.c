@@ -1135,7 +1135,7 @@ int check_switch(is_switch* node)
 		node->scope = scope_new(symbol_new_switch(node->line, mylabel, node->expr->s_type->data.type_object), false);
 		
 		scope_push(node->scope);
-			check_switch_stmt_list(node->list);
+			check_switch_stmt_list(node->list, node);
 
 			if (errors == 0)
 				node->terminates = (node->list ? node->list->terminates : true);
@@ -1145,19 +1145,88 @@ int check_switch(is_switch* node)
 	return errors;
 }
 
-int check_switch_stmt(is_switch_stmt* node)
+int check_switch_stmt(is_switch_stmt* node, is_switch* root)
 {
 	int errors = 0;
-	/* TODO */
+	char *typeA, *typeB;
+	is_switch_stmt_list* temp;
+
+	switch (node->type)
+	{
+		case t_switch_stmt_default:
+			for (temp = root->list; temp != NULL; temp = temp->next)
+			{
+				if (temp->node != node && temp->node->type == t_switch_stmt_default)
+				{
+					errors++;
+					pretty_error(node->line, "duplicate default label inside of switch (previous declaration was here %d)",
+						temp->node->line);
+				}
+			}
+		break;
+
+		case t_switch_stmt_case:
+			translate_constant(node->constant);
+			
+			if (errors == 0)
+			{
+				node->s_type = duplicate_type_decl(node->constant->s_type);
+
+	 			if (!type_type_equal(root->expr->s_type, node->s_type))
+				{
+					errors++;
+					typeA = string_type_decl(root->expr->s_type);
+					typeB = string_type_decl(node->s_type);
+
+					pretty_error(node->line, "case stmt must by of type %s (but got %s)",
+						typeA, typeB);
+
+					free(typeA);
+					free(typeB);
+				}
+			}
+
+			if (errors == 0)
+			{
+				for (temp = root->list; temp != NULL; temp = temp->next)
+				{
+					if (temp->node != node && temp->node->type != t_switch_stmt_default &&
+						constant_constant_equal(temp->node->constant, node->constant))
+					{
+						errors++;
+						pretty_error(node->line, "duplicate case inside of switch (previous declaration was here %d)",
+							temp->node->line);
+					}
+				}
+			}
+
+		break;
+	}
 
 	return errors;
 }
 
-int check_switch_stmt_list(is_switch_stmt_list* node)
+int check_switch_stmt_list(is_switch_stmt_list* node, is_switch* root)
 {
 	int errors = 0;
 
-	/* TODO */
+	if (node)
+	{
+		check_switch_stmt(node->node, root);
+		check_switch_stmt_list(node->next, root);
+
+		if (node->next)
+		{
+			node->length = 1 + node->next->length;
+			node->has_default = node->node->type == t_switch_stmt_default || node->next->has_default;
+			node->terminates = node->node->terminates && node->next->terminates;
+		} else
+		{
+			node->length = 1;
+			node->has_default = node->node->type == t_switch_stmt_default;
+			node->terminates = node->node->terminates;
+		}
+	}
 
 	return errors;
 }
