@@ -633,7 +633,7 @@ char *string_array_decl(is_array_decl* array)
 	strcpy(val, native); 
 	
 	for (i = 0; i < array->dims->size; i++)
-		strcat(val, "*");
+		strcat(val, "[]");
 
 	free(native);
 
@@ -646,7 +646,7 @@ char *string_array_decl_c(is_array_decl* array)
 	int size, i;
 
 	native = string_type_native_c(&(array->type->type));
-	size = strlen(native) + 2*(array->dims->size)+1;
+	size = strlen(native) + (array->dims->size)+1;
 
 	val = (char*)malloc(sizeof(char)*size);
 	strcpy(val, native); 

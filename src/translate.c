@@ -232,7 +232,7 @@ void translate_binary_op(is_binary_op *node)
 						OUT("\t_fp->args[0] = _registers[%d];\n", node->data.operands.right->temp);
 						OUT("\tgoto %s_to_string;\n", typeRightJava);
 						OUT("\n");
-						OUT("label_%d: ;\n", tempLabel);
+						OUT("label_%d:\n", tempLabel);
 						OUT("\t_registers[%d] = _fp->retval;\n", tempRight);
 						OUT("\n");
 
@@ -657,8 +657,6 @@ void translate_func_def(is_func_def *node)
 	OUT("\t/* %s body */\n",  node->id->name);
 	
 	translate_stmt_list(node->body);
-
-	/* FIXME: free locals */
 	
 	OUT("\n");
 	OUT("label_%d_end:\n\t/* end of %s */\n", node->scope->symbol->data.func_data.label, node->id->name);
@@ -1033,7 +1031,7 @@ void translate_unary_op(is_unary_op *node)
 
 void translate_var(is_var *node)
 {
-	char *type;
+	char *type, *type_subscript;
 
 	node->temp = temp_counter++;
 
@@ -1060,21 +1058,41 @@ void translate_var(is_var *node)
 		case t_var_array:
 			translate_var(node->data.array.var);
 			translate_dims_sized(node->data.array.dims);
-			type = string_type_decl_c(node->data.array.var->s_type);
-			OUT("\t*(%s*)& _registers[%d] = (( *(%s*)& _registers[%d])[*(int*)& _registers[%d]]);\n",
+
+			type = string_type_decl_c(node->s_type);
+			type_subscript = string_type_decl_c(node->data.array.var->s_type);
+
+			OUT("\t*(%s*)& _registers[%d] = ((*(%s*)& _registers[%d])[*(int*)& _registers[%d]]);\n",
 				type,
 				node->temp,
-				type,
+				type_subscript,
 				node->data.array.var->temp,
 				node->data.array.dims->temp
 			);
 			OUT("\n");
 
+			free(type_subscript);
 			free(type);
 		break;
 
 		case t_var_func_call:
-			OUT("FIXME %d\n", __LINE__);
+			translate_func_call(node->data.func_call.call);
+			translate_dims_sized(node->data.array.dims);
+
+			type = string_type_decl_c(node->s_type);
+			type_subscript = string_type_decl_c(node->data.func_call.call->s_type);
+
+			OUT("\t*(%s*)& _registers[%d] = (( *(%s*)& _registers[%d])[*(int*)& _registers[%d]]);\n",
+				type,
+				node->temp,
+				type_subscript,
+				node->data.array.var->temp,
+				node->data.array.dims->temp
+			);
+			OUT("\n");
+			
+			free(type_subscript);
+			free(type);
 		break;
 	}
 }
