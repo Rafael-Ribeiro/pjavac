@@ -959,8 +959,6 @@ void translate_switch_stmt_list(is_switch_stmt_list *node)
 
 void translate_ternary_op(is_ternary_op *node)
 {
-	OUT("FIXME REGISTERS %d\n", __LINE__);
-
 	int label;
 
 	label = ++label_counter;
@@ -1059,9 +1057,11 @@ void translate_var(is_var *node)
 		case t_var_array:
 			translate_var(node->data.array.var);
 			translate_dims_sized(node->data.array.dims);
-			OUT("\t_registers[%d] = &(( **(%s*)& _registers[%d])[*(int*)& _registers[%d]]);\n",
+			type = string_type_decl_c(node->data.array.var->s_type);
+			OUT("\t*(%s*)& _registers[%d] = (( *(%s*)& _registers[%d])[*(int*)& _registers[%d]]);\n",
+				type,
 				node->temp,
-				type = string_type_decl_c(node->data.array.var->s_type),
+				type,
 				node->data.array.var->temp,
 				node->data.array.dims->temp
 			);
@@ -1137,7 +1137,8 @@ void translate_var_initializer(is_var_initializer *node)
 	switch (node->type)
 	{
 		case t_var_initializer_val_arr:
-			OUT("FIXME %d\n", __LINE__); 
+			translate_var_initializer_list(node->data.array);
+			node->temp = node->data.array->temp;
 		break;
 
 		case t_var_initializer_expr:
@@ -1149,7 +1150,27 @@ void translate_var_initializer(is_var_initializer *node)
 
 void translate_var_initializer_list(is_var_initializer_list *node)
 {
-	OUT("FIXME %d\n", __LINE__);
+	int i;
+	int temp = temp_counter++;
+
+	char *type;
+	is_var_initializer_list *it = NULL;
+
+	type = string_type_decl_c(node->node->s_type);
+
+	OUT("\t/* array initialization */\n");
+	OUT("\t*(%s**)& _registers[%d] = (%s*)malloc(%d * sizeof(%s));\n", type, temp, type, node->length, type);
+
+	for (i = 0, it = node; it != NULL; i++, it = it->next)
+	{
+		translate_var_initializer(it->node);
+
+		OUT("\t/* array initialization: element %d */\n",i);
+		OUT("\t(*(%s**)& _registers[%d])[%d] = *(%s*)& _registers[%d];\n", type, temp, i, type, it->node->temp);
+		OUT("\n");
+	}
+
+	free(type);
 }
 
 void translate_while(is_while *node)

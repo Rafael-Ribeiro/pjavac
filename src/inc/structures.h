@@ -856,6 +856,8 @@ typedef struct _is_var_initializer_list
 	struct _is_var_initializer *node;
 	struct _is_var_initializer_list *next; /* nullable */
 
+	int length;
+
 	int temp;
 } is_var_initializer_list;
 

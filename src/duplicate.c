@@ -3,7 +3,9 @@
 
 #include "inc/structures.h"
 #include "inc/duplicate.h"
+#include "inc/insert.h"
 #include "inc/utils.h"
+#include "inc/types.h"
 
 is_type_decl* duplicate_type_decl(is_type_decl* type)
 {
@@ -48,6 +50,30 @@ is_array_decl* duplicate_array_decl(is_array_decl* array)
 	newarray->dims = duplicate_dims_empty_list(array->dims);
 
 	return newarray;
+}
+
+
+is_type_decl * encapsulate_type_decl(is_type_decl *type)
+{
+	is_type_decl* newtype;
+	
+	newtype = (is_type_decl*)malloc(sizeof(is_type_decl));
+	newtype->type = t_type_decl_array_decl;
+	newtype->line = type->line; /* needed? */
+
+	switch(type->type)
+	{
+		case t_type_decl_type_object:
+			newtype->data.array = insert_array_decl(insert_type_object(type->data.type_object->type),new_dims_empty_list(newtype->line, 1));
+		break;
+
+		case t_type_decl_array_decl:
+			newtype->data.array = duplicate_array_decl(type->data.array);
+			newtype->data.array->dims->size++;
+		break;
+	}
+
+	return newtype;
 }
 
 is_dims_empty_list* duplicate_dims_empty_list(is_dims_empty_list* list)
