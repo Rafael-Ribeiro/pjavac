@@ -37,7 +37,7 @@ void translate_constant(is_constant *node)
 		break;
 
 		case t_constant_long:
-			OUT("\t*(long long*)& _registers[%d] = %lld;\n", node->temp, node->value.long_val);
+			OUT("\t*(long long*)& _registers[%d] = %lldll;\n", node->temp, node->value.long_val);
 		break;
 
 		case t_constant_double:
