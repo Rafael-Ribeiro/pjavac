@@ -978,7 +978,7 @@ void translate_stmt_list(is_stmt_list *node)
 void translate_switch(is_switch *node)
 {
 	int i;
-	int label = ++label_counter;
+	int label = node->scope->symbol->data.switch_data.label;
 	int conditionCounter = temp_counter++;
 
 	int defaultIndex = -1;
@@ -987,8 +987,8 @@ void translate_switch(is_switch *node)
 
 	char *type;
 
-	OUT("/* begin of switch */");
-	OUT("label_%d:\n",node->scope->symbol->data.switch_data.label);
+	OUT("label_%d:\n", label);
+	OUT("\t; /* begin of switch */\n");
 
 	translate_expr(node->expr);
 
@@ -996,51 +996,59 @@ void translate_switch(is_switch *node)
 
 	for (i = 0, it = node->list; it != NULL; i++, it = it->next)
 	{
+		OUT("\t/* begin of switch's case */\n");
+		OUT("label_%d_%d_before:\n", label, i);
+
 		switch (it->node->type)
 		{
-			OUT("/* begin of switch's case */\n");
-			OUT("label_%d_%d_before:\n", label, i);
-
 			case t_switch_stmt_case:
 				translate_constant(it->node->constant);
 
-				OUT("\t*(bool*)& _registers[%d] = (*(%s*)& _registers[%d] != *(%s*)& _registers[%d]);\n", conditionCounter, type, node->expr->temp, type, it->node->constant->temp); /* TODO/FIXME: comparison between strings */
+				OUT("\t*(bool*)& _registers[%d] = (*(%s*)& _registers[%d] == *(%s*)& _registers[%d]);\n", conditionCounter, type, node->expr->temp, type, it->node->constant->temp); /* TODO/FIXME: comparison between strings */
 				OUT("\n");
 
 				OUT("\tif (! *(bool*)& _registers[%d])\n", conditionCounter);
-				OUT("\t\tgoto label_%d_%d_before;\n",label, i);
+
+				if (it->next)
+					OUT("\t\tgoto label_%d_%d_before;\n",label, i + 1);
+				else
+					OUT("\t\tgoto label_%d_default;\n",label);
+
 				OUT("\n");
 
 				OUT("label_%d_%d_after:\n", label, i);
 
 				translate_stmt_list(it->node->list);
 
-				OUT("goto label_%d_%d_after", label, i + 1);
-
-				OUT("; /* end of switch's case */\n");
 				OUT("\n");
 			break;
 
 			case t_switch_stmt_default:
 				defaultIndex = i;
 
-				OUT("label_%d_%d_before:\n", label, i);
-				OUT("\tgoto label_%d_%d_before;\n",label, i + 1);
-				OUT("label_%d_%d_after:\n", label, i);
+				if (it->next)
+					OUT("\tgoto label_%d_%d_before;\n",label, i + 1);
+
+				OUT("label_%d_%d_after: ;\n", label, i);
 
 				translate_stmt_list(it->node->list);
-
-				OUT("goto label_%d_%d_after", label, i + 1);
 			break;
 		}
+
+		if (it->next)
+			OUT("\tgoto label_%d_%d_after;\n", label, i + 1);
+		else
+			OUT("\tgoto label_%d_end;\n", label);
+
+		OUT("; /* end of switch's case */\n");
+		OUT("\n");
 	}
 
-	if (defaultIndex != -1)
+	OUT("label_%d_default:\n",label);
+	if (defaultIndex != -1) /* there is a default case */
 		OUT("\tgoto label_%d_%d_after;\n", label, defaultIndex);
 
-	OUT("label_%d_%d_after:", label, i);
-
-	OUT("label_%d_end:\n",node->scope->symbol->data.switch_data.label);
+	OUT("label_%d_end:\n", label);
 	OUT("; /* end of switch*/\n");
 
 	free(type);
