@@ -246,7 +246,12 @@ void translate_binary_op(is_binary_op *node)
 					OUT("label_%d:\n", tempLabel);
 					OUT("\t_registers[%d] = _fp->retval;\n", node->temp);
 					OUT("\n");
-				} else if (node->type == t_binary_op_eq || node->type == t_binary_op_ne)
+				} else if (	node->type == t_binary_op_eq ||
+							node->type == t_binary_op_ne || 
+							node->type == t_binary_op_l ||
+							node->type == t_binary_op_g ||
+							node->type == t_binary_op_le ||
+							node->type == t_binary_op_ge )
 				{
 					node->temp = temp_counter++;
 					operator = string_binary_operator(node->type);
