@@ -964,7 +964,73 @@ void translate_stmt_list(is_stmt_list *node)
  
 void translate_switch(is_switch *node)
 {
-	OUT("FIXME %d\n", __LINE__);
+	int i;
+	int label = ++label_counter;
+	int conditionCounter = temp_counter++;
+
+	int defaultIndex = -1;
+
+	is_switch_stmt_list *it;
+
+	char *type;
+
+	OUT("/* begin of switch */");
+	OUT("label_%d:\n",node->scope->symbol->data.switch_data.label);
+
+	translate_expr(node->expr);
+
+	type = string_type_decl_c(node->expr->s_type);
+
+	for (i = 0, it = node->list; it != NULL; i++, it = it->next)
+	{
+		switch (it->node->type)
+		{
+			OUT("/* begin of switch's case */\n");
+			OUT("label_%d_%d_before:\n", label, i);
+
+			case t_switch_stmt_case:
+				translate_constant(it->node->constant);
+
+				OUT("\t*(bool*)& _registers[%d] = (*(%s*)& _registers[%d] != *(%s*)& _registers[%d]);\n", conditionCounter, type, node->expr->temp, type, it->node->constant->temp); /* TODO/FIXME: comparison between strings */
+				OUT("\n");
+
+				OUT("\tif (! *(bool*)& _registers[%d])\n", conditionCounter);
+				OUT("\t\tgoto label_%d_%d_before;\n",label, i);
+				OUT("\n");
+
+				OUT("label_%d_%d_after:\n", label, i);
+
+				translate_stmt_list(it->node->list);
+
+				OUT("goto label_%d_%d_after", label, i + 1);
+
+				OUT("; /* end of switch's case */\n");
+				OUT("\n");
+			break;
+
+			case t_switch_stmt_default:
+				defaultIndex = i;
+
+				OUT("label_%d_%d_before:\n", label, i);
+				OUT("\tgoto label_%d_%d_before;\n",label, i + 1);
+				OUT("label_%d_%d_after:\n", label, i);
+
+				translate_stmt_list(it->node->list);
+
+				OUT("goto label_%d_%d_after", label, i + 1);
+			break;
+		}
+	}
+
+	if (defaultIndex != -1)
+		OUT("\tgoto label_%d_%d_after;\n", label, defaultIndex);
+
+	OUT("label_%d_%d_after:", label, i);
+
+	OUT("label_%d_end:\n",node->scope->symbol->data.switch_data.label);
+	OUT("; /* end of switch*/\n");
+
+	free(type);
 }
 
 void translate_switch_stmt(is_switch_stmt *node)
@@ -979,9 +1045,8 @@ void translate_switch_stmt_list(is_switch_stmt_list *node)
 
 void translate_ternary_op(is_ternary_op *node)
 {
-	int label;
+	int label = ++label_counter;
 
-	label = ++label_counter;
 	node->temp = temp_counter++;
 
 	OUT("\t/* ternary op */\n");
