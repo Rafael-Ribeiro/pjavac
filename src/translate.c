@@ -985,8 +985,6 @@ void translate_switch(is_switch *node)
 	OUT("label_%d:\n", label);
 	OUT("\t; /* begin of switch */\n");
 
-	translate_expr(node->expr);
-
 	type = string_type_decl_c(node->expr->s_type);
 
 	for (i = 0, it = node->list; it != NULL; i++, it = it->next)
@@ -994,12 +992,18 @@ void translate_switch(is_switch *node)
 		OUT("\t/* begin of switch's case */\n");
 		OUT("label_%d_%d_before:\n", label, i);
 
+		translate_expr(node->expr); /* TODO/FIXME retranslated because of register assignments */
+
 		switch (it->node->type)
 		{
 			case t_switch_stmt_case:
 				translate_constant(it->node->constant);
 
-				OUT("\t*(bool*)& _registers[%d] = (*(%s*)& _registers[%d] == *(%s*)& _registers[%d]);\n", conditionCounter, type, node->expr->temp, type, it->node->constant->temp); /* TODO/FIXME: comparison between strings */
+				if (node->expr->s_type->data.type_object->type != t_type_native_string)
+					OUT("\t*(bool*)& _registers[%d] = (*(%s*)& _registers[%d] == *(%s*)& _registers[%d]);\n", conditionCounter, type, node->expr->temp, type, it->node->constant->temp);
+				else
+					OUT("\t*(bool*)& _registers[%d] = (strcmp(*(%s*)& _registers[%d], *(%s*)& _registers[%d]) == 0);\n", conditionCounter, type, node->expr->temp, type, it->node->constant->temp);
+
 				OUT("\n");
 
 				OUT("\tif (! *(bool*)& _registers[%d])\n", conditionCounter);
@@ -1007,7 +1011,7 @@ void translate_switch(is_switch *node)
 				if (it->next)
 					OUT("\t\tgoto label_%d_%d_before;\n",label, i + 1);
 				else
-					OUT("\t\tgoto label_%d_default;\n",label);
+					OUT("\t\tgoto label_%d_default;\n", label);
 
 				OUT("\n");
 
@@ -1039,7 +1043,7 @@ void translate_switch(is_switch *node)
 		OUT("\n");
 	}
 
-	OUT("label_%d_default:\n",label);
+	OUT("label_%d_default:\n", label);
 	if (defaultIndex != -1) /* there is a default case */
 		OUT("\tgoto label_%d_%d_after;\n", label, defaultIndex);
 
