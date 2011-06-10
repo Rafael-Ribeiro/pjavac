@@ -2,9 +2,20 @@ class test
 {
 	public int main()
 	{
-		short a = 1.0e3;
-	
-		System.out.println(""+a);
+		switch("coisa")
+		{
+			case "teste":
+				System.out.println("1");
+				break;
+
+			default:
+				System.out.println("default");
+
+			case "cenas":
+				System.out.println("2");
+				break;
+		}
+
 		return 0;
 	}
 }

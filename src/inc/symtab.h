@@ -22,7 +22,7 @@ typedef struct _SYMBOL
 		struct
 		{
 			is_type_decl *type;
-			int framepos;	/* position in the local/global frame */
+			int framepos; /* position in the local/global frame */
 			bool global;
 			bool initialized;
 		} var_data;
@@ -49,6 +49,7 @@ typedef struct _SYMBOL
 		{
 			int label; /* label id used by the switch (used on breaks) */
 			is_type_object *type; /* type of the expression */
+			int framepos; /* position in the local frame of the computed expr */
 		} switch_data;
 	} data;
 } SYMBOL;
@@ -88,7 +89,7 @@ SYMBOL* symbol_new_var(char* id, int line, is_type_decl *type, bool global, int 
 SYMBOL* symbol_new_func(char* id, int line, is_type_decl *retval, is_func_def_args* args, int label);
 SYMBOL* symbol_new_loop(char* id, int line, int label); /* id is nullable */
 SYMBOL* symbol_new_class(char* id, int line /*, ...*/);
-SYMBOL* symbol_new_switch(char* id, int line, int label, is_type_object *type); /* id is nullable */
+SYMBOL* symbol_new_switch(char* id, int line, int label, is_type_object *type, int framepos); /* id is nullable */
 
 void symbol_delete(SYMBOL* symbol);
 SYMBOL* symbol_lookup(NODE* node, char* id);

@@ -1066,7 +1066,9 @@ int check_stmt(is_stmt* node)
 			scope_push(node->data.stmt_list.scope);
 				errors += check_stmt_list(node->data.stmt_list.list);
 			scope_pop();
-			node->terminates = node->data.stmt_list.list->terminated;
+
+			if (errors == 0)
+				node->terminates = node->data.stmt_list.list->terminated;
 		break;
 
 		case t_stmt_var_stmt:
@@ -1083,12 +1085,14 @@ int check_stmt(is_stmt* node)
 
 		case t_stmt_if:
 			errors += check_if(node->data.if_stmt);
-			node->terminates = node->data.if_stmt->terminates;
+			if (errors == 0)
+				node->terminates = node->data.if_stmt->terminates;
 		break;
 
 		case t_stmt_loop:
 			errors += check_loop_stmt(node->data.loop);
-			node->terminates = node->data.loop->terminates;
+			if (errors == 0)
+				node->terminates = node->data.loop->terminates;
 		break;
 
 		case t_stmt_func_call:
@@ -1097,7 +1101,9 @@ int check_stmt(is_stmt* node)
 
 		case t_stmt_switch:
 			errors += check_switch(node->data.switch_stmt);
-			node->terminates = node->data.switch_stmt->terminates;
+
+			if (errors == 0)
+				node->terminates = node->data.switch_stmt->terminates;
 		break;
 
 		case t_stmt_break:
@@ -1171,9 +1177,9 @@ int check_switch(is_switch* node)
 	if (errors == 0)
 	{
 		if (node->label)
-			node->scope = scope_new(symbol_new_switch(node->label->name, node->line, mylabel, node->expr->s_type->data.type_object), false);
+			node->scope = scope_new(symbol_new_switch(node->label->name, node->line, mylabel, node->expr->s_type->data.type_object, symtab->framepos++), false);
 		else
-			node->scope = scope_new(symbol_new_switch(NULL, node->line, mylabel, node->expr->s_type->data.type_object), false);
+			node->scope = scope_new(symbol_new_switch(NULL, node->line, mylabel, node->expr->s_type->data.type_object, symtab->framepos++), false);
 
 		scope_push(node->scope);
 			check_switch_stmt_list(node->list, node);
@@ -1195,9 +1201,9 @@ int check_switch_stmt(is_switch_stmt* node, is_switch* root)
 	switch (node->type)
 	{
 		case t_switch_stmt_default:
-			for (temp = root->list; temp != NULL; temp = temp->next)
+			for (temp = root->list; temp->node != node; temp = temp->next)
 			{
-				if (temp->node != node && temp->node->type == t_switch_stmt_default)
+				if (temp->node->type == t_switch_stmt_default)
 				{
 					errors++;
 					pretty_error(node->line, "duplicate default label inside of switch (previous declaration was here %d)",
@@ -1232,9 +1238,9 @@ int check_switch_stmt(is_switch_stmt* node, is_switch* root)
 
 			if (errors == 0)
 			{
-				for (temp = root->list; temp != NULL; temp = temp->next)
+				for (temp = root->list; temp->node != node; temp = temp->next)
 				{
-					if (temp->node != node && temp->node->type != t_switch_stmt_default &&
+					if (temp->node->type != t_switch_stmt_default &&
 						constant_constant_equal(temp->node->constant, node->constant))
 					{
 						errors++;
@@ -1535,7 +1541,7 @@ int check_var_defs(is_var_defs* node, bool first_pass)
 
 			if (it->node->var_init) /* check initialization if it exists */
 			{
-				if (type_var_init_assign_able(type, (type->type == t_type_decl_array_decl ? type->data.array->dims->size : 0), it->node->var_init)) /* FIXME/TODO */
+				if (type_var_init_assign_able(type, (type->type == t_type_decl_array_decl ? type->data.array->dims->size : 0), it->node->var_init))
 					/* if initialization is valid */
 					symbol->data.var_data.initialized = true;
 				else
