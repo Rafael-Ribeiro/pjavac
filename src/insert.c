@@ -876,10 +876,11 @@ is_stmt_list* insert_stmt_list(is_stmt* stmt, is_stmt_list* next)
 	return node;
 }
 
-is_switch* insert_switch(is_expr* expr, is_switch_stmt_list* list)
+is_switch* insert_switch(is_label* label, is_expr* expr, is_switch_stmt_list* list)
 {
 	is_switch *node = (is_switch*)malloc(sizeof(is_switch));
 
+	node->label = label;
 	node->expr = expr;
 	node->list = list;
 	node->line = expr->line;
@@ -894,9 +895,14 @@ is_switch_stmt* insert_switch_stmt_default(is_stmt_list* stmt_list)
 	is_switch_stmt* node = (is_switch_stmt*)malloc(sizeof(is_switch_stmt));
 	
 	node->type = t_switch_stmt_default;
+
 	node->constant = NULL;
 	node->list = stmt_list;
-	node->line = stmt_list->line;
+
+	if (stmt_list)
+		node->line = stmt_list->line;
+	else
+		node->line = yyline;
 
 	/* semantics */
 	node->s_type = NULL;
@@ -909,6 +915,7 @@ is_switch_stmt* insert_switch_stmt_case(is_constant* constant, is_stmt_list* stm
 	is_switch_stmt* node = (is_switch_stmt*)malloc(sizeof(is_switch_stmt));
 	
 	node->type = t_switch_stmt_case;
+
 	node->constant = constant;
 	node->list = stmt_list;
 	node->line = constant->line;

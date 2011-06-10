@@ -88,7 +88,7 @@ SYMBOL* symbol_new_var(char* id, int line, is_type_decl *type, bool global, int 
 SYMBOL* symbol_new_func(char* id, int line, is_type_decl *retval, is_func_def_args* args, int label);
 SYMBOL* symbol_new_loop(char* id, int line, int label); /* id is nullable */
 SYMBOL* symbol_new_class(char* id, int line /*, ...*/);
-SYMBOL* symbol_new_switch(int line, int label, is_type_object *type); /* id is nullable */
+SYMBOL* symbol_new_switch(char* id, int line, int label, is_type_object *type); /* id is nullable */
 
 void symbol_delete(SYMBOL* symbol);
 SYMBOL* symbol_lookup(NODE* node, char* id);

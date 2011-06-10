@@ -102,7 +102,7 @@ is_stmt* insert_stmt_continue(is_continue* continue_stmt);
 is_stmt* insert_stmt_return(is_return* return_stmt);
 
 is_stmt_list* insert_stmt_list(is_stmt* stmt, is_stmt_list* next); 
-is_switch* insert_switch(is_expr* expr, is_switch_stmt_list* list);
+is_switch* insert_switch(is_label* label, is_expr* expr, is_switch_stmt_list* list);
 
 is_switch_stmt* insert_switch_stmt_default(is_stmt_list* stmt_list);
 is_switch_stmt* insert_switch_stmt_case(is_constant* constant, is_stmt_list* stmt_list);

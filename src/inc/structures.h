@@ -151,12 +151,21 @@ typedef struct _is_binary_op
 	int temp;
 } is_binary_op;
 
+typedef enum
+{
+	t_break_loop,
+	t_break_switch
+} type_break;
+
 typedef struct _is_break
 {
 	int line;
 
 	struct _is_id* label;	/* nullable */
 	struct _SCOPE* scope;
+
+	/* semantics */
+	type_break type;
 } is_break;
 
 typedef struct _is_class_def
@@ -631,6 +640,7 @@ typedef struct _is_switch
 {
 	int line;
 
+	is_label *label; /* nullable */
 	struct _is_expr *expr;
 	struct _is_switch_stmt_list *list; /* nullable */
 

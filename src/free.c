@@ -566,6 +566,9 @@ void free_switch(is_switch* node)
 {
 	if (node)
 	{
+		if (node->label)
+			free_id(node->label);
+
 		free_expr(node->expr);
 		free_switch_stmt_list(node->list);
 
