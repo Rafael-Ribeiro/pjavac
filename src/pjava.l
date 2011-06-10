@@ -27,49 +27,64 @@ CHAR 				(\\(b|t|n|r|\"|\'|\\|u{N16}{4}|{N8}{1,3})|[^\\\"\n])
 STRING_LITERAL		\"{CHAR}*\"
 JAVA_COMMENT		(\/\/[^\n]*\n)|(\/\*([^\/]|[^\*]\/)*\*\/)
 
+DECIMAL				(({N10}*"."{N10}+{EXP}?{FLOAT_SPEC}*)|({N10}+{EXP}{FLOAT_SPEC}*))
+INTEGER				((0{N8}+{INT_SPEC}*)|({N10}+{INT_SPEC}*)|(0(x|X){N16}+{INT_SPEC}*))
+
 %%
 
 {JAVA_COMMENT}		{ int i=0; while (yytext[i]) if (yytext[i++] == '\n') yyline++; }
 
-0{N8}+{INT_SPEC}*						{ if (yytext[strlen(yytext)-1] == 'l' || yytext[strlen(yytext)-1] == 'L') { yylval.val_constant = insert_constant_long(strtoll(yytext, NULL, 8)); } else { yylval.val_constant = insert_constant_int(strtol(yytext, NULL, 8)); } return CONSTANT; } /* LITERALS */
-{N10}+{EXP}?{INT_SPEC}*					{ if (yytext[strlen(yytext)-1] == 'l' || yytext[strlen(yytext)-1] == 'L') { yylval.val_constant = insert_constant_long(strtoll(yytext, NULL, 10)); } else { yylval.val_constant = insert_constant_int(strtol(yytext, NULL, 10)); } return CONSTANT;  }
-0(x|X){N16}+{INT_SPEC}*					{ if (yytext[strlen(yytext)-1] == 'l' || yytext[strlen(yytext)-1] == 'L') { yylval.val_constant = insert_constant_long(strtoll(yytext, NULL, 16)); } else { yylval.val_constant = insert_constant_int(strtol(yytext, NULL, 16)); } return CONSTANT;  }
+{INTEGER} 			{ 
+						if (yytext[strlen(yytext)-1] == 'l' || yytext[strlen(yytext)-1] == 'L')
+							yylval.val_constant = insert_constant_long(strtoll(yytext, NULL, 0));
+						else
+							yylval.val_constant = insert_constant_int(strtol(yytext, NULL, 0));
 
-{N10}*"."{N10}+{EXP}?{FLOAT_SPEC}*		{ if (yytext[strlen(yytext)-1] == 'f' || yytext[strlen(yytext)-1] == 'F') { yylval.val_constant = insert_constant_float(strtof(yytext, NULL)); } else { yylval.val_constant = insert_constant_double(strtold(yytext, NULL)); } return CONSTANT; }
+						return CONSTANT; 
+					}
 
-\'{CHAR}\'								{ yylval.val_constant = insert_constant_char(yytext); return CONSTANT; }
-{STRING_LITERAL}						{ yylval.val_constant = insert_constant_string(yytext); return CONSTANT; }
+{DECIMAL}			{
+						if (yytext[strlen(yytext)-1] == 'f' || yytext[strlen(yytext)-1] == 'F')
+							yylval.val_constant = insert_constant_float(strtof(yytext, NULL));
+						else
+							yylval.val_constant = insert_constant_double(strtold(yytext, NULL));
+						
+						return CONSTANT;
+					}
 
-"true"									{ yylval.val_constant = insert_constant_bool(true); return CONSTANT; }
-"false"									{ yylval.val_constant = insert_constant_bool(false); return CONSTANT; }
+\'{CHAR}\'			{ yylval.val_constant = insert_constant_char(yytext); return CONSTANT; }
+{STRING_LITERAL}	{ yylval.val_constant = insert_constant_string(yytext); return CONSTANT; }
 
-"boolean"				{ return BOOL; } /* KEYWORDS */
-"break"					{ return BREAK; } /* WHAT-TO-DO-ABOUT: catch, enum, finally, import, protected, throw, throws, try? */
-"byte"					{ return BYTE; }
-"case"					{ return CASE; }
-"char"					{ return CHAR; }
-"class"					{ return CLASS; }
-"continue"				{ return CONTINUE; }
-"default"				{ return DEFAULT; }
-"do"					{ return DO; }
-"double"				{ return DOUBLE; }
-"else"					{ return ELSE; }
-"final"					{ return FINAL; }
-"float"					{ return FLOAT; }
-"for"					{ return FOR; }
-"if"					{ return IF; }
-"int"					{ return INT; }
-"long"					{ return LONG; }
-"new"					{ return NEW; }
-"private"				{ return PRIVATE; }
-"public"				{ return PUBLIC; }
-"return"				{ return RETURN; }
-"short"					{ return SHORT; }
-"static"				{ return STATIC; }
-"String"				{ return STRING; }
-"switch"				{ return SWITCH; }
-"void"					{ return VOID; }
-"while"					{ return WHILE; }
+"true"				{ yylval.val_constant = insert_constant_bool(true); return CONSTANT; }
+"false"				{ yylval.val_constant = insert_constant_bool(false); return CONSTANT; }
+
+"boolean"			{ return BOOL; } /* KEYWORDS */
+"break"				{ return BREAK; } /* WHAT-TO-DO-ABOUT: catch, enum, finally, import, protected, throw, throws, try? */
+"byte"				{ return BYTE; }
+"case"				{ return CASE; }
+"char"				{ return CHAR; }
+"class"				{ return CLASS; }
+"continue"			{ return CONTINUE; }
+"default"			{ return DEFAULT; }
+"do"				{ return DO; }
+"double"			{ return DOUBLE; }
+"else"				{ return ELSE; }
+"final"				{ return FINAL; }
+"float"				{ return FLOAT; }
+"for"				{ return FOR; }
+"if"				{ return IF; }
+"int"				{ return INT; }
+"long"				{ return LONG; }
+"new"				{ return NEW; }
+"private"			{ return PRIVATE; }
+"public"			{ return PUBLIC; }
+"return"			{ return RETURN; }
+"short"				{ return SHORT; }
+"static"			{ return STATIC; }
+"String"			{ return STRING; }
+"switch"			{ return SWITCH; }
+"void"				{ return VOID; }
+"while"				{ return WHILE; }
 
 {ALPHA}({ALPHA}|{N10})* { yylval.val_id = insert_id(yytext); return ID; } /* IDENTIFIERS */
 

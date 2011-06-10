@@ -1541,7 +1541,7 @@ int check_var_defs(is_var_defs* node, bool first_pass)
 				else
 				{
 					errors++;
-					pretty_error(it->node->line, "\"%s\"'s initalization is invalid", it->node->left->id->name);
+					pretty_error(it->node->line, "variable \"%s\" initalization is invalid", it->node->left->id->name);
 				}
 			}
 		}
