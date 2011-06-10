@@ -288,8 +288,16 @@ void translate_binary_op(is_binary_op *node)
 
 void translate_break(is_break *node)
 {
-	OUT("\t/* breaking loop */");
-	OUT("\tgoto label_%d_end;\n", node->scope->symbol->data.loop_data.label);
+	switch (node->type)
+	{
+		case t_break_loop:
+			OUT("\tgoto label_%d_end;\n", node->scope->symbol->data.loop_data.label);
+		break;
+
+		case t_break_switch:
+			OUT("\tgoto label_%d_end;\n", node->scope->symbol->data.switch_data.label);
+		break;
+	}
 }
 
 void translate_class_def(is_class_def *node)

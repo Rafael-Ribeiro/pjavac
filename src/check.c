@@ -189,22 +189,57 @@ int check_binary_op(is_binary_op* node)
 int check_break(is_break* node)
 {
 	int errors = 0;
+	SCOPE *scope_loop, *scope_switch, *aux;
 
 	if (errors == 0)
 	{
+		node->scope = NULL;
+
 		if (node->label)
-			node->scope = scope_get_by_name(symtab, node->label->name, t_symbol_loop);
-		else
-			node->scope = scope_get_by_name(symtab, NULL, t_symbol_loop);
+		{
+			scope_loop = scope_get_by_name(symtab, node->label->name, t_symbol_loop);
+			scope_switch = scope_get_by_name(symtab, node->label->name, t_symbol_switch);
+		} else
+		{
+			scope_loop = scope_get_by_name(symtab, NULL, t_symbol_loop);
+			scope_switch = scope_get_by_name(symtab, NULL, t_symbol_switch);
+		}
+
+		if (scope_loop == NULL)
+		{
+			node->scope = scope_switch;
+			node->type = t_break_switch;
+		} else if (scope_switch == NULL)
+		{
+			node->scope = scope_loop;
+			node->type = t_break_loop;
+		} else
+		{
+			for (aux = scope_loop; aux != NULL; aux = aux->parent)
+			{
+				if (aux == scope_switch) /* switch is higher on the scope stack */
+				{
+					node->scope = scope_loop; /* we want the lowest */
+					node->type = t_break_loop;
+					break;
+				}
+			}
+
+			if (node->scope == NULL)
+			{
+				node->scope = scope_switch;
+				node->type = t_break_switch;
+			}
+		}
 
 		if (!node->scope)
 		{
 			errors++;
-	
+
 			if (node->label)
 				pretty_error(node->line, "break stmt label \"%s\" is undefined", node->label->name);
 			else
-				pretty_error(node->line, "break stmt outside of loop or case");
+				pretty_error(node->line, "break stmt outside of loop or switch");
 		}
 	}
 
@@ -1116,6 +1151,9 @@ int check_switch(is_switch* node)
 	int mylabel = ++label_counter; /* setting label for use with break */
 	char *type;
 
+	if (node->label)
+		errors += check_label(node->label);
+
 	errors += check_expr(node->expr);
 
 	if (errors == 0)
@@ -1127,13 +1165,16 @@ int check_switch(is_switch* node)
 			type = string_type_decl(node->expr->s_type);
 			pretty_error(node->line, "switch statement expression must be of object type (got %s)", type);
 			free(type);
-		}	
+		}
 	}
 
 	if (errors == 0)
 	{
-		node->scope = scope_new(symbol_new_switch(node->line, mylabel, node->expr->s_type->data.type_object), false);
-		
+		if (node->label)
+			node->scope = scope_new(symbol_new_switch(node->label->name, node->line, mylabel, node->expr->s_type->data.type_object), false);
+		else
+			node->scope = scope_new(symbol_new_switch(NULL, node->line, mylabel, node->expr->s_type->data.type_object), false);
+
 		scope_push(node->scope);
 			check_switch_stmt_list(node->list, node);
 
@@ -1163,10 +1204,13 @@ int check_switch_stmt(is_switch_stmt* node, is_switch* root)
 						temp->node->line);
 				}
 			}
+			
+			if (node->list)
+				errors += check_stmt_list(node->list);
 		break;
 
 		case t_switch_stmt_case:
-			translate_constant(node->constant);
+			check_constant(node->constant);
 			
 			if (errors == 0)
 			{
@@ -1200,6 +1244,8 @@ int check_switch_stmt(is_switch_stmt* node, is_switch* root)
 				}
 			}
 
+			if (node->list)
+				errors += check_stmt_list(node->list);
 		break;
 	}
 

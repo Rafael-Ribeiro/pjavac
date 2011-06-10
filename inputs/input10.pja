@@ -7,15 +7,15 @@ class test
 		switch (a)
 		{
 			case 3:
-				System.out.println("" + 3);
 			break;
 
 			case 5:
-				System.out.println("" + 5);
 			break;
 
 			default:
-				System.out.println("Default");
+			break;
 		}
+
+		return 0;
 	}
 }

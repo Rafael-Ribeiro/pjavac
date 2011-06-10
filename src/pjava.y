@@ -474,8 +474,10 @@ stmt_list
 	;
 
 switch
-	: SWITCH '(' expr ')' '{' '}'									{ $$ = insert_switch($3, NULL); }
-	| SWITCH '(' expr ')' '{' switch_stmt_list '}'					{ $$ = insert_switch($3, $6); }
+	: SWITCH '(' expr ')' '{' '}'									{ $$ = insert_switch(NULL, $3, NULL); }
+	| SWITCH '(' expr ')' '{' switch_stmt_list '}'					{ $$ = insert_switch(NULL, $3, $6); }
+	| ID ':' SWITCH '(' expr ')' '{' '}'							{ $$ = insert_switch($1, $5, NULL); }
+	| ID ':' SWITCH '(' expr ')' '{' switch_stmt_list '}'			{ $$ = insert_switch($1, $5, $8); }
 	;
 
 switch_stmt

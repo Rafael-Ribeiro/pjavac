@@ -1,15 +1,6 @@
 TODOs:
 	Semantics:
-		- array initializers only in declarations
-		- break/continue inside loops
-		- System.out.println() (manually included in symtab)
-		- "terminated" bool after each block  
--->>>>	- main() prototype
--->>>	CHECK TABLES
-
-		---> symbols with the same name and different types
 		- functions with the same name as variables need to be allowed
-		- function overload
 
 	Semantic choices
 		don't allow:
@@ -18,6 +9,7 @@ TODOs:
 			function overloading
 			function var args (ellipsis)
 			% and %= operators envolving floating point types (because C doesn't allow them)
+		- function overload
 
 		allow:
 			for (i= 0; i < n; i++)
@@ -25,18 +17,8 @@ TODOs:
 
 			==, !=, <, >, <= and >= on strings
 
-
+TODO: LEX
+	Range validation on size (http://linux.die.net/man/3/strtoll  ERANGE)	
 
 TODO Code Generation:
-		add frame counter to all variables (locals and globals)
-
-		local variable is accessed trough local frame
-		global variables are accessed trough global's table (--> make this a single "global" frame?) 
-
-		translate functions
-				-> caller defined?
-				-> calee defined?
-			+ headers
-			+ foooters
-				+ redirector?
-
+	==, !=, <, >, <= and >= on strings
