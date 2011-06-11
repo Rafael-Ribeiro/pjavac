@@ -37,7 +37,7 @@ void translate_constant(is_constant *node)
 		break;
 
 		case t_constant_long:
-			OUT("\t*(long long*)& _registers[%d] = %lld;\n", node->temp, node->value.long_val);
+			OUT("\t*(long long*)& _registers[%d] = %lldll;\n", node->temp, node->value.long_val);
 		break;
 
 		case t_constant_double:
@@ -246,7 +246,12 @@ void translate_binary_op(is_binary_op *node)
 					OUT("label_%d:\n", tempLabel);
 					OUT("\t_registers[%d] = _fp->retval;\n", node->temp);
 					OUT("\n");
-				} else if (node->type == t_binary_op_eq || node->type == t_binary_op_ne)
+				} else if (	node->type == t_binary_op_eq ||
+							node->type == t_binary_op_ne || 
+							node->type == t_binary_op_l ||
+							node->type == t_binary_op_g ||
+							node->type == t_binary_op_le ||
+							node->type == t_binary_op_ge )
 				{
 					node->temp = temp_counter++;
 					operator = string_binary_operator(node->type);
@@ -975,34 +980,45 @@ void translate_switch(is_switch *node)
 	int i;
 	int label = node->scope->symbol->data.switch_data.label;
 	int conditionCounter = temp_counter++;
-
 	int defaultIndex = -1;
-
-	is_switch_stmt_list *it;
-
 	char *type;
+	is_type_decl *type_string;
+	
+	is_switch_stmt_list *it;
 
 	OUT("label_%d:\n", label);
 	OUT("\t; /* begin of switch */\n");
 
+	translate_expr(node->expr);
 	type = string_type_decl_c(node->expr->s_type);
+	type_string = new_type_decl_string(0);
+
+	OUT("\t_fp->locals[%d] = _registers[%d];\n", node->scope->symbol->data.switch_data.framepos, node->expr->temp);
 
 	for (i = 0, it = node->list; it != NULL; i++, it = it->next)
 	{
 		OUT("\t/* begin of switch's case */\n");
 		OUT("label_%d_%d_before:\n", label, i);
 
-		translate_expr(node->expr); /* TODO/FIXME retranslated because of register assignments */
-
 		switch (it->node->type)
 		{
 			case t_switch_stmt_case:
 				translate_constant(it->node->constant);
 
-				if (node->expr->s_type->data.type_object->type != t_type_native_string)
-					OUT("\t*(bool*)& _registers[%d] = (*(%s*)& _registers[%d] == *(%s*)& _registers[%d]);\n", conditionCounter, type, node->expr->temp, type, it->node->constant->temp);
+				if (type_type_equal(node->expr->s_type, type_string))
+					OUT("\t*(bool*)& _registers[%d] = (strcmp(*(char**)& _fp->locals[%d], *(char**)& _registers[%d]) == 0);\n",
+						conditionCounter,
+						node->scope->symbol->data.switch_data.framepos,
+						it->node->constant->temp
+					);				
 				else
-					OUT("\t*(bool*)& _registers[%d] = (strcmp(*(%s*)& _registers[%d], *(%s*)& _registers[%d]) == 0);\n", conditionCounter, type, node->expr->temp, type, it->node->constant->temp);
+					OUT("\t*(bool*)& _registers[%d] = (*(%s*)& _fp->locals[%d] == *(%s*)& _registers[%d]);\n",
+						conditionCounter,
+						type,
+						node->scope->symbol->data.switch_data.framepos,
+						type,
+						it->node->constant->temp
+					);
 
 				OUT("\n");
 
@@ -1051,6 +1067,7 @@ void translate_switch(is_switch *node)
 	OUT("; /* end of switch*/\n");
 
 	free(type);
+	free_type_decl(type_string);
 }
 
 void translate_switch_stmt(is_switch_stmt *node)

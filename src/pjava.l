@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
+#include <errno.h>
 
 #include "inc/structures.h"
 #include "inc/insert.h"
@@ -12,6 +13,8 @@
 #include "y.tab.h"
 
 extern int yyline;
+extern bool has_errors;
+
 %}
 
 N8					[0-7]
@@ -27,54 +30,100 @@ CHAR 				(\\(b|t|n|r|\"|\'|\\|u{N16}{4}|{N8}{1,3})|[^\\\"\n])
 STRING_LITERAL		\"{CHAR}*\"
 JAVA_COMMENT		(\/\/[^\n]*\n)|(\/\*([^\/]|[^\*]\/)*\*\/)
 
+DECIMAL				(({N10}*"."{N10}+{EXP}?{FLOAT_SPEC}*)|({N10}+{EXP}{FLOAT_SPEC}*))
+INTEGER				((0{N8}+{INT_SPEC}*)|({N10}+{INT_SPEC}*)|(0(x|X){N16}+{INT_SPEC}*))
+
 %%
 
 {JAVA_COMMENT}		{ int i=0; while (yytext[i]) if (yytext[i++] == '\n') yyline++; }
 
-0{N8}+{INT_SPEC}*						{ if (yytext[strlen(yytext)-1] == 'l' || yytext[strlen(yytext)-1] == 'L') { yylval.val_constant = insert_constant_long(strtoll(yytext, NULL, 8)); } else { yylval.val_constant = insert_constant_int(strtol(yytext, NULL, 8)); } return CONSTANT; } /* LITERALS */
-{N10}+{EXP}?{INT_SPEC}*					{ if (yytext[strlen(yytext)-1] == 'l' || yytext[strlen(yytext)-1] == 'L') { yylval.val_constant = insert_constant_long(strtoll(yytext, NULL, 10)); } else { yylval.val_constant = insert_constant_int(strtol(yytext, NULL, 10)); } return CONSTANT;  }
-0(x|X){N16}+{INT_SPEC}*					{ if (yytext[strlen(yytext)-1] == 'l' || yytext[strlen(yytext)-1] == 'L') { yylval.val_constant = insert_constant_long(strtoll(yytext, NULL, 16)); } else { yylval.val_constant = insert_constant_int(strtol(yytext, NULL, 16)); } return CONSTANT;  }
+{INTEGER} 			{
+						errno = 0;
+						if (yytext[strlen(yytext)-1] == 'l' || yytext[strlen(yytext)-1] == 'L')
+						{
+							yylval.val_constant = insert_constant_long(strtoll(yytext, NULL, 0));
+							if (errno == ERANGE)
+							{
+								pretty_error(yyline, "integer constant is too large for ‘long’ type");
+								has_errors = true;
+							}
+						} else
+						{
+							yylval.val_constant = insert_constant_int(strtol(yytext, NULL, 0));
+							if (errno == ERANGE)
+							{
+								pretty_error(yyline, "integer constant is too large for ‘int’ type");
+								has_errors = true;
+							}
+						}
 
-{N10}*"."{N10}+{EXP}?{FLOAT_SPEC}*		{ if (yytext[strlen(yytext)-1] == 'f' || yytext[strlen(yytext)-1] == 'F') { yylval.val_constant = insert_constant_float(strtof(yytext, NULL)); } else { yylval.val_constant = insert_constant_double(strtold(yytext, NULL)); } return CONSTANT; }
+						return CONSTANT; 
+					}
 
-\'{CHAR}\'								{ yylval.val_constant = insert_constant_char(yytext); return CONSTANT; }
-{STRING_LITERAL}						{ yylval.val_constant = insert_constant_string(yytext); return CONSTANT; }
+{DECIMAL}			{
+						errno = 0;
 
-"true"									{ yylval.val_constant = insert_constant_bool(true); return CONSTANT; }
-"false"									{ yylval.val_constant = insert_constant_bool(false); return CONSTANT; }
+						if (yytext[strlen(yytext)-1] == 'f' || yytext[strlen(yytext)-1] == 'F')
+						{
+							yylval.val_constant = insert_constant_float(strtof(yytext, NULL));
 
-"boolean"				{ return BOOL; } /* KEYWORDS */
-"break"					{ return BREAK; } /* WHAT-TO-DO-ABOUT: catch, enum, finally, import, protected, throw, throws, try? */
-"byte"					{ return BYTE; }
-"case"					{ return CASE; }
-"char"					{ return CHAR; }
-"class"					{ return CLASS; }
-"continue"				{ return CONTINUE; }
-"default"				{ return DEFAULT; }
-"do"					{ return DO; }
-"double"				{ return DOUBLE; }
-"else"					{ return ELSE; }
-"final"					{ return FINAL; }
-"float"					{ return FLOAT; }
-"for"					{ return FOR; }
-"if"					{ return IF; }
-"int"					{ return INT; }
-"long"					{ return LONG; }
-"new"					{ return NEW; }
-"private"				{ return PRIVATE; }
-"public"				{ return PUBLIC; }
-"return"				{ return RETURN; }
-"short"					{ return SHORT; }
-"static"				{ return STATIC; }
-"String"				{ return STRING; }
-"switch"				{ return SWITCH; }
-"void"					{ return VOID; }
-"while"					{ return WHILE; }
+							if (errno == ERANGE)
+							{
+								pretty_error(yyline, "decimal constant is too large for ‘float’ type");
+								has_errors = true;
+							}
+						} else
+						{
+							yylval.val_constant = insert_constant_double(strtold(yytext, NULL));
+
+							if (errno == ERANGE)
+							{
+								pretty_error(yyline, "decimal constant is too large for ‘double’ type");
+								has_errors = true;
+							}
+						}
+						
+						return CONSTANT;
+					}
+
+\'{CHAR}\'			{ yylval.val_constant = insert_constant_char(yytext); return CONSTANT; }
+{STRING_LITERAL}	{ yylval.val_constant = insert_constant_string(yytext); return CONSTANT; }
+
+"true"				{ yylval.val_constant = insert_constant_bool(true); return CONSTANT; }
+"false"				{ yylval.val_constant = insert_constant_bool(false); return CONSTANT; }
+
+"boolean"			{ return BOOL; } /* KEYWORDS */
+"break"				{ return BREAK; } /* WHAT-TO-DO-ABOUT: catch, enum, finally, import, protected, throw, throws, try? */
+"byte"				{ return BYTE; }
+"case"				{ return CASE; }
+"char"				{ return CHAR; }
+"class"				{ return CLASS; }
+"continue"			{ return CONTINUE; }
+"default"			{ return DEFAULT; }
+"do"				{ return DO; }
+"double"			{ return DOUBLE; }
+"else"				{ return ELSE; }
+"final"				{ return FINAL; }
+"float"				{ return FLOAT; }
+"for"				{ return FOR; }
+"if"				{ return IF; }
+"int"				{ return INT; }
+"long"				{ return LONG; }
+"new"				{ return NEW; }
+"private"			{ return PRIVATE; }
+"public"			{ return PUBLIC; }
+"return"			{ return RETURN; }
+"short"				{ return SHORT; }
+"static"			{ return STATIC; }
+"String"			{ return STRING; }
+"switch"			{ return SWITCH; }
+"void"				{ return VOID; }
+"while"				{ return WHILE; }
 
 {ALPHA}({ALPHA}|{N10})* { yylval.val_id = insert_id(yytext); return ID; } /* IDENTIFIERS */
 
-"System"{WS}*"."{WS}*"out"{WS}*"."{WS}*"println" { yylval.val_id = insert_id("System.out.println"); return ID; } /* TODO: add other bultins (Math.cos) here if wanted */
-"System"{WS}*"."{WS}*"in"{WS}*"."{WS}*"nextInt" { yylval.val_id = insert_id("System.in.nextInt"); return ID; } /* TODO: add other bultins (Math.cos) here if wanted */
+"System"{WS}*"."{WS}*"out"{WS}*"."{WS}*"println" { yylval.val_id = insert_id("System.out.println"); return ID; } /* add other bultins (Math.cos) here if wanted */
+"System"{WS}*"."{WS}*"in"{WS}*"."{WS}*"nextInt" { yylval.val_id = insert_id("System.in.nextInt"); return ID; } 
 
 ">>="			{ return SHIFT_R_ASSIGN;} /* OPERATORS */
 "<<="			{ return SHIFT_L_ASSIGN; }

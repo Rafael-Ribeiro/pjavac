@@ -83,7 +83,7 @@ SYMBOL* symbol_new_class(char* id, int line)
 	return symbol;
 }
 
-SYMBOL* symbol_new_switch(char *id, int line, int label, is_type_object *type)
+SYMBOL* symbol_new_switch(char *id, int line, int label, is_type_object *type, int framepos)
 {
 	SYMBOL *symbol = (SYMBOL*)malloc(sizeof(SYMBOL));
 	
@@ -96,6 +96,7 @@ SYMBOL* symbol_new_switch(char *id, int line, int label, is_type_object *type)
 	symbol->line = line;
 	symbol->data.switch_data.label = label;
 	symbol->data.switch_data.type = duplicate_type_object(type);
+	symbol->data.switch_data.framepos = framepos;
 
 	return symbol;
 }
