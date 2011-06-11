@@ -1,13 +1,9 @@
-<<<<<<< HEAD
 class test
 {
 	public int main()
 	{
 		double a = 111111110656.0;
-		System.out.println(""+a);
 		return 0;
 	}
 }
-=======
 
->>>>>>> 79be6375aa90f11d20cc3b8e9e585fcc7126355a

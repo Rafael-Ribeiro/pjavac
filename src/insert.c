@@ -28,6 +28,9 @@ is_constant* insert_constant_bool(bool value)
 	node->value.bool_val = value;
 	node->line = yyline;
 
+	/* semantics */
+	node->s_type = NULL;
+
 	return node;
 }
 
@@ -38,6 +41,9 @@ is_constant* insert_constant_int(int value)
 	node->type = t_constant_int;
 	node->value.int_val = value;
 	node->line = yyline;
+
+	/* semantics */
+	node->s_type = NULL;
 
 	return node;
 }
@@ -50,6 +56,9 @@ is_constant* insert_constant_long(long long value)
 	node->value.long_val = value;
 	node->line = yyline;
 
+	/* semantics */
+	node->s_type = NULL;
+
 	return node;
 }
 
@@ -60,6 +69,9 @@ is_constant* insert_constant_double(double value)
 	node->type = t_constant_double;
 	node->value.double_val = value;
 	node->line = yyline;
+
+	/* semantics */
+	node->s_type = NULL;
 
 	return node;
 }
@@ -72,6 +84,9 @@ is_constant* insert_constant_float(float value)
 	node->value.float_val = value;
 	node->line = yyline;
 
+	/* semantics */
+	node->s_type = NULL;
+
 	return node;
 }
 
@@ -83,6 +98,9 @@ is_constant* insert_constant_char(char* value)
 	node->value.string_val = __strdup(value);
 	node->line = yyline;
 
+	/* semantics */
+	node->s_type = NULL;
+
 	return node;
 }
 
@@ -93,6 +111,9 @@ is_constant* insert_constant_string(char* value)
 	node->type = t_constant_string;
 	node->value.string_val = __strdup(value);
 	node->line = yyline;
+
+	/* semantics */
+	node->s_type = NULL;
 
 	return node;
 }
@@ -732,6 +753,8 @@ is_stmt* insert_stmt_stmt_list(is_stmt_list* stmt_list)
 	
 	/* semantics */
 	node->terminates = false;
+	node->data.stmt_list.scope = NULL;
+
 	return node;
 }
 

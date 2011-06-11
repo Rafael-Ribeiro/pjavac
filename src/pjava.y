@@ -599,14 +599,12 @@ int main()
 		label_counter = 0; /* 0 = main */
 		if (check_application(main_application) == 0)
 		{
-			//printf("Valid semantics!\n");
-			//show_application(main_application, 0);
-
-			//printf("\n");
 			fout = stdout;
 			translate_application(main_application);
 		}
 		scope_delete(symtab);
+
+		free_builtins();
 	}
 
 	free_application(main_application);
