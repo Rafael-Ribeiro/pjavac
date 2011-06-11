@@ -5,7 +5,6 @@ TODOs:
 	Semantic choices
 		don't allow:
 			"float[] a[]" in function parameters
-			redefinition of global variables (that would make them inaccessible)
 			function overloading
 			function var args (ellipsis)
 			% and %= operators envolving floating point types (because C doesn't allow them)
@@ -16,6 +15,7 @@ TODOs:
 				int i;
 
 			==, !=, <, >, <= and >= on strings
+			redefinition of global variables (that would make them inaccessible)
 
 TODO: LEX
 	Range validation on size (http://linux.die.net/man/3/strtoll  ERANGE)
