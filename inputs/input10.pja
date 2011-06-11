@@ -12,9 +12,8 @@ public class test
 	public int main()
 	{
 		double a = a();
-
-		System.out.println("" + a);
-		return 0;
+	
+		int a = +
 	}
 }
 

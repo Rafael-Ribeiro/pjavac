@@ -223,7 +223,7 @@ int yyline;
 
 application
 	: class_def END													{ $$ = $1; main_application = $1; return 0; yyerrok; }
-	| error															{ pretty_error(yyline, "invalid statement"); yylex(); }
+	| error	END														{ pretty_error(yyline, "error found before EOF"); return 0; yyerrok; }
 	;
 
 array_decl
@@ -347,6 +347,7 @@ expr
 	| CONSTANT														{ $$ = insert_expr_constant($1); }
 	| func_call														{ $$ = insert_expr_func_call($1); }
 	| expr_op														{ $$ = insert_expr_expr_op($1); }
+	| error															{ pretty_error(yyline, "invalid expression"); yylex(); }
 	;
 
 expr_list
@@ -456,7 +457,7 @@ return
 
 stmt
 	: ';'															{ $$ = NULL; yyerrok; }
-	| '{' '}'														{ $$ = NULL; }
+	| '{' '}'														{ $$ = NULL; yyerrok; }
 	| '{' stmt_list '}'												{ $$ = insert_stmt_stmt_list($2); yyerrok; }
 	| var_stmt														{ $$ = insert_stmt_var_stmt($1); }
 	| assign_op ';'													{ $$ = insert_stmt_assign_op($1); }

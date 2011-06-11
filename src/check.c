@@ -1128,7 +1128,10 @@ int check_stmt_list(is_stmt_list* node)
 		errors += check_stmt(node->node);
 		errors += check_stmt_list(node->next);
 
-		node->terminated = node->node->terminates;
+		if (node->node)
+			node->terminated = node->node->terminates;
+		else
+			node->terminated = false;
 
 		if (node->next)
 		{

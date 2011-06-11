@@ -920,6 +920,9 @@ void translate_stmt(is_stmt *node)
 {
 	temp_counter = 0;
 
+	if (!node)
+		return;
+
 	switch (node->type)
 	{
 		case t_stmt_stmt_list:

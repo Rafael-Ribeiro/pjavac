@@ -8,6 +8,7 @@
 #include "inc/utils.h"
 
 extern bool has_errors;
+int last_line = -1;
 
 int max(int x, int y)
 {
@@ -18,6 +19,9 @@ int pretty_error(int line, char* format, ...)
 {
 	va_list argp;
 
+	if (line == last_line)
+		return 0;
+
 	has_errors = true;
 	fprintf(stderr, "%d: ", line);
 
@@ -26,6 +30,8 @@ int pretty_error(int line, char* format, ...)
 	va_end(argp);
 
 	fprintf(stderr, "\n");
+	last_line = line;
+
 	return 0;
 }
 
