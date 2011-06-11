@@ -148,6 +148,7 @@ de escopos, existência de variáveis, funções etc.
 Um \texttt{scope} é composto por um mapeamento <\texttt{ID}, \texttt{tipo}> em símbolos e a sua implementação consiste numa àrvore \texttt{AVL}. Assim é 
 possível obter uma pesquisa com complexidade sub-linear.
 
+\cleardoublepage
 \subsection{Semantic Choices}
 \indent \indent Tal como na síntaxe, algumas alterações foram efectuadas 
 à semântica da linguagem de forma a esta estar de acordo com o paradigma procedimental. 
@@ -166,6 +167,16 @@ caso fosse extendido o conjunto os operadores permitidos para este tipo. Como ta
 \indent Foi aplicada uma restrição ao operador ternário: os tipos das expressões resultantes têm de ser iguais.
 Esta restrição é necessária para evitar o uso de interfaces \footnote[4]{Em Java esta verificação é efectuada através das interfaces \texttt{Comparable} e \texttt{Serializable}.}
 e não limita o programador pois é possível re-estruturar o código para uma forma equivalente.
+
+\indent De forma a permitir declarações de variáveis no cabeçalho de um \texttt{statement for} é também possível declarar variáveis em ciclos \texttt{single statement};
+
+\indent Considerámos como \textbf{semanticamente inválidas} as seguintes situações
+\begin{itemize}
+	\item \textit{Function overloading} \footnote[5]{Como consequência da ausência de \textit{function overloading} surge a necessidade de concatenar
+		uma string (mesmo que vazia) com qualquer outro tipo de dados, para que estes sejam impressos por \texttt{System.out.println()}};
+	\item Funções de argumentos variáveis (\texttt{...});
+	\item Operadores \% and \%= envolvendo tipos de vírgula flutuante (dado que \texttt{C} não os permite, ao contrário de \texttt{Java}).
+\end{itemize}
 
 \cleardoublepage
 \subsection{Semantic Checks}
@@ -258,22 +269,6 @@ e não limita o programador pois é possível re-estruturar o código para uma f
 	\item [while] \hfill \\
 		Garantia do tipo da expressão de condição(\texttt{boolean}).
 \end{description}
-
-\subsection{Semantic Choices}
-\label{semantic_choices}
-\indent \indent Decidimos considerar como \textbf{semanticamente válidas} as seguintes situações (algumas diferentes/restritivas relativamente à definição semântica do Java):
-\begin{itemize}
-	\item Declarações de variáveis em ciclos \texttt{single statement};
-	\item Operadores de comparação (\texttt{==}, \texttt{!=}, \texttt{<}, \texttt{>}, \texttt{<=}, \texttt{>=}) em \texttt{strings}.
-\end{itemize}
-
-Da mesma forma, considerámos como \textbf{semanticamente inválidas} as seguintes situações:
-\begin{itemize}
-	\item \textit{Function overloading} \footnote[1]{Como consequência da ausência de \textit{function overloading} surge a necessidade de concatenar
-		uma string (mesmo que vazia) com qualquer outro tipo de dados, para que estes sejam impressos por \texttt{System.out.println()}};
-	\item Funções de argumentos variáveis (\texttt{...});
-	\item Operadores \% and \%= envolvendo tipos de vírgula flutuante (dado que \texttt{C} não os permite, ao contrário de \texttt{Java}).
-\end{itemize}
 
 \cleardoublepage
 
