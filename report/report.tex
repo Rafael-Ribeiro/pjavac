@@ -29,13 +29,17 @@
 \usepackage{longtable}
 \usepackage{multirow}
 \usepackage[table]{xcolor}
+\usepackage{minted}
 
 \marginsize{3.5cm}{3.5cm}{3cm}{3cm}
 
 \makeatletter
 
 \begin{document}
+
 \renewcommand{\figurename}{Figure}
+\renewcommand{\contentsname}{Contents}
+
 \maketitle
 \cleardoublepage
 
@@ -50,9 +54,116 @@
 
 \cleardoublepage
 
-\section{Syntax Analysis}
-\subsection{...}
+\section{Syntatic Analysis}
+\indent \indent Tal como indicado no enunciado do projecto, na linguagem PJAVA apenas se pretende explorar a vertente procedimental do JAVA. 
+Deste modo, decidimos que implementar \texttt{packages} seria desnecessário.
 
+\indent Devido a esta escolha, os métodos \texttt{System.out.println()} e \texttt{System.in.nextInt()} (aqui considerado equivalente a \texttt{Scanner.nextInt()})
+são implementados como funções \emph{built-in}. Estes serão posteriormente distinguidos na semântica.
+
+Outras funcionalidades da linguagem que necessitem implicitamente ou explicitamente de um objecto também não foram implementadas (\texttt{try-catch-finally}, \texttt{syncronized}, \\ \texttt{instanceof}, entre outros).
+
+Ainda que sejam permitidas definições compostas de \texttt{arrays}\footnote[1]{Ex.: \texttt{<type>[ ] <id>[ ]}.}, estas não são permitidas enquanto parâmetros de funções.
+
+Todas as restantes funcionalidades estão implementadas de acordo com a especificação.
+
+\cleardoublepage
+
+\subsection{Grammar Specification}
+\begin{minted}[mathescape]{antlr}
+	%%% TODO Copiar pjava.y e apagar actions das sub-regras
+	%%% TODO
+	%%% TODO
+	%%% TODO
+	%%% TODO
+	%%% TODO
+	%%% TODO
+	%%% TODO
+	%%% TODO
+	%%% TODO
+	%%% TODO
+	%%% TODO
+	%%% TODO
+	%%% TODO
+	%%% TODO
+\end{minted}
+
+\cleardoublepage
+
+\subsection{Abstract Syntax}
+\indent \indent A partir da definição da gramática é possível extrair a sintaxe abstracta, subdividindo cada disjunção de regras numa disjunção de predicados.
+Aos nomes das regras acrescentamos o prefixo "is\_" ao seu predicado correspondente;
+dessa mesma forma, acrescentamos o sufixo "\_list" às regras que constituem listas de elementos.
+A disjunção dessas regras (no YACC representada pelo símbolo |) é transformada na disjunção de predicados utilizando para isso
+o símbolo de disjunção lógico $\vee$.
+
+\indent Por exemplo, na regra
+\begin{minted}[mathescape]{antlr}
+type_decl
+	: type_object
+	| array_decl
+	;
+\end{minted}
+
+o seu correspondente na sintaxe abstracta é \\ \\
+is\_type\_decl $\to$ <is\_type\_object : type\_object> $\vee$ <is\_array\_decl : array> \\
+
+\indent \indent Apesar de aparecerem referidos na definição da sintaxe abstracta, is\_ID, \\
+is\_CONSTANT e outros tipos (identificados com a mesma nomenclatura),
+não são expressos segundo uma regra pois são tokens obtidos a partir da análise lexical do programa fonte.
+
+Segue-se a especificação da sintaxe abstracta.
+
+\cleardoublepage
+
+\subsubsection{Abstract Syntax Specification}
+\begin{longtable}{lcl}
+%%% TODO Transformar regras do pjava.y em disjunções (ignorando listas e considerando enums)
+%%% TODO
+%%% TODO
+%%% TODO
+%%% TODO
+%%% TODO
+%%% TODO
+%%% TODO
+%%% TODO
+%%% TODO
+%%% TODO
+%%% TODO
+%%% TODO
+
+	is\_application				& $\to$ & <is\_class\_def : class> \\
+	is\_array\_decl 			& $\to$ & <is\_type\_object : type> <is\_dims\_empty\_list : empty> \\
+	is\_assign\_op				& $\to$ & <is\_var : var> <is\_type\_assign\_op : op> <is\_expr : expr> \\
+	is\_type\_assign\_op		& $\to$ & <is\_EQUAL> \\
+								& $\vee$ & <is\_SHIFT\_R\_ASSIGN> \\
+								& $\vee$ & <is\_SHIFT\_L\_ASSIGN> \\
+								& $\vee$ & <is\_ADD\_ASSIGN> \\
+								& $\vee$ & <is\_SUB\_ASSIGM> \\
+								& $\vee$ & <is\_MUL\_ASSIGN> \\
+								& $\vee$ & <is\_DIV\_ASSIGN> \\
+								& $\vee$ & <is\_MOD\_ASSIGN> \\
+								& $\vee$ & <is\_AND\_ASSIGN> \\
+								& $\vee$ & <is\_XOR\_ASSIGN> \\
+								& $\vee$ & <is\_OR\_ASSIGN> \\
+								...TODO & $\lambda$ & ...TODO
+\end{longtable}
+
+\subsection{Abstract Syntax Tree Implementation}
+A implementação das estruturas da árvore de sintaxe abstracta foi feita segundo as seguintes regras:
+\begin{itemize}
+	\item Cada conjunção de predicados é colocada numa \texttt{struct};
+	\item Cada disjunção, de ou predicados ou conjunções de predicados, é colocada numa \texttt{union},
+		utilizando um \texttt{enum} auxiliar de identificação do campo da \texttt{union} utilizado
+		(nalguns casos determinando implicitamente o valor de um campo);
+	\item Todas os predicados que seleccionam apenas objectos elementares são \texttt{typedef}'d para o seu objecto elementar correspondente,
+		dado que estas regras foram mantidas com o objectivo de facilitar futuras extensões sintácticas da linguagem.
+\end{itemize}
+
+A regra is\_empty\_dims é omitida da AS uma vez que a informação semântica que esta indica não depende do seu conteúdo, mas sim da sua existência.
+Assim, na implementação de is\_empty\_dims\_list é apenas necessário guardar um inteiro, correspondente ao número de vezes que a regra é repetida.
+
+\subsection{Syntatic Choices}
 \indent \indent ...
 
 \cleardoublepage
@@ -62,7 +173,21 @@
 \indent \indent ...
 
 \subsection{Semantic Choices}
-\indent \indent ...
+\indent \indent Decidimos considerar como \textbf{semanticamente válidas} as seguintes situações (algumas diferentes/restritivas relativamente à definição semântica do Java):
+\begin{itemize}
+	\item Variáveis, funções, ciclos e \texttt{switch} com o mesmo \texttt{id}/\texttt{label};
+	\item Declarações de variáveis em ciclos \texttt{single statement};
+	\item Operadores de comparação (\texttt{==}, \texttt{!=}, \texttt{<}, \texttt{>}, \texttt{<=}, \texttt{>=}) em \texttt{strings}.
+	\item Redefinição de variáveis globais (tornam-se inacessíveis no escopo onde a local está definida);
+\end{itemize}
+
+Da mesma forma, considerámos como \textbf{semanticamente inválidas} as seguintes situações:
+\begin{itemize}
+	\item \textit{Function overloading} \footnote[1]{Como consequência da ausência de \textit{function overloading} surge a necessidade de concatenar
+		uma string (mesmo que vazia) com qualquer outro tipo de dados, para que estes sejam impressos por \texttt{System.out.println()}};
+	\item Funções de argumentos variáveis (\texttt{...});
+	\item Operadores \% and \%= envolvendo tipos de vírgula flutoante (dado que C não os permite, ao contrário de Java).
+\end{itemize}
 
 \cleardoublepage
 
@@ -70,5 +195,7 @@
 \subsection{...}
 \indent \indent ...
 
+\subsection{Implementation Choices}
+\indent \indent ...
 
 \end{document}
