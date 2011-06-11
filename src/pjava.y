@@ -222,7 +222,8 @@ int yyline;
 %%
 
 application
-	: class_def END													{ $$ = $1; main_application = $1; return 0; }
+	: class_def END													{ $$ = $1; main_application = $1; return 0; yyerrok; }
+	| error	END														{ pretty_error(yyline, "error found before EOF"); return 0; yyerrok; }
 	;
 
 array_decl
@@ -346,6 +347,7 @@ expr
 	| CONSTANT														{ $$ = insert_expr_constant($1); }
 	| func_call														{ $$ = insert_expr_func_call($1); }
 	| expr_op														{ $$ = insert_expr_expr_op($1); }
+	| error															{ pretty_error(yyline, "invalid expression"); yylex(); }
 	;
 
 expr_list
@@ -454,9 +456,9 @@ return
 	;
 
 stmt
-	: ';'															{ $$ = NULL; }
-	| '{' '}'														{ $$ = NULL; }
-	| '{' stmt_list '}'												{ $$ = insert_stmt_stmt_list($2); }
+	: ';'															{ $$ = NULL; yyerrok; }
+	| '{' '}'														{ $$ = NULL; yyerrok; }
+	| '{' stmt_list '}'												{ $$ = insert_stmt_stmt_list($2); yyerrok; }
 	| var_stmt														{ $$ = insert_stmt_var_stmt($1); }
 	| assign_op ';'													{ $$ = insert_stmt_assign_op($1); }
 	| incr_op ';'													{ $$ = insert_stmt_incr_op($1); }
@@ -467,6 +469,7 @@ stmt
 	| break															{ $$ = insert_stmt_break($1); }
 	| continue														{ $$ = insert_stmt_continue($1); }
 	| return														{ $$ = insert_stmt_return($1); }
+	| error															{ pretty_error(yyline, "invalid statement"); yylex(); }
 	;
 
 stmt_list
@@ -578,7 +581,8 @@ while
 %%
 int yyerror(char* msg)
 {
-	return pretty_error(yyline, "%s", msg);
+	return 0;
+	/* return pretty_error(yyline, "%s", msg); */
 }
 
 int main()
@@ -604,9 +608,8 @@ int main()
 		scope_delete(symtab);
 
 		free_builtins();
+		free_application(main_application); /* only valid here */
 	}
-
-	free_application(main_application);
 
 	return 0;
 }

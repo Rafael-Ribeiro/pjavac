@@ -483,9 +483,11 @@ is_for* insert_for(is_for_init *init, is_for_cond *cond, is_for_inc *inc, is_stm
 		node->line = cond->line;
 	else if (inc)
 		node->line = inc->line;
-	else
+	else if (body)
 		node->line = body->line;
-		
+	else
+		node->line = yyline;
+
 	/* semantics */
 	node->scope = NULL;
 	node->terminates = false;
@@ -895,7 +897,11 @@ is_stmt_list* insert_stmt_list(is_stmt* stmt, is_stmt_list* next)
 	
 	node->node = stmt;
 	node->next = next;
-	node->line = stmt->line;
+
+	if (stmt)
+		node->line = stmt->line;
+	else
+		node->line = yyline;
 
 	return node;
 }
