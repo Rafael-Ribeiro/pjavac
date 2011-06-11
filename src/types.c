@@ -19,9 +19,9 @@ is_type_native operators_binary[MAX_OPERATORS_BINARY][MAX_NATIVE_TYPES-1][MAX_NA
 	{
 		/*					bool						, byte					, char					, double				, float					, int					, long					, short					, String					<- second operand */
 		/*	bool	=	*/	{	t_type_native_bool		, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					, ERROR					},
-		/*	byte	=	*/	{	ERROR					, t_type_native_byte	, t_type_native_byte	, t_type_native_byte	, t_type_native_byte	, t_type_native_byte	, ERROR					, t_type_native_byte	, ERROR					},
+		/*	byte	=	*/	{	ERROR					, t_type_native_byte	, t_type_native_byte	, ERROR					, ERROR					, t_type_native_byte	, ERROR					, t_type_native_byte	, ERROR					},
 		/*	char	=	*/	{	ERROR					, t_type_native_char	, t_type_native_char	, ERROR					, ERROR					, t_type_native_char	, ERROR					, t_type_native_char	, ERROR					},
-		/*	double	=	*/	{	ERROR					, ERROR					, ERROR					, t_type_native_double	, ERROR					, ERROR					, t_type_native_double	, ERROR					, ERROR					},
+		/*	double	=	*/	{	ERROR					, t_type_native_double	, t_type_native_double	, t_type_native_double	, t_type_native_double	, t_type_native_double	, t_type_native_double	, t_type_native_double	, ERROR					},
 		/*	float	=	*/	{	ERROR					, t_type_native_float	, t_type_native_float	, t_type_native_float	, t_type_native_float	, t_type_native_float	, t_type_native_float	, t_type_native_float	, ERROR					},
 		/*	int		=	*/	{	ERROR					, t_type_native_int		, t_type_native_int		, ERROR					, ERROR					, t_type_native_int		, ERROR					, t_type_native_int		, ERROR					},
 		/*	long	=	*/	{	ERROR					, t_type_native_long	, t_type_native_long	, ERROR					, ERROR					, t_type_native_long	, t_type_native_long	, t_type_native_long	, ERROR					},
