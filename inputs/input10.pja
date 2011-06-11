@@ -11,9 +11,8 @@ public class test
 
 	public int main()
 	{
-		double a = a();
-	
-		int a = +
+		int a[] = (int[]) new char[10];
+
 	}
 }
 
