@@ -274,13 +274,20 @@ e não limita o programador pois é possível reestruturar o código para uma fo
 \cleardoublepage
 
 \section{Code Generation}
-\subsection{...}
-\indent \indent ...
-
 \subsection{Implementation Choices}
-\indent \indent %TODO
 
+\indent \indent De forma a manter a geração de código o mais próximo possível de código máquina é simulado um conjunto fixo de registos.
+Estes registos são do tipo \texttt{long long} possuíndo capacidade suficiente para armazenar os tipos de dados possíveis (64 bits). \\
+\indent Um problema com esta representação é o facto de ser inválida uma atribuição directa de valores aos registos, isto pois, mesmo realizando
+\texttt{type-casts}, é efectuada sempre a truncagem de valores. Para contornar este problema as atribuições são realizadas através de ponteiros:
 
+\begin{center}
+	\verb!*(float*)& _registers[0] = 1.3f;!
+\end{center}
+
+\indent De forma a minimizar o número de registos activos, estes são reutilizados a cada novo statement.
+Este método é válido caso toda a informação persistente seja guardada ou em \texttt{\_locals} ou em \texttt{\_globals}. A sua implementação torna-se bastante simples mas possui a desvantagem de produzir código redundante pois
+não aproveita o facto de alguns valores já se encontrarem em registos.
 
 \indent Os operadores envolvendo o tipo \texttt{String} (atribuição, concatenação e comparação) são implementados recorrendo a funções \texttt{built-in}. Essas
 funções são consideradas parte das "bibliotecas" do código (ainda que extensões), e recorrem à biblioteca \texttt{<string.h>} da linguagem \texttt{C}.
@@ -304,11 +311,12 @@ da criação de uma nova \texttt{frame}.
 		\item \texttt{float};
 		\item \texttt{double};
 	\end{itemize}
-	\item Suporte para o tipo \texttt{String};% TODO ref para a secção de semântica
+	\item Suporte para o tipo \texttt{String};
 	\item \texttt{Arrays} multi-dimensionais:
 	\begin{itemize}
-		\item Operação \texttt{new}: \quad \texttt{int a[] = new [10];}
-		\item \texttt{Array initializers}: \quad \texttt{int a[][] = \{\{1,2\}, \{3,4,5\}\}; }
+		\item Operação \texttt{new}: \quad \texttt{int a[] = new [10]};
+		\item \texttt{Array initializers}: \quad \texttt{int a[][] = \{\{1,2\}, \{3,4,5\}\}};
+		\item Declarações compostas: \quad \texttt{int[] a[], b} é equivalente a \texttt{int a[][], b[]};
 	\end{itemize}
 	\item Definição de múltiplas variáveis: \quad \texttt{int a = 1, b[] = \{1,2\}; }
 	\item Operações com parâmetros de tipos distintos \footnote[1]{\texttt{long a = 1; a *= 3.5;}}.
