@@ -824,7 +824,7 @@ int check_func_def_arg(is_func_def_arg* node)
 		symbol = scope_local_lookup(symtab, node->id->name, t_symbol_var);
 		if (symbol)
 		{
-			pretty_error(node->line, "argument \"%s\" colides with already defined symbol (previous declaration was here: %d)",
+			pretty_error(node->line, "argument \"%s\" colides with already defined variable (previous declaration was here: %d)",
 				node->id->name, symbol->line);
 			errors++;
 		} else
@@ -1506,8 +1506,8 @@ int check_var_defs(is_var_defs* node, bool first_pass)
 
 	for (it = node->list; it != NULL; it = it->next)
 	{
-		symbol = scope_lookup(symtab, it->node->left->id->name, t_symbol_var);
-		if (symbol && !symbol->data.var_data.global)
+		symbol = scope_local_lookup(symtab, it->node->left->id->name, t_symbol_var);
+		if (symbol)
 		{
 			errors++;
 			pretty_error(it->node->line, "symbol \"%s\" is already defined (previous declaration was here: %d)", it->node->left->id->name, symbol->line);

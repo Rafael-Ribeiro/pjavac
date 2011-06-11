@@ -2,17 +2,13 @@ public class test
 {
 	int b = 5;
 
-	public int a()
-	{
-		int b = 3;
-
-		return b;
-	}
-
 	public int main()
 	{
-		int a[] = (int[]) new char[10];
+		int _b = 3;
 
+		System.out.println("" + b);
+
+		return 0;
 	}
 }
 
