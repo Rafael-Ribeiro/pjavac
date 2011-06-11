@@ -71,7 +71,7 @@ utilizado.
 Deste modo, decidimos que implementar \texttt{packages} seria desnecessário.
 
 \indent Devido a esta escolha, os métodos \texttt{System.out.println()} e \texttt{System.in.nextInt()} (aqui considerado equivalente a \texttt{Scanner.nextInt()})
-são implementados como funções \emph{built-in}. Estes serão posteriormente distinguidos na semântica.
+são implementados como funções \emph{built-in}. Estes serão posteriormente distinguidos na geração de código.
 
 Outras funcionalidades da linguagem que necessitem implicitamente ou explicitamente de um objecto também não foram implementadas (\texttt{try-catch-finally}, \texttt{syncronized}, \\ \texttt{instanceof}, entre outros).
 
@@ -142,18 +142,19 @@ como argumentos de funções. São, no entanto, válidos dentro de funções e e
 é possível verificar semanticamente a utilização de símbolos (variáveis ou funções) definidas após a sua utilização. Esta
 análise é efectuada sobre a \texttt{AST} e complementa-a ao armazenar informação obtida nesta fase. Esta informação
 consiste sobretudo na propagação dos tipos das constantes até às expressões intermédias, assim como a verificação
-de escopos, existência de variáveis, funções etc.
+de escopos, existência de variáveis, funções, etc.
 
-\indent De forma a ser possível extrair esta informação foi implementado um \texttt{spaghetti stack}\footnote[1]{Àrvore de N-filhos em que cada nó contém um ponteiro para o seu superior mas não o contrário.} de \texttt{scopes}.
-Um \texttt{scope} é composto por um mapeamento <\texttt{ID}, \texttt{tipo}> em símbolos e a sua implementação consiste numa àrvore \texttt{AVL}. Assim é 
+\indent De forma a ser possível extrair esta informação, foi implementado uma \texttt{spaghetti stack}\footnote[1]{Àrvore de N-filhos em que cada nó contém um ponteiro para o seu superior mas não o contrário.} de \texttt{scopes}.
+Um \texttt{scope} é composto por um mapeamento <\texttt{ID}, \texttt{tipo}> em símbolos e a sua implementação consiste numa árvore \texttt{AVL}. Assim, é 
 possível obter uma pesquisa com complexidade sub-linear.
 
 \cleardoublepage
 \subsection{Semantic Choices}
-\indent \indent Tal como na síntaxe, algumas alterações foram efectuadas 
+\label{semantic_choices}
+\indent \indent Tal como na sintaxe, algumas alterações foram efectuadas 
 à semântica da linguagem de forma a esta estar de acordo com o paradigma procedimental. 
 
-\indent Uma vez que não é possível definir métodos sobre \texttt{Strings} decidimos que estes apenas seríam uteís
+\indent Uma vez que não é possível definir métodos sobre \texttt{Strings} decidimos que estes apenas seriam úteis
 caso fosse extendido o conjunto os operadores permitidos para este tipo. Como tal, estão definidos os operadores de:
 \begin{itemize}
 	\item Atribuição: \quad \verb!=! 
@@ -166,7 +167,7 @@ caso fosse extendido o conjunto os operadores permitidos para este tipo. Como ta
 
 \indent Foi aplicada uma restrição ao operador ternário: os tipos das expressões resultantes têm de ser iguais.
 Esta restrição é necessária para evitar o uso de interfaces \footnote[4]{Em Java esta verificação é efectuada através das interfaces \texttt{Comparable} e \texttt{Serializable}.}
-e não limita o programador pois é possível re-estruturar o código para uma forma equivalente.
+e não limita o programador pois é possível reestruturar o código para uma forma equivalente.
 
 \indent De forma a permitir declarações de variáveis no cabeçalho de um \texttt{statement for} é também possível declarar variáveis em ciclos \texttt{single statement};
 
@@ -278,6 +279,15 @@ e não limita o programador pois é possível re-estruturar o código para uma f
 
 \subsection{Implementation Choices}
 \indent \indent %TODO
+
+
+
+\indent Os operadores envolvendo o tipo \texttt{String} (atribuição, concatenação e comparação) são implementados recorrendo a funções \texttt{built-in}. Essas
+funções são consideradas parte das "bibliotecas" do código (ainda que extensões), e recorrem à biblioteca \texttt{<string.h>} da linguagem \texttt{C}.
+
+\indent A atribuição é implementada recorrendo à função \texttt{strdup} (re-implementada, dado esta não ser \texttt{ANSI C}), a concatenação recorrendo à função
+\texttt{sprintf} e as várias comparações recorrendo a \texttt{strcmp}. Dado que estas funções não modificam os argumentos, a chamada das mesmas não carece
+da criação de uma nova \texttt{frame}.
 
 \cleardoublepage
 
