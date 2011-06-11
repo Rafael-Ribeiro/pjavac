@@ -272,12 +272,14 @@ binary_op
 
 break
 	: BREAK ';'														{ $$ = insert_break(NULL); }
-	| BREAK ID ';'													{ $$ = insert_break($2); } /* TODO labeled loops */
+	| BREAK ID ';'													{ $$ = insert_break($2); }
 	;
 
 class_def
 	: CLASS ID '{' '}'												{ $$ = insert_class_def($2, NULL); }
 	| CLASS ID '{' class_stmt_list '}'								{ $$ = insert_class_def($2, $4); }
+	| class_stmt_privacy CLASS ID '{' '}'							{ $$ = insert_class_def($3, NULL); }
+	| class_stmt_privacy CLASS ID '{' class_stmt_list '}'			{ $$ = insert_class_def($3, $5); }
 	;
 
 class_stmt
@@ -306,7 +308,7 @@ class_stmt_list
 
 continue
 	: CONTINUE ';'													{ $$ = insert_continue(NULL); }
-	| CONTINUE ID ';'												{ $$ = insert_continue($2); } /* TODO labeled loops */
+	| CONTINUE ID ';'												{ $$ = insert_continue($2); }
 	;
 
 dims
@@ -327,7 +329,6 @@ dims_sized
 	: '[' expr ']'													{ $$ = $2; }
 	;
 
-/* this one is left recursive, can we swap it? if not attention to the constructors */
 dims_sized_list 
 	: dims_sized													{ $$ = insert_dims_sized_list(NULL, $1); }
 	| dims_sized_list dims_sized									{ $$ = insert_dims_sized_list($1, $2); }
@@ -547,7 +548,6 @@ var_def_list
 
 var_def_left
 	: ID															{ $$ = insert_var_def_left($1, new_dims_empty_list(yyline, 0)); }
-/*	| ID dims														{ $$ = insert_var_def_left_dims($1, $2); } */
 	| ID dims_empty_list											{ $$ = insert_var_def_left($1, $2); }
 	;
 
@@ -562,7 +562,6 @@ var_initializer
 	| expr															{ $$ = insert_var_initializer_expr($1); }
 	;
 
-/* this one is left recursive, can we swap it? if not attention to the constructors */
 var_initializer_list
 	: var_initializer												{ $$ = insert_var_initializer_list(NULL, $1); }
 	| var_initializer_list ',' var_initializer						{ $$ = insert_var_initializer_list($1, $3); }
