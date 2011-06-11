@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 class test
 {
 	public int main()
@@ -7,3 +8,6 @@ class test
 		return 0;
 	}
 }
+=======
+
+>>>>>>> 79be6375aa90f11d20cc3b8e9e585fcc7126355a

@@ -18,7 +18,5 @@ TODOs:
 			==, !=, <, >, <= and >= on strings
 
 TODO: LEX
-	Range validation on size (http://linux.die.net/man/3/strtoll  ERANGE)	
+	Range validation on size (http://linux.die.net/man/3/strtoll  ERANGE)
 
-TODO Code Generation:
-	==, !=, <, >, <= and >= on strings
