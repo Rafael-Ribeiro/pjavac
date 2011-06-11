@@ -19,6 +19,7 @@
 	,pdfborder = {0 0 0}
 }
 
+\usepackage{alltt}
 \usepackage{subfig}
 \usepackage{amsmath}
 \usepackage{wrapfig}
@@ -68,6 +69,7 @@ Ainda que sejam permitidas definições compostas de \texttt{arrays}\footnote[1]
 
 Todas as restantes funcionalidades estão implementadas de acordo com a especificação.
 
+% TODO: error handling
 \cleardoublepage
 
 \subsection{Grammar Specification}
@@ -128,14 +130,15 @@ Assim, na implementação de is\_empty\_dims\_list é apenas necessário guardar
 \section{Semantic Analysis}
 \subsection{...}
 \indent \indent ...
+% TODO 2 passage
+% Symbol table com stack de árvores AVL
+% pesquisa sub linear
 
 \subsection{Semantic Choices}
 \indent \indent Decidimos considerar como \textbf{semanticamente válidas} as seguintes situações (algumas diferentes/restritivas relativamente à definição semântica do Java):
 \begin{itemize}
-	\item Variáveis, funções, ciclos e \texttt{switch} com o mesmo \texttt{id}/\texttt{label};
 	\item Declarações de variáveis em ciclos \texttt{single statement};
 	\item Operadores de comparação (\texttt{==}, \texttt{!=}, \texttt{<}, \texttt{>}, \texttt{<=}, \texttt{>=}) em \texttt{strings}.
-	\item Redefinição de variáveis globais (tornam-se inacessíveis no escopo onde a local está definida);
 \end{itemize}
 
 Da mesma forma, considerámos como \textbf{semanticamente inválidas} as seguintes situações:
@@ -154,5 +157,61 @@ Da mesma forma, considerámos como \textbf{semanticamente inválidas} as seguint
 
 \subsection{Implementation Choices}
 \indent \indent ...
+
+\cleardoublepage
+\section{Feature List}
+\begin{itemize}
+	\item Suporte aos tipos nativos:
+	\begin{itemize}
+		\item \texttt{void};
+		\item \texttt{byte};
+		\item \texttt{char};
+		\item \texttt{short};
+		\item \texttt{int};
+		\item \texttt{long};
+		\item \texttt{float};
+		\item \texttt{double};
+	\end{itemize}
+	\item Suporte para o tipo \texttt{String};% TODO ref para a secção de semântica
+	\item \texttt{Arrays} multi-dimensionais:
+	\begin{itemize}
+		\item Operação \texttt{new}: \quad \texttt{int a[] = new [10];}
+		\item \texttt{Array initializers}: \quad \texttt{int a[][] = \{\{1,2\}, \{3,4,5\}\}; }
+	\end{itemize}
+	\item Definição de multiplas variáveis: \quad \texttt{int a = 1, b[] = \{1,2\}; }
+	\item Operações com parâmetros de tipos distintos \footnote[1]{\texttt{long a = 1; a *= 3.5;}}.
+	\item \texttt{Widening} e \texttt{Narrowing conversions};
+	\item \texttt{Type-casting} de variáveis;
+	\item Suporte aos operadores:
+	\begin{itemize}
+		\item Unários: \quad \verb|+ - ! ~ ++ --|
+		\item Binários:
+		\begin{itemize}
+			\item Aritméticos: \quad \verb!+ - * / % & | ^ << >>!
+			\item Relacionais: \quad \verb|== != < > <= >=|
+			\item Booleanos: \quad \verb!&& ||!
+			\item Atribuição: \quad \verb!= <<= >>= += -= *= /= %= &= ^= |=!
+		\end{itemize}
+		\item Ternário: \quad \texttt{ ? : } 
+	\end{itemize}
+	\item Suporte para as instruções:
+	\begin{itemize}
+		\item Ciclos: \quad \texttt{for while do..while}
+		\item Controlo: \quad \texttt{if..else switch}
+		\item Fluxo: \quad \texttt{break continue return}
+	\end{itemize}
+	\item Acesso aos argumentos de chamada;
+	\item Instruções de ciclo, \texttt{switch}, \texttt{break}, \texttt{continue} com \texttt{labels} opcionais;
+	\item Distinção entre variáveis globais e locais;
+	\item Redefinição de variáveis globais \footnote[2]{As globais tornam-se inacessíveis no escopo onde a local está definida.}; 
+	\item Definição de escopo ao nível do bloco \footnote[3]{As definições de variáveis efectuadas dentro de ciclos não propagam para fora deste.}; 
+	\item Funções de entrada e saída:
+	\begin{itemize}
+		\item \texttt{System.out.println();}
+		\item \texttt{System.in.nextInt();}
+	\end{itemize}
+	\item Chamadas a funções incluindo recursividade directa e indirecta;
+	\item Variáveis, funções, ciclos e \texttt{switch} com o mesmo \texttt{id}/\texttt{label};
+\end{itemize}
 
 \end{document}
