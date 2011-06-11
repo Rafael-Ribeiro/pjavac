@@ -183,7 +183,7 @@ e não limita o programador pois é possível re-estruturar o código para uma f
 		e no caso particular de possuir uma \texttt{label} se se encontra dentro do escopo onde esta é definida.
 
 	\item [class\_def] \hfill \\
-		Garantia que o nome da classe não se encontra préviamente definido\footnote[1]{Uma vez que a linguagem é procedimental e que apenas permite uma classe esta verificação é apenas formal.} e que existe uma função
+		Garantia que o nome da classe não se encontra previamente definido\footnote[1]{Uma vez que a linguagem é procedimental e que apenas permite uma classe esta verificação é apenas formal.} e que existe uma função
 		de inicio de aplicação.
 
 	\item [continue] \hfill \\
@@ -203,17 +203,17 @@ e não limita o programador pois é possível re-estruturar o código para uma f
 		Confimação do tipo da expressão de condição (\texttt{boolean}).
 
 	\item [func\_call] \hfill \\
-		Verificação se existe uma função com o \texttt{ID} fornecido e em caso afirmativo se esta possuí argumentos compatíveis
+		Verificação se existe uma função com o \texttt{ID} fornecido e em caso afirmativo se esta possui argumentos compatíveis
 		(tanto em número como em tipos)
 		
 	\item [func\_def] \hfill \\
-		Garantia que o nome da função não se encontra préviamente definido. \\
-		Se a função possua um valor de retorno, é verificado se existe algum caminho de execução que não termine num \texttt{return}.
+		Garantia que o nome da função não se encontra previamente definido. \\
+		Caso a função possua um valor de retorno, é verificado se existe algum caminho de execução que não termine num \texttt{return}.
 		No caso particular da função \texttt{main} é verificado se o protótipo é válido
-		(i.e.: o return value é \texttt{void} ou \texttt{int} e possuí um parâmetro opcional do tipo \texttt{String[]})
+		(i.e.: o \texttt{return value} é \texttt{void} ou \texttt{int} e possui um parâmetro opcional do tipo \texttt{String[]})
 		
 	\item [check\_func\_def\_arg] \hfill \\
-		Garantia que não existem argumentos duplicados.
+		Garantia de que não existem argumentos duplicados.
 
 	\item [if] \hfill \\
 		Confimação do tipo da expressão de condição (\texttt{boolean}).
@@ -229,7 +229,7 @@ e não limita o programador pois é possível re-estruturar o código para uma f
 		Comparação do tipo da expressão (caso exista) com o tipo da função.
 
 	\item [stmt\_list] \hfill \\
-		É efectuada uma verificação da existência de código morto. (Esta é efectuada sem recorrer a expanção
+		É efectuada uma verificação da existência de código morto. (Esta é efectuada sem recorrer a expansão
 		de constantes pelo que é necessário que todos os caminhos de execução possíveis estejam terminados).
 
 	\item [switch] \hfill \\
@@ -283,7 +283,9 @@ Da mesma forma, considerámos como \textbf{semanticamente inválidas} as seguint
 
 \subsection{Implementation Choices}
 \indent \indent %TODO
+
 \cleardoublepage
+
 \section{Feature List}
 \begin{itemize}
 	\item Suporte aos tipos nativos:
@@ -303,7 +305,7 @@ Da mesma forma, considerámos como \textbf{semanticamente inválidas} as seguint
 		\item Operação \texttt{new}: \quad \texttt{int a[] = new [10];}
 		\item \texttt{Array initializers}: \quad \texttt{int a[][] = \{\{1,2\}, \{3,4,5\}\}; }
 	\end{itemize}
-	\item Definição de multiplas variáveis: \quad \texttt{int a = 1, b[] = \{1,2\}; }
+	\item Definição de múltiplas variáveis: \quad \texttt{int a = 1, b[] = \{1,2\}; }
 	\item Operações com parâmetros de tipos distintos \footnote[1]{\texttt{long a = 1; a *= 3.5;}}.
 	\item \texttt{Widening} e \texttt{Narrowing conversions};
 	\item \texttt{Type-casting} de variáveis;
