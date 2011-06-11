@@ -1,8 +1,19 @@
 public class test
 {
+	int b = 5;
+
+	public int a()
+	{
+		int b = 3;
+
+		return b;
+	}
+
 	public int main()
 	{
-		double a = 111111110656.0;
+		double a = a();
+
+		System.out.println("" + a);
 		return 0;
 	}
 }
