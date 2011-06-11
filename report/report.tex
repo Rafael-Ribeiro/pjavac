@@ -277,7 +277,21 @@ e não limita o programador pois é possível re-estruturar o código para uma f
 \indent \indent ...
 
 \subsection{Implementation Choices}
-\indent \indent %TODO
+\indent \indent De forma a manter a geração de código o mais próximo possível de código máquina é simulado um conjunto fixo de registos.
+Estes registos são do tipo \texttt{long long} possuíndo capacidade suficiente para armazenar os tipos de dados possíveis (64 bits). \\
+\indent Um problema com esta representação é o facto de ser inválida uma atribuição directa de valores aos registos, isto pois, mesmo realizando
+\texttt{type-casts}, é efectuada sempre a truncagem de valores. Para contornar este problema as atribuições são realizadas através de ponteiros:
+
+\begin{center}
+	\verb!*(float*)& _registers[0] = 1.3f;!
+\end{center}
+
+\indent De forma a minimizar o número de registos activos, estes são reutilizados a cada novo statement.
+Este método é válido caso toda a informação persistente seja guardada ou em \texttt{\_locals} ou em \texttt{\_globals}. A sua implementação torna-se bastante simples mas possui a desvantagem de produzir código redundante pois
+não aproveita o facto de alguns valores já se encontrarem em registos.
+
+% String operations
+
 \cleardoublepage
 \section{Feature List}
 \begin{itemize}
