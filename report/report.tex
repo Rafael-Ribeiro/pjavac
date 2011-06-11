@@ -126,15 +126,38 @@ Assim, na implementação de is\_empty\_dims\_list é apenas necessário guardar
 \indent \indent ...
 
 \cleardoublepage
-
 \section{Semantic Analysis}
-\subsection{...}
-\indent \indent ...
-% TODO 2 passage
-% Symbol table com stack de árvores AVL
-% pesquisa sub linear
-% errors
+\indent \indent Para efectuar a análise semântica optámos por implementar um analisador de duas passagens. Desta forma
+é possível verificar semanticamente a utilização de símbolos (variáveis ou funções) definidas após a sua utilização. Esta
+análise é efectuada sobre a \texttt{AST} e complementa-a ao armazenar informação obtida nesta fase. Esta informação
+consiste sobretudo na propagação dos tipos das constantes até às expressões intermédias, assim como a verificação
+de escopos, existência de variáveis, funções etc.
 
+\indent De forma a ser possível extrair esta informação foi implementado um \texttt{spaghetti stack}\footnote[1]{Àrvore de N-filhos em que cada nó contém um ponteiro para o seu superior mas não o contrário.} de \texttt{scopes}.
+Um \texttt{scope} é composto por um mapeamento <\texttt{ID}, \texttt{tipo}> em símbolos e a sua implementação consiste numa àrvore \texttt{AVL}. Assim é 
+possível obter uma pesquisa com complexidade sub-linear.
+
+\subsection{Semantic Choices}
+\indent \indent Tal como na síntaxe, algumas alterações foram efectuadas 
+à semântica da linguagem de forma a esta estar de acordo com o paradigma procedimental. 
+
+\indent Uma vez que não é possível definir métodos sobre \texttt{Strings} decidimos que estes apenas seríam uteís
+caso fosse extendido o conjunto os operadores permitidos para este tipo. Como tal, estão definidos os operadores de:
+\begin{itemize}
+	\item Atribuição: \quad \verb!=! 
+  	\item Concatenação \footnote[2]{Sendo possível efectuar a concatenação de uma \texttt{String} com um objecto de qualquer tipo.}: \quad \verb!+! 
+	\item Comparação \footnote[3]{Segundo a ordem alfabética, sensível a maiúsculas e minúsculas.}: \quad \verb|== != < > <= >=|
+\end{itemize}
+
+\indent Desta forma, consideramos o tipo \texttt{String} como imutável, razão que permite que este seja utilizado num
+\texttt{statement switch}.
+
+\indent Foi aplicada uma restrição ao operador ternário: os tipos das expressões resultantes têm de ser iguais.
+Esta restrição é necessária para evitar o uso de interfaces \footnote[4]{Em Java esta verificação é efectuada através das interfaces \texttt{Comparable} e \texttt{Serializable}.}
+e não limita o programador pois é possível re-estruturar o código para uma forma equivalente.
+
+\cleardoublepage
+\subsection{Semantic Checks}
 \begin{description}
 	\item [assign\_op] \hfill \\
 		Atribuições apenas possíveis para os tipos nativos, à excepção do operador \texttt{assignment} directo (i.e.: operador \texttt{"="}).
@@ -169,7 +192,7 @@ Assim, na implementação de is\_empty\_dims\_list é apenas necessário guardar
 		Confimação do tipo da expressão de condição (\texttt{boolean}).
 
 	\item [func\_call] \hfill \\
-		Verificação se existe uma função com o \texttt{id} fornecido e em caso afirmativo se esta possuí argumentos compatíveis
+		Verificação se existe uma função com o \texttt{ID} fornecido e em caso afirmativo se esta possuí argumentos compatíveis
 		(tanto em número como em tipos)
 		
 	\item [func\_def] \hfill \\
@@ -188,6 +211,41 @@ Assim, na implementação de is\_empty\_dims\_list é apenas necessário guardar
 		Incrementos e decrementos apenas válidos para tipos nativos. \\
 		Verificação se a variável já se encontra inicializada.
 
+	\item [label] \hfill \\
+		Verificação da ambibuidade da label.
+
+	\item [return] \hfill \\
+		Comparação do tipo da expressão (caso exista) com o tipo da função.
+
+	\item [stmt\_list] \hfill \\
+		É efectuada uma verificação da existência de código morto. (Esta é efectuada sem recorrer a expanção
+		de constantes pelo que é necessário que todos os caminhos de execução possíveis estejam terminados).
+
+	\item [switch] \hfill \\
+		Confirmação do tipo da expressão de controlo (nativo ou \texttt{String}).
+	
+	\item [switch\_stmt] \hfill \\
+		Garantia que não existem \texttt{cases} duplicados.
+		Verificação se o tipo da constante corresponde ao tipo da expressão de controlo.
+
+	\item [ternary\_op] \hfill \\
+		Garantia do tipo da expressão de condição(\texttt{boolean}).
+		Verificação se os tipos das expressões dos dois branches são iguais.
+
+	\item [unary\_op] \hfill \\
+		Operações unárias apenas possíveis para os tipos nativos. \\
+		A validade da operação é verificada através da tabela de operações em \texttt{types.c}.
+
+	\item [var] \hfill \\
+		Caso a variável seja a expanção de um \texttt{ID} é verificado se esta já se encontra inicializada.
+		Caso seja uma operação de indexação (quer a uma \texttt{var} ou ao return value de uma \texttt{func\_call}) verificar se o tipo é de facto um \texttt{array}. 
+ 
+	\item [var\_defs] \hfill \\
+		Garantia que o nome da variável não se encontra já atribuído.
+		Caso exista uma inicialização, é efectuada a verificação se esta é válida e que se tipo corresponde ao da variável.
+
+	\item [while] \hfill \\
+		Garantia do tipo da expressão de condição(\texttt{boolean}).
 \end{description}
 
 \subsection{Semantic Choices}
@@ -267,7 +325,7 @@ Da mesma forma, considerámos como \textbf{semanticamente inválidas} as seguint
 		\item \texttt{System.in.nextInt();}
 	\end{itemize}
 	\item Chamadas a funções incluindo recursividade directa e indirecta;
-	\item Variáveis, funções, ciclos e \texttt{switch} com o mesmo \texttt{id}/\texttt{label};
+	\item Variáveis, funções, ciclos e \texttt{switch} com o mesmo \texttt{ID}/\texttt{label};
 \end{itemize}
 
 \end{document}
