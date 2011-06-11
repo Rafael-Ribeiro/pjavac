@@ -4,7 +4,7 @@
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
 
-\newcommand{\documentTitle}{PJAVA Compiler} %Macro definition
+\newcommand{\documentTitle}{PJava Compiler} %Macro definition
 \newcommand{\documentAuthors}{João Rafael (2008111876, jprafael@student.dei.uc.pt) \and José Ribeiro (2008112181, jbaia@student.dei.uc.pt)} %Macro definition
 
 \title{\documentTitle}
@@ -15,7 +15,7 @@
 	pdftitle = \documentTitle
 	,pdfauthor = \documentAuthors
 	,pdfsubject = {Project Report}
-	,pdfkeywords = {PJAVA Compiler} {Compilers} {Syntax Analysis} {Semantic Analysis} {Code Generation}
+	,pdfkeywords = {PJava Compiler} {Compilers} {Syntax Analysis} {Semantic Analysis} {Code Generation}
 	,pdfborder = {0 0 0}
 }
 
@@ -52,12 +52,22 @@
 \setlength{\parskip}{0.3cm}
 
 \section{Introduction}
-\indent \indent ...
+\indent \indent No âmbito da cadeira de Compiladores foi-nos proposta a implementação de um compilador de um \textit{subset} de \texttt{Java} (apelidado de
+\texttt{PJava} \footnote[1]{PJava: Procedimental Java}) para um \texttt{subset} de C. Esse \textit{subset} de C tem como principais limitações
+apenas possuir saltos incondicionais (\texttt{goto}), \texttt{labels} e a instrução de selecção \texttt{if} (sem o correspondente \texttt{else}, além de apenas poder
+ter uma \texttt{statement}). Tal permite uma maior semelhança à compilação para código binário (\texttt{Assembly}).
+
+\indent Apesar de PJava (como definido no enunciado) ser um \texttt{subset} algo reduto, decidimos implementar algumas funcionalidades mais avançadas que consideramos
+serem essenciais a qualquer linguagem de programação (como \texttt{arrays}). Essas funcionalidades são exploradas com maior detalhe na secção \ref{semantic_choices}.
+
+\indent Este relatório permite esclarecer algumas das decisões tomadas relativamente à sintaxe e semântica, bem como explicar o mecanismo de geração de código
+utilizado.
 
 \cleardoublepage
 
-\section{Syntatic Analysis} %%% TODO FIXME TODO FIXME TODO FIXME Explicar detecção de erros
-\indent \indent Tal como indicado no enunciado do projecto, na linguagem PJAVA apenas se pretende explorar a vertente procedimental do JAVA. 
+\section{Syntactic Analysis} %%% TODO FIXME TODO FIXME TODO FIXME Explicar detecção de erros
+\label{syntactic_analysis}
+\indent \indent Tal como indicado no enunciado do projecto, na linguagem PJava apenas se pretende explorar a vertente procedimental do Java. 
 Deste modo, decidimos que implementar \texttt{packages} seria desnecessário.
 
 \indent Devido a esta escolha, os métodos \texttt{System.out.println()} e \texttt{System.in.nextInt()} (aqui considerado equivalente a \texttt{Scanner.nextInt()})
@@ -123,7 +133,8 @@ A regra is\_empty\_dims é omitida da AS uma vez que a informação semântica q
 Assim, na implementação de is\_empty\_dims\_list é apenas necessário guardar um inteiro, correspondente ao número de vezes que a regra é repetida.
 
 \subsection{Syntactic Choices}
-\indent \indent ...
+\indent \indent Como já mencionado na secção \ref{syntactic_analysis}, uma das escolhas relativamente à sintaxe foi a não permissão de \texttt{arrays} compostos
+como argumentos de funções. São, no entanto, válidos dentro de funções e enquanto globais.
 
 \cleardoublepage
 \section{Semantic Analysis}
@@ -249,6 +260,7 @@ e não limita o programador pois é possível re-estruturar o código para uma f
 \end{description}
 
 \subsection{Semantic Choices}
+\label{semantic_choices}
 \indent \indent Decidimos considerar como \textbf{semanticamente válidas} as seguintes situações (algumas diferentes/restritivas relativamente à definição semântica do Java):
 \begin{itemize}
 	\item Declarações de variáveis em ciclos \texttt{single statement};
@@ -260,7 +272,7 @@ Da mesma forma, considerámos como \textbf{semanticamente inválidas} as seguint
 	\item \textit{Function overloading} \footnote[1]{Como consequência da ausência de \textit{function overloading} surge a necessidade de concatenar
 		uma string (mesmo que vazia) com qualquer outro tipo de dados, para que estes sejam impressos por \texttt{System.out.println()}};
 	\item Funções de argumentos variáveis (\texttt{...});
-	\item Operadores \% and \%= envolvendo tipos de vírgula flutuante (dado que C não os permite, ao contrário de Java).
+	\item Operadores \% and \%= envolvendo tipos de vírgula flutuante (dado que \texttt{C} não os permite, ao contrário de \texttt{Java}).
 \end{itemize}
 
 \cleardoublepage
