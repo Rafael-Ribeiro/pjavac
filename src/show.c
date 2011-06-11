@@ -41,7 +41,7 @@ void show_constant(is_constant* node)
 			break;
 
 		case t_constant_double:
-			printf("%.3Lf", node->value.double_val);
+			printf("%.3lf", node->value.double_val);
 			break;
 
 		case t_constant_char:

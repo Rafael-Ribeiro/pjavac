@@ -2,22 +2,8 @@ class test
 {
 	public int main()
 	{
-		long a = 111111111110l;
-
-		switch("coisa")
-		{
-			case "teste":
-				System.out.println("1");
-				break;
-
-			default:
-				System.out.println("default");
-
-			case "cenas":
-				System.out.println("2");
-				break;
-		}
-
+		double a = 111111110656.0;
+		System.out.println(""+a);
 		return 0;
 	}
 }

@@ -74,7 +74,7 @@ INTEGER				((0{N8}+{INT_SPEC}*)|({N10}+{INT_SPEC}*)|(0(x|X){N16}+{INT_SPEC}*))
 							}
 						} else
 						{
-							yylval.val_constant = insert_constant_double(strtold(yytext, NULL));
+							yylval.val_constant = insert_constant_double(strtod(yytext, NULL));
 
 							if (errno == ERANGE)
 							{

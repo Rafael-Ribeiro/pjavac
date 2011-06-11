@@ -53,7 +53,7 @@ is_constant* insert_constant_long(long long value)
 	return node;
 }
 
-is_constant* insert_constant_double(long double value)
+is_constant* insert_constant_double(double value)
 {
 	is_constant* node = (is_constant*)malloc(sizeof(is_constant));
 

@@ -231,7 +231,7 @@ typedef struct _is_constant
 		bool bool_val;
 		int int_val;
 		long long long_val;
-		long double double_val;
+		double double_val;
 		float float_val;
 
 		/* char char_val; it's not used since char is now a '<char>' string (including the inverted commas) */
