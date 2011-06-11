@@ -895,7 +895,11 @@ is_stmt_list* insert_stmt_list(is_stmt* stmt, is_stmt_list* next)
 	
 	node->node = stmt;
 	node->next = next;
-	node->line = stmt->line;
+
+	if (stmt)
+		node->line = stmt->line;
+	else
+		node->line = yyline;
 
 	return node;
 }

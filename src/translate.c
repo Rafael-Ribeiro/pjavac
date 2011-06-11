@@ -1236,18 +1236,26 @@ void translate_var(is_var *node)
 void translate_var_def(is_var_def *node)
 {
 	SYMBOL* symbol;
+	char *typeA = NULL, *typeB = NULL;
 
 	symbol = node->left->symbol;
 
 	if (node->var_init)
 		translate_var_initializer(node->var_init);
 
+	typeA = string_type_decl(node->left->symbol->data.var_data.type);
+	if (node->var_init)
+		typeB = string_type_decl(node->var_init->s_type);
+
 	if (symbol->data.var_data.global)
 	{
 		if (node->var_init)
 		{
-			OUT("\t_globals[%d] = _registers[%d];\n",
+
+			OUT("\t*(%s*)& _globals[%d] = *(%s*)& _registers[%d];\n",
+				typeA,
 				symbol->data.var_data.framepos,
+				typeB,
 				node->var_init->temp
 			);
 		}
@@ -1255,13 +1263,18 @@ void translate_var_def(is_var_def *node)
 	{
 		if (node->var_init)
 		{
-			OUT("\t_fp->locals[%d] = _registers[%d];\n",
-				symbol->data.var_data.framepos,
+			OUT("\t*(%s*)& _fp->locals[%d] = *(%s*)& _registers[%d];\n",
+				typeA,
+				symbol->data.var_data.framepos,	
+				typeB,
 				node->var_init->temp
 			);
 		}
 	}
 	OUT("\n");
+
+	free(typeA);
+	free(typeB);
 }
 
 void translate_var_def_list(is_var_def_list *node)
