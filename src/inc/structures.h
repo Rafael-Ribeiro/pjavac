@@ -168,22 +168,23 @@ typedef struct _is_break
 	type_break type;
 } is_break;
 
+typedef enum
+{
+	t_class_stmt_privacy_public,
+	t_class_stmt_privacy_private
+} is_class_stmt_privacy;
+
 typedef struct _is_class_def
 {
 	int line;
 
+	is_class_stmt_privacy* privacy;
 	struct _is_id* id;
 	struct _is_class_stmt_list* body;
 
 	/* semantics */
 	struct _SCOPE* scope;
 } is_class_def;
-
-typedef enum
-{
-	t_class_stmt_privacy_public,
-	t_class_stmt_privacy_private
-} is_class_stmt_privacy;
 
 typedef struct _is_class_stmt_scope
 {

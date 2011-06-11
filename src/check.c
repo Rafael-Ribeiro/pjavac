@@ -130,9 +130,6 @@ int check_assign_op(is_assign_op* node)
 		}
 	}
 
-	if (errors == 0)
-		node->s_type = duplicate_type_decl(node->s_type);
-
 	return errors;
 }
 
@@ -272,10 +269,7 @@ int check_class_def(is_class_def* node)
 		if (errors == 0)
 		{
 			symbol = scope_lookup(symtab, "main", t_symbol_func);
-			if (symbol)
-			{
-				/* TODO check function prototype */
-			} else
+			if (!symbol)
 			{
 				errors++;
 				pretty_error(node->line, "missing main entry point");
@@ -1551,8 +1545,10 @@ int check_var_defs(is_var_defs* node, bool first_pass)
 				}
 			}
 		}
-	}
 
+		free_type_decl(type);
+	}
+	
 	return errors;
 }
 

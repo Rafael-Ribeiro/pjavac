@@ -619,7 +619,9 @@ void translate_func_call(is_func_call *node)
 
 		node->temp = temp;
 		free(type);
-	}	
+	}
+
+	free_type_decl(type_void);
 }
 
 void translate_func_def(is_func_def *node)

@@ -34,6 +34,9 @@ void free_constant(is_constant* node)
 			default:
 				break;
 		}
+
+		free_type_decl(node->s_type);
+
 		free(node);
 	}
 }
@@ -43,6 +46,7 @@ void free_array_decl (is_array_decl* node)
 	if (node)
 	{
 		free_type_object(node->type);
+		free_dims_empty_list(node->dims);
 		free(node);
 	}
 }
@@ -103,17 +107,20 @@ void free_class_stmt_list (is_class_stmt_list* node)
 	}
 }
 
-void free_class_def (is_class_def* node)
+void free_class_def(is_class_def* node)
 {
 	if (node)
 	{
+		if (node->privacy)
+			free_class_stmt_privacy(node->privacy);
+
 		free_id(node->id);
 		free_class_stmt_list(node->body);
 
-		free(node);
-	
 		if (node->scope)
 			scope_delete(node->scope);
+
+		free(node);
 	}
 }
 
@@ -156,6 +163,8 @@ void free_dims (is_dims* node)
 	if (node)
 	{
 		free_dims_sized_list(node->sized);
+		free_dims_empty_list(node->empty);
+
 		free(node);
 	}
 }
@@ -189,7 +198,12 @@ void free_do_while (is_do_while* node)
 		free_expr(node->cond);
 
 		if (node->scope)
+		{
+			if (node->scope->symbol)
+				symbol_delete(node->scope->symbol);
+
 			scope_delete(node->scope);
+		}
 		free(node);
 	}
 }
@@ -279,7 +293,11 @@ void free_for(is_for* node)
 		free_stmt(node->body);
 
 		if (node->scope)
+		{
+			if (node->scope->symbol)
+				symbol_delete(node->scope->symbol);
 			scope_delete(node->scope);
+		}
 		free(node);
 	}
 }
@@ -375,6 +393,8 @@ void free_func_def(is_func_def* node)
 		free_func_def_arg_list(node->args);
 		free_stmt_list(node->body);
 
+		if (node->scope)
+			scope_delete(node->scope);
 		free(node);
 	}
 }
@@ -573,7 +593,12 @@ void free_switch(is_switch* node)
 		free_switch_stmt_list(node->list);
 
 		if (node->scope)
+		{
+			if (node->scope->symbol)
+				symbol_delete(node->scope->symbol);
+
 			scope_delete(node->scope);
+		}
 
 		free(node);
 	}
@@ -790,7 +815,12 @@ void free_while(is_while* node)
 		free_stmt(node->body);
 
 		if (node->scope)
+		{
+			if (node->scope->symbol)
+				symbol_delete(node->scope->symbol);
+
 			scope_delete(node->scope);
+		}
 
 		free(node);
 	}

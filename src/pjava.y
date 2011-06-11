@@ -276,10 +276,10 @@ break
 	;
 
 class_def
-	: CLASS ID '{' '}'												{ $$ = insert_class_def($2, NULL); }
-	| CLASS ID '{' class_stmt_list '}'								{ $$ = insert_class_def($2, $4); }
-	| class_stmt_privacy CLASS ID '{' '}'							{ $$ = insert_class_def($3, NULL); }
-	| class_stmt_privacy CLASS ID '{' class_stmt_list '}'			{ $$ = insert_class_def($3, $5); }
+	: CLASS ID '{' '}'												{ $$ = insert_class_def(NULL, $2, NULL); }
+	| CLASS ID '{' class_stmt_list '}'								{ $$ = insert_class_def(NULL, $2, $4); }
+	| class_stmt_privacy CLASS ID '{' '}'							{ $$ = insert_class_def($1, $3, NULL); }
+	| class_stmt_privacy CLASS ID '{' class_stmt_list '}'			{ $$ = insert_class_def($1, $3, $5); }
 	;
 
 class_stmt
@@ -598,14 +598,12 @@ int main()
 		label_counter = 0; /* 0 = main */
 		if (check_application(main_application) == 0)
 		{
-			//printf("Valid semantics!\n");
-			//show_application(main_application, 0);
-
-			//printf("\n");
 			fout = stdout;
 			translate_application(main_application);
 		}
 		scope_delete(symtab);
+
+		free_builtins();
 	}
 
 	free_application(main_application);

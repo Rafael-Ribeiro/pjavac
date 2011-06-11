@@ -25,7 +25,7 @@ is_break* insert_break(is_id* label);
 
 is_class_stmt_list* insert_class_stmt_list(is_class_stmt* stmt, is_class_stmt_list* next); 
 
-is_class_def* insert_class_def(is_id* id, is_class_stmt_list* body);
+is_class_def* insert_class_def(is_class_stmt_privacy *privacy, is_id* id, is_class_stmt_list* body);
 
 is_class_stmt* insert_class_stmt(is_class_stmt_privacy* privacy, is_class_stmt_scope* scope, is_member_stmt* stmt); 
 

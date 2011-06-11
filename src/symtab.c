@@ -164,6 +164,7 @@ SCOPE* scope_new(SYMBOL* name,bool global)
 	scope->parent = NULL;
 	scope->global = global;
 	scope->symbol = name;
+	scope->framepos = 0;
 
 	for (i = 0; i < MAX_SYMBOL_TYPES; i++)
 		scope->node[i] = NULL;
@@ -193,6 +194,7 @@ void scope_delete(SCOPE* scope)
 	int i;
 	for (i = 0; i < MAX_SYMBOL_TYPES; i++)
 		node_delete(scope->node[i]);
+
 	free(scope);
 }
 
