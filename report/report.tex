@@ -4,7 +4,7 @@
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
 
-\newcommand{\documentTitle}{PJAVA Compiler} %Macro definition
+\newcommand{\documentTitle}{PJava Compiler} %Macro definition
 \newcommand{\documentAuthors}{João Rafael (2008111876, jprafael@student.dei.uc.pt) \and José Ribeiro (2008112181, jbaia@student.dei.uc.pt)} %Macro definition
 
 \title{\documentTitle}
@@ -15,7 +15,7 @@
 	pdftitle = \documentTitle
 	,pdfauthor = \documentAuthors
 	,pdfsubject = {Project Report}
-	,pdfkeywords = {PJAVA Compiler} {Compilers} {Syntax Analysis} {Semantic Analysis} {Code Generation}
+	,pdfkeywords = {PJava Compiler} {Compilers} {Syntax Analysis} {Semantic Analysis} {Code Generation}
 	,pdfborder = {0 0 0}
 }
 
@@ -52,12 +52,12 @@
 \setlength{\parskip}{0.3cm}
 
 \section{Introduction}
-\indent \indent No âmbito da cadeira de Compiladores foi-nos proposta a implementação de um compilador de um \textit{subset} de \texttt{JAVA} (apelidado de
-\texttt{PJAVA} \footnote[1]{PJAVA: Procedimental JAVA}) para um \texttt{subset} de C. Esse \textit{subset} de C tem como principais limitações
+\indent \indent No âmbito da cadeira de Compiladores foi-nos proposta a implementação de um compilador de um \textit{subset} de \texttt{Java} (apelidado de
+\texttt{PJava} \footnote[1]{PJava: Procedimental Java}) para um \texttt{subset} de C. Esse \textit{subset} de C tem como principais limitações
 apenas possuir saltos incondicionais (\texttt{goto}), \texttt{labels} e a instrução de selecção \texttt{if} (sem o correspondente \texttt{else}, além de apenas poder
 ter uma \texttt{statement}). Tal permite uma maior semelhança à compilação para código binário (\texttt{Assembly}).
 
-\indent Apesar de PJAVA (como definido no enunciado) ser um \texttt{subset} algo reduto, decidimos implementar algumas funcionalidades mais avançadas que consideramos
+\indent Apesar de PJava (como definido no enunciado) ser um \texttt{subset} algo reduto, decidimos implementar algumas funcionalidades mais avançadas que consideramos
 serem essenciais a qualquer linguagem de programação (como \texttt{arrays}). Essas funcionalidades são exploradas com maior detalhe na secção \ref{semantic_choices}.
 
 \indent Este relatório permite esclarecer algumas das decisões tomadas relativamente à sintaxe e semântica, bem como explicar o mecanismo de geração de código
@@ -67,7 +67,7 @@ utilizado.
 
 \section{Syntactic Analysis} %%% TODO FIXME TODO FIXME TODO FIXME Explicar detecção de erros
 \label{syntactic_analysis}
-\indent \indent Tal como indicado no enunciado do projecto, na linguagem PJAVA apenas se pretende explorar a vertente procedimental do JAVA. 
+\indent \indent Tal como indicado no enunciado do projecto, na linguagem PJava apenas se pretende explorar a vertente procedimental do Java. 
 Deste modo, decidimos que implementar \texttt{packages} seria desnecessário.
 
 \indent Devido a esta escolha, os métodos \texttt{System.out.println()} e \texttt{System.in.nextInt()} (aqui considerado equivalente a \texttt{Scanner.nextInt()})
@@ -144,10 +144,66 @@ como argumentos de funções. São, no entanto, válidos dentro de funções e e
 % TODO 2 passage
 % Symbol table com stack de árvores AVL
 % pesquisa sub linear
+% errors
+
+\begin{description}
+	\item [assign\_op] \hfill \\
+		Atribuições apenas possíveis para os tipos nativos, à excepção do operador \texttt{assignment} directo (i.e.: operador \texttt{"="}).
+		A validade da operação é verificada através da tabela de operações em \texttt{types.c}.
+
+	\item [binary\_op] \hfill \\
+		Tal como as operações de atribuição, as operações binárias apenas são possíveis para os tipos nativos e a sua verificação
+		é efectuada através da tabela em \texttt{types.c}.
+
+	\item [break] \hfill \\
+		Verificação se o \texttt{break} se encontra dentro de um \texttt{loop} ou \texttt{switch}
+		e no caso particular de possuir uma \texttt{label} se se encontra dentro do escopo onde esta é definida.
+
+	\item [class\_def] \hfill \\
+		Garantia que o nome da classe não se encontra préviamente definido\footnote[1]{Uma vez que a linguagem é procedimental e que apenas permite uma classe esta verificação é apenas formal.} e que existe uma função
+		de inicio de aplicação.
+
+	\item [continue] \hfill \\
+		À semelhança do \texttt{statement break} é verificado se o \texttt{continue} se encontra dentro de um \texttt{loop} correspondente.
+
+	\item [dims\_sized] \hfill \\
+		Confirmação do tipo da expressão (\texttt{int}).
+
+	\item [do\_while] \hfill \\
+		Confimação do tipo da expressão de condição (\texttt{boolean}).
+
+	\item [expr] \hfill \\
+		Caso a expressão seja a expansão de uma variável é verificado se esta é possível estar não inicializada. \\
+		Caso a expressão seja um \texttt{type-cast} é confirmada a sua validade através da tabela em \texttt{types.c}.
+
+	\item [for] \hfill \\
+		Confimação do tipo da expressão de condição (\texttt{boolean}).
+
+	\item [func\_call] \hfill \\
+		Verificação se existe uma função com o \texttt{id} fornecido e em caso afirmativo se esta possuí argumentos compatíveis
+		(tanto em número como em tipos)
+		
+	\item [func\_def] \hfill \\
+		Garantia que o nome da função não se encontra préviamente definido. \\
+		Se a função possua um valor de retorno, é verificado se existe algum caminho de execução que não termine num \texttt{return}.
+		No caso particular da função \texttt{main} é verificado se o protótipo é válido
+		(i.e.: o return value é \texttt{void} ou \texttt{int} e possuí um parâmetro opcional do tipo \texttt{String[]})
+		
+	\item [check\_func\_def\_arg] \hfill \\
+		Garantia que não existem argumentos duplicados.
+
+	\item [if] \hfill \\
+		Confimação do tipo da expressão de condição (\texttt{boolean}).
+
+	\item [incr\_op] \hfill \\
+		Incrementos e decrementos apenas válidos para tipos nativos. \\
+		Verificação se a variável já se encontra inicializada.
+
+\end{description}
 
 \subsection{Semantic Choices}
 \label{semantic_choices}
-\indent \indent Decidimos considerar como \textbf{semanticamente válidas} as seguintes situações (algumas diferentes/restritivas relativamente à definição semântica do JAVA):
+\indent \indent Decidimos considerar como \textbf{semanticamente válidas} as seguintes situações (algumas diferentes/restritivas relativamente à definição semântica do Java):
 \begin{itemize}
 	\item Declarações de variáveis em ciclos \texttt{single statement};
 	\item Operadores de comparação (\texttt{==}, \texttt{!=}, \texttt{<}, \texttt{>}, \texttt{<=}, \texttt{>=}) em \texttt{strings}.
@@ -158,7 +214,7 @@ Da mesma forma, considerámos como \textbf{semanticamente inválidas} as seguint
 	\item \textit{Function overloading} \footnote[1]{Como consequência da ausência de \textit{function overloading} surge a necessidade de concatenar
 		uma string (mesmo que vazia) com qualquer outro tipo de dados, para que estes sejam impressos por \texttt{System.out.println()}};
 	\item Funções de argumentos variáveis (\texttt{...});
-	\item Operadores \% and \%= envolvendo tipos de vírgula flutuante (dado que \texttt{C} não os permite, ao contrário de \texttt{JAVA}).
+	\item Operadores \% and \%= envolvendo tipos de vírgula flutuante (dado que \texttt{C} não os permite, ao contrário de \texttt{Java}).
 \end{itemize}
 
 \cleardoublepage
