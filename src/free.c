@@ -111,6 +111,9 @@ void free_class_def(is_class_def* node)
 {
 	if (node)
 	{
+		if (node->privacy)
+			free_class_stmt_privacy(node->privacy);
+
 		free_id(node->id);
 		free_class_stmt_list(node->body);
 

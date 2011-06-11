@@ -276,10 +276,10 @@ break
 	;
 
 class_def
-	: CLASS ID '{' '}'												{ $$ = insert_class_def($2, NULL); }
-	| CLASS ID '{' class_stmt_list '}'								{ $$ = insert_class_def($2, $4); }
-	| class_stmt_privacy CLASS ID '{' '}'							{ $$ = insert_class_def($3, NULL); }
-	| class_stmt_privacy CLASS ID '{' class_stmt_list '}'			{ $$ = insert_class_def($3, $5); }
+	: CLASS ID '{' '}'												{ $$ = insert_class_def(NULL, $2, NULL); }
+	| CLASS ID '{' class_stmt_list '}'								{ $$ = insert_class_def(NULL, $2, $4); }
+	| class_stmt_privacy CLASS ID '{' '}'							{ $$ = insert_class_def($1, $3, NULL); }
+	| class_stmt_privacy CLASS ID '{' class_stmt_list '}'			{ $$ = insert_class_def($1, $3, $5); }
 	;
 
 class_stmt

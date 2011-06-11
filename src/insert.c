@@ -195,12 +195,13 @@ is_class_stmt_list* insert_class_stmt_list (is_class_stmt* stmt, is_class_stmt_l
 	return node;
 }
 
-is_class_def* insert_class_def (is_id* id, is_class_stmt_list* body)
+is_class_def* insert_class_def (is_class_stmt_privacy* privacy, is_id* id, is_class_stmt_list* body)
 {
 	is_class_def *node = (is_class_def*)malloc(sizeof(is_class_def));
 
 	node->id = id;
 	node->body = body;
+	node->privacy = privacy;
 	node->line = id->line;
 
 	/* semantics */
