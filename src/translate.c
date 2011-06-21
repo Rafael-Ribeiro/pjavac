@@ -1246,9 +1246,9 @@ void translate_var_def(is_var_def *node)
 	if (node->var_init)
 		translate_var_initializer(node->var_init);
 
-	typeA = string_type_decl(node->left->symbol->data.var_data.type);
+	typeA = string_type_decl_c(node->left->symbol->data.var_data.type);
 	if (node->var_init)
-		typeB = string_type_decl(node->var_init->s_type);
+		typeB = string_type_decl_c(node->var_init->s_type);
 
 	if (symbol->data.var_data.global)
 	{
